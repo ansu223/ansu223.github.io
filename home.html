@@ -51,6 +51,17 @@
             position: relative;
         }
 
+        .wheel::after {
+            content: "😊 🎁 😢 🎉 😊 💰";
+            position: absolute;
+            font-size: 24px;
+            color: white;
+            width: 100%;
+            text-align: center;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
         .arrow {
             position: absolute;
             top: -10px;
@@ -120,9 +131,9 @@
                 
                 if (reward > 0) {
                     balance += reward;
-                    document.getElementById("spin-result").innerText = "You won: " + reward + " BTTC!";
+                    document.getElementById("spin-result").innerText = "You won: " + reward + " BTTC! 😊";
                 } else {
-                    document.getElementById("spin-result").innerText = "Better luck next time!";
+                    document.getElementById("spin-result").innerText = "Better luck next time! 😢";
                 }
                 document.getElementById("balance").innerText = balance;
                 
@@ -140,31 +151,5 @@
             });
         }
     </script>
-
-    <nav class="bottom-nav">
-        <a href="home.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>HOME</span>
-        </a>
-        <a href="leaderboard.html" class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>LEADERBOARD</span>
-        </a>
-        <a href="invite-friends.html" class="nav-item">
-            <i class="fas fa-user-friends"></i>
-            <span>FRIENDS</span>
-        </a>
-        <a href="task.html" class="nav-item">
-            <i class="fas fa-tasks"></i>
-            <span>TASKS</span>
-        </a>
-        <a href="balance.html" class="nav-item">
-            <i class="fas fa-wallet"></i>
-            <span>BALANCE</span>
-        </a>
-    </nav>
-
-    <script src="material/js/js.js"></script>
-    <script src="material/js/main.js"></script>
 </body>
 </html>
