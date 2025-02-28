@@ -6,11 +6,8 @@
     <title>Complete Tasks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="material/css/styles.css">
+    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
-                  <script>      
- <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
-</script>
-        <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -20,69 +17,43 @@
             padding: 0;
         }
 
-        #balance-container {
-            margin: 20px;
-            font-size: 18px;
-        }
-
-        .task-container {
-            margin: 10px auto;
-            max-width: 600px;
-        }
-
-        .task {
-            margin: 10px auto;
+        .game-container {
+            margin: 20px auto;
             padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #000000; 
+            max-width: 400px;
+            background-color: #333030;
             border-radius: 12px;
-            background-color: #333030; 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-            width: 80%;
         }
 
-        .task:hover {
-            transform: translateY(-5px);
-        }
-
-        .task-detail {
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            position: relative;
+            margin: 20px auto;
+            background: conic-gradient(
+                gold 0deg 60deg,
+                silver 60deg 120deg,
+                bronze 120deg 180deg,
+                gold 180deg 240deg,
+                silver 240deg 300deg,
+                bronze 300deg 360deg
+            );
+            transition: transform 3s ease-out;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: black;
+            font-weight: bold;
+            position: relative;
         }
 
-        .task-image img {
-            border-radius: 8px;
-            margin-right: 10px;
-        }
-
-        .task h4 {
-            margin: 0;
-            font-size: 18px;
-            color: #f2f2f2;
-        }
-
-        .task-data {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        .task-data img {
-            margin-right: 5px;
-        }
-
-        .task-data h5 {
-            margin: 0;
-            color: #ffcc00;
-            font-size: 18px;
-        }
-
-        .task-button {
-            background-color: #ffffff; 
-            color: rgb(0, 0, 0);
+        .spin-button {
+            background-color: #ffffff;
+            color: black;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
@@ -91,121 +62,94 @@
             transition: background-color 0.3s ease;
         }
 
-        .task-button:hover {
-            background-color: #a2aaa0;
-        }
-
-        @media (max-width: 600px) {
-            .task-container {
-                max-width: 100%;
-            }
-
-            .task-button {
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-
-            .task h4 {
-                font-size: 16px;
-            }
+        .spin-button:hover {
+            background-color: #2dd60c;
         }
     </style>
 </head>
 <body>
-   
-    <br><br>
-
-
-    <div id="balance-container"><h2><b></b></h2>
-        <span id="balance">0</span>🎁 TOTAL Giftbox
+    
+    <div class="game-container">
+        <h3>🎡 Spin & Win BTTC 🎡</h3>
+        <p>Spin the wheel to earn BTTC rewards!</p>
+        <p>Your Balance: <span id="balance">0</span> BTTC</p>
+        <p>Your Tickets: <span id="tickets">0</span></p>
+        <div class="wheel" id="wheel"></div>
+        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (10 Tickets)</button>
+        <p id="spin-result"></p>
+        <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
+        <p id="code-box" style="display: none;">🎁 You won a Code Box! 🎁</p>
     </div>
-    <br>
 
-    <div class="task-container">
-        <div class="task">
-            <div class="task-detail">
-                <div class="task-image">
-                    <img src="material/images/logo.png" width="45px" alt="">
-                </div>
-                <div>
-                    <h4>Claim Rewards</h4>
-                    <div class="task-data">
-                        <img src="material/images/logo.png" width="20px" alt="Coin Icon">
-                        <h5>1000</h5>
-                    </div>
-                </div>
-            </div>
-            <button class="task-button" onclick="completeTask(1000, 'reword.html')">🎁 Claim</button>
-        </div>
+    <script>
+        let balance = 0;
+        let tickets = 0;
+        let spins = 0;
 
-        <div class="task">
-            <div class="task-detail">
-                <div class="task-image">
-                    <img src="material/images/logo.png" width="45px" alt="">
-                </div>
-                <div>
-                    <h4>Verify and Earn</h4>
-                    <div class="task-data">
-                        <img src="material/images/logo.png" width="20px" alt="Coin Icon">
-                        <h5>1000</h5>
-                    </div>
-                </div>
-            </div>
-            <button class="task-button" onclick="completeTask(1000, 'verify.html')">🎁 Claim</button>
-        </div>
-                  <script>      
-    // Rewarded interstitial
-        
-show_9014452().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-</script>
+        function spinWheel() {
+            if (tickets < 10) {
+                alert("You need 10 tickets to spin!");
+                return;
+            }
+            tickets -= 10;
+            document.getElementById("tickets").innerText = tickets;
+            spins++;
 
+            const wheel = document.getElementById("wheel");
+            const degrees = Math.floor(Math.random() * 3600) + 1800; 
+            wheel.style.transform = `rotate(${degrees}deg)`;
+            setTimeout(() => {
+                const prizes = [10, 50, 100, 500, 1000, 0];
+                const index = Math.floor((degrees % 360) / 60);
+                const reward = prizes[index];
+                
+                if (reward > 0) {
+                    balance += reward;
+                    document.getElementById("spin-result").innerText = "You won: " + reward + " BTTC!";
+                } else {
+                    document.getElementById("spin-result").innerText = "Better luck next time!";
+                }
+                document.getElementById("balance").innerText = balance;
+                
+                if (spins >= 10) {
+                    document.getElementById("code-box").style.display = "block";
+                }
+            }, 3000);
+        }
 
+        function watchAdForTicket() {
+            show_9014452().then(() => {
+                alert('You watched an ad! You received 1 ticket.');
+                tickets++;
+                document.getElementById("tickets").innerText = tickets;
+            });
+        }
+    </script>
 
-        <div class="coin-container">
-            <div class="task-image">
-                <img src="material/images/logo.png" width="80%">
-
-               
-
-                <nav class="bottom-nav">
-            <a href="home.html" class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>HOME</span>
-            </a>
-            <a href="leaderboard.html" class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>LEADERBOARD</span>
-            </a>
-            <a href="invite-friends.html" class="nav-item">
-                <i class="fas fa-user-friends"></i>
-                <span>FRIENDS</span>
-            </a>
-            <a href="task.html" class="nav-item">
-                <i class="fas fa-tasks"></i>
-                <span>TASKS</span>
-            </a>
-            <a href="balance.html" class="nav-item">
-                <i class="fas fa-wallet"></i>
-                <span>BALANCE</span>
-            </a>
-        </nav>
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>HOME</span>
+        </a>
+        <a href="leaderboard.html" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>LEADERBOARD</span>
+        </a>
+        <a href="invite-friends.html" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>FRIENDS</span>
+        </a>
+        <a href="task.html" class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>TASKS</span>
+        </a>
+        <a href="balance.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>BALANCE</span>
+        </a>
+    </nav>
 
     <script src="material/js/js.js"></script>
     <script src="material/js/main.js"></script>
-
-          <script>      
-    // Rewarded interstitial
-        
-show_9014452().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-</script>
-        
 </body>
 </html>
