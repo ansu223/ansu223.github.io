@@ -101,7 +101,7 @@
             <div class="arrow"></div>
             <div class="wheel" id="wheel"></div>
         </div>
-        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Tickets)</button>
+        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (10 Tickets)</button>
         <p id="spin-result"></p>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
         <p id="code-box" style="display: none;">🎁 BPHKQFNQ59 🎁</p>
@@ -113,11 +113,11 @@
         let spins = 0;
 
         function spinWheel() {
-            if (tickets < 1) {
+            if (tickets < 10) {
                 alert("You need 1 tickets to spin!");
                 return;
             }
-            tickets -= 1;
+            tickets -= 10;
             document.getElementById("tickets").innerText = tickets;
             spins++;
 
