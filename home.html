@@ -3,93 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Game - Spin & Earn</title>
+    <title>Complete Tasks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="material/css/styles.css">
+    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #000;
-            color: #fff;
+            background-color: #000; 
+            color: #fff; 
             margin: 0;
             padding: 0;
         }
 
-        .wheel-container {
-            margin-top: 20px;
-        }
-
-        .wheel {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: conic-gradient(
-                gold 0deg 60deg,
-                red 60deg 120deg,
-                green 120deg 180deg,
-                blue 180deg 240deg,
-                yellow 240deg 300deg,
-                purple 300deg 360deg
-            );
-            position: relative;
-            transition: transform 3s ease-out;
+        .game-container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 400px;
+            background-color: #333030;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .spin-button {
-            background-color: #ffcc00;
-            color: #000;
+            background-color: #ffffff;
+            color: black;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 8px;
-            margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
 
-        .spin-button:disabled {
-            background-color: #666;
-            cursor: not-allowed;
-        }
-
-        .reward-ad {
-            margin-top: 10px;
-            color: #ffcc00;
-            cursor: pointer;
-            text-decoration: underline;
+        .spin-button:hover {
+            background-color: #2dd60c;
         }
     </style>
 </head>
 <body>
-    <h2>🎰 Spin & Earn BTTC</h2>
-    <div class="wheel-container">
-        <div class="wheel" id="wheel"></div>
+    
+    <div class="game-container">
+        <h3>🎡 Spin & Win BTTC 🎡</h3>
+        <p>Spin the wheel to earn BTTC rewards!</p>
+        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now</button>
+        <p id="spin-result"></p>
+        <button class="spin-button" onclick="watchAdForSpin()">🎥 Watch Ad for Extra Spin</button>
     </div>
-    <button id="spinButton" class="spin-button" onclick="spinWheel()">Spin</button>
-    <p class="reward-ad" onclick="watchAd()">Watch Ad for Extra Spin</p>
 
     <script>
-        let spinning = false;
-
         function spinWheel() {
-            if (spinning) return;
-            spinning = true;
-            let wheel = document.getElementById("wheel");
-            let randomDegree = 1440 + Math.floor(Math.random() * 360);
-            wheel.style.transform = `rotate(${randomDegree}deg)`;
-            setTimeout(() => {
-                spinning = false;
-                alert("You won some BTTC!"); // Add backend call to distribute reward
-            }, 3000);
+            const prizes = ["10 BTTC", "50 BTTC", "100 BTTC", "Better luck next time!"];
+            const result = prizes[Math.floor(Math.random() * prizes.length)];
+            document.getElementById("spin-result").innerText = "You won: " + result;
         }
 
-        function watchAd() {
+        function watchAdForSpin() {
             show_9014452().then(() => {
-                alert("Ad watched! You get an extra spin!");
+                alert('You watched an ad! Now you get an extra spin.');
             });
         }
     </script>
 
-    <script src="//whephiwums.com/sdk.js" data-zone="9014452" data-sdk="show_9014452"></script>
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>HOME</span>
+        </a>
+        <a href="leaderboard.html" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>LEADERBOARD</span>
+        </a>
+        <a href="invite-friends.html" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>FRIENDS</span>
+        </a>
+        <a href="task.html" class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>TASKS</span>
+        </a>
+        <a href="balance.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>BALANCE</span>
+        </a>
+    </nav>
+
+    <script src="material/js/js.js"></script>
+    <script src="material/js/main.js"></script>
 </body>
 </html>
