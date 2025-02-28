@@ -71,6 +71,7 @@
     <div class="game-container">
         <h3>🎡 Spin & Win BTTC 🎡</h3>
         <p>Spin the wheel to earn BTTC rewards!</p>
+        <p>Your Balance: <span id="balance">0</span> BTTC</p>
         <div class="wheel" id="wheel">BTTC</div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now</button>
         <p id="spin-result"></p>
@@ -78,14 +79,24 @@
     </div>
 
     <script>
+        let balance = 0;
+
         function spinWheel() {
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800; 
             wheel.style.transform = `rotate(${degrees}deg)`;
             setTimeout(() => {
-                const prizes = ["10 BTTC", "50 BTTC", "100 BTTC", "500 BTTC", "1000 BTTC", "Better luck next time!"];
+                const prizes = [10, 50, 100, 500, 1000, 0];
                 const index = Math.floor((degrees % 360) / 60);
-                document.getElementById("spin-result").innerText = "You won: " + prizes[index];
+                const reward = prizes[index];
+                
+                if (reward > 0) {
+                    balance += reward;
+                    document.getElementById("spin-result").innerText = "You won: " + reward + " BTTC!";
+                } else {
+                    document.getElementById("spin-result").innerText = "Better luck next time!";
+                }
+                document.getElementById("balance").innerText = balance;
             }, 3000);
         }
 
