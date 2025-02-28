@@ -27,19 +27,19 @@
         }
 
         .wheel {
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             border: 5px solid #fff;
             position: relative;
             margin: 20px auto;
             background: conic-gradient(
-                gold 0deg 60deg,
-                silver 60deg 120deg,
-                bronze 120deg 180deg,
-                gold 180deg 240deg,
-                silver 240deg 300deg,
-                bronze 300deg 360deg
+                #ffcc00 0deg 60deg,
+                #ff6600 60deg 120deg,
+                #ff0000 120deg 180deg,
+                #00ccff 180deg 240deg,
+                #33cc33 240deg 300deg,
+                #9900cc 300deg 360deg
             );
             transition: transform 3s ease-out;
             display: flex;
@@ -49,6 +49,18 @@
             color: black;
             font-weight: bold;
             position: relative;
+        }
+
+        .arrow {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #fff;
         }
 
         .spin-button {
@@ -74,7 +86,10 @@
         <p>Spin the wheel to earn BTTC rewards!</p>
         <p>Your Balance: <span id="balance">0</span> BTTC</p>
         <p>Your Tickets: <span id="tickets">0</span></p>
-        <div class="wheel" id="wheel"></div>
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel" id="wheel"></div>
+        </div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (10 Tickets)</button>
         <p id="spin-result"></p>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
