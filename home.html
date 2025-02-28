@@ -3,209 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Tasks</title>
+    <title>Mini Game - Spin & Earn</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="material/css/styles.css">
     <style>
-                  <script>      
- <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
-</script>
-        <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #000; 
-            color: #fff; 
+            background-color: #000;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
 
-        #balance-container {
-            margin: 20px;
-            font-size: 18px;
+        .wheel-container {
+            margin-top: 20px;
         }
 
-        .task-container {
-            margin: 10px auto;
-            max-width: 600px;
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                gold 0deg 60deg,
+                red 60deg 120deg,
+                green 120deg 180deg,
+                blue 180deg 240deg,
+                yellow 240deg 300deg,
+                purple 300deg 360deg
+            );
+            position: relative;
+            transition: transform 3s ease-out;
         }
 
-        .task {
-            margin: 10px auto;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #000000; 
-            border-radius: 12px;
-            background-color: #333030; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-            width: 80%;
-        }
-
-        .task:hover {
-            transform: translateY(-5px);
-        }
-
-        .task-detail {
-            display: flex;
-            align-items: center;
-        }
-
-        .task-image img {
-            border-radius: 8px;
-            margin-right: 10px;
-        }
-
-        .task h4 {
-            margin: 0;
-            font-size: 18px;
-            color: #f2f2f2;
-        }
-
-        .task-data {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        .task-data img {
-            margin-right: 5px;
-        }
-
-        .task-data h5 {
-            margin: 0;
-            color: #ffcc00;
-            font-size: 18px;
-        }
-
-        .task-button {
-            background-color: #ffffff; 
-            color: rgb(0, 0, 0);
+        .spin-button {
+            background-color: #ffcc00;
+            color: #000;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            margin-top: 20px;
         }
 
-        .task-button:hover {
-            background-color: #a2aaa0;
+        .spin-button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
         }
 
-        @media (max-width: 600px) {
-            .task-container {
-                max-width: 100%;
-            }
-
-            .task-button {
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-
-            .task h4 {
-                font-size: 16px;
-            }
+        .reward-ad {
+            margin-top: 10px;
+            color: #ffcc00;
+            cursor: pointer;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-   
-    <br><br>
-
-
-    <div id="balance-container"><h2><b></b></h2>
-        <span id="balance">0</span>🎁 TOTAL Giftbox
+    <h2>🎰 Spin & Earn BTTC</h2>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel"></div>
     </div>
-    <br>
+    <button id="spinButton" class="spin-button" onclick="spinWheel()">Spin</button>
+    <p class="reward-ad" onclick="watchAd()">Watch Ad for Extra Spin</p>
 
-    <div class="task-container">
-        <div class="task">
-            <div class="task-detail">
-                <div class="task-image">
-                    <img src="material/images/logo.png" width="45px" alt="">
-                </div>
-                <div>
-                    <h4>Claim Rewards</h4>
-                    <div class="task-data">
-                        <img src="material/images/logo.png" width="20px" alt="Coin Icon">
-                        <h5>1000</h5>
-                    </div>
-                </div>
-            </div>
-            <button class="task-button" onclick="completeTask(1000, 'reword.html')">🎁 Claim</button>
-        </div>
+    <script>
+        let spinning = false;
 
-        <div class="task">
-            <div class="task-detail">
-                <div class="task-image">
-                    <img src="material/images/logo.png" width="45px" alt="">
-                </div>
-                <div>
-                    <h4>Verify and Earn</h4>
-                    <div class="task-data">
-                        <img src="material/images/logo.png" width="20px" alt="Coin Icon">
-                        <h5>1000</h5>
-                    </div>
-                </div>
-            </div>
-            <button class="task-button" onclick="completeTask(1000, 'verify.html')">🎁 Claim</button>
-        </div>
-                  <script>      
-    // Rewarded interstitial
-        
-show_9014452().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-</script>
+        function spinWheel() {
+            if (spinning) return;
+            spinning = true;
+            let wheel = document.getElementById("wheel");
+            let randomDegree = 1440 + Math.floor(Math.random() * 360);
+            wheel.style.transform = `rotate(${randomDegree}deg)`;
+            setTimeout(() => {
+                spinning = false;
+                alert("You won some BTTC!"); // Add backend call to distribute reward
+            }, 3000);
+        }
 
+        function watchAd() {
+            show_9014452().then(() => {
+                alert("Ad watched! You get an extra spin!");
+            });
+        }
+    </script>
 
-
-        <div class="coin-container">
-            <div class="task-image">
-                <img src="material/images/logo.png" width="80%">
-
-               
-
-                <nav class="bottom-nav">
-            <a href="home.html" class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>HOME</span>
-            </a>
-            <a href="leaderboard.html" class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>LEADERBOARD</span>
-            </a>
-            <a href="invite-friends.html" class="nav-item">
-                <i class="fas fa-user-friends"></i>
-                <span>FRIENDS</span>
-            </a>
-            <a href="task.html" class="nav-item">
-                <i class="fas fa-tasks"></i>
-                <span>TASKS</span>
-            </a>
-            <a href="balance.html" class="nav-item">
-                <i class="fas fa-wallet"></i>
-                <span>BALANCE</span>
-            </a>
-        </nav>
-
-    <script src="material/js/js.js"></script>
-    <script src="material/js/main.js"></script>
-
-          <script>      
-    // Rewarded interstitial
-        
-show_9014452().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    alert('You have seen an ad!');
-})
-</script>
-        
+    <script src="//whephiwums.com/sdk.js" data-zone="9014452" data-sdk="show_9014452"></script>
 </body>
 </html>
