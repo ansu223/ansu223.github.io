@@ -14,7 +14,7 @@
 
     <div class="frens-invite">
         <div class="frens-invite-button">
-            <input type="text" value="https://t.me/redpacket_gift_bot" id="link" readonly>
+            <input type="text" value="https://t.me/redpacket_gift_bot?ref=YOUR_REFERRAL_CODE" id="link" readonly>
             <button id="copyButton">Copy Link</button>
         </div>
     </div>
@@ -46,29 +46,48 @@
 
     <script>
     // In-App Interstitial 
+    show_9014452({ 
+      type: 'inApp', 
+      inAppSettings: { 
+        frequency: 2, 
+        capping: 0.1, 
+        interval: 30, 
+        timeout: 5, 
+        everyPage: false 
+      } 
+    });
 
-show_9014452({ 
-  type: 'inApp', 
-  inAppSettings: { 
-    frequency: 2, 
-    capping: 0.1, 
-    interval: 30, 
-    timeout: 5, 
-    everyPage: false 
-  } 
-})
+    // Referral System Logic
+    document.getElementById("copyButton").addEventListener("click", function() {
+        var referralLink = document.getElementById("link");
+        referralLink.select();
+        document.execCommand("copy");
 
-/*
-This value is decoded as follows:
-- show automatically 2 ads
-  within 0.1 hours (6 minutes)
-  with a 30-second interval between them
-  and a 5-second delay before the first one is shown.
-  The last digit, 0, means that the session will be saved when you navigate between pages.
-  If you set the last digit as 1, then at any transition between pages,
-  the session will be reset, and the ads will start again.
-*/
-</script>
+        alert("Referral link copied! Share it with your friends to earn 1000 BTTC each!");
+    });
+
+    // Extract referral code from URL if available
+    function getReferralCode() {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('ref') || null;
+    }
+
+    // Simulate referral reward (This part needs to be handled by your backend API)
+    function handleReferral(referralCode) {
+        if (referralCode) {
+            // Make an API call to register the referral and reward both the referrer and the referee
+            console.log("Referral Code detected: " + referralCode);
+            // Backend API integration here to reward the users
+        }
+    }
+
+    // Call the function when the page loads
+    window.onload = function() {
+        var referralCode = getReferralCode();
+        handleReferral(referralCode);
+    }
+    </script>
 </body>
 </html>
+
 
