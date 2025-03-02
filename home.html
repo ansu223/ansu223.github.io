@@ -61,7 +61,7 @@
             transform: translate(-50%, -50%) rotate(var(--rotate));
             top: var(--top);
             left: var(--left);
-            text-shadow: px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; }
@@ -109,6 +109,11 @@
             display: none;
             margin-top: 10px;
         }
+
+        #ad-progress {
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +138,9 @@
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
 
+        <!-- Ad Progress -->
+        <p id="ad-progress">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count">0</span>/5</p>
+
         <!-- Invite Friend Section -->
         <div class="invite-link">
             <p>Invite a friend to earn tickets!</p>
@@ -145,6 +153,7 @@
     <script>
         let tickets = 0;
         let spins = 0;
+        let adCount = 0; // Track the number of ads watched
         const spinCodes = [
             "NA8KGY0N", "BPQDCNZZHO", "GPBG40K1", "NVR92VJ8", "1V5THSCD", 
             "LOONY8ZD", "02EV75SZ", "IHOBQUCY", "12XDULY1", "3HL1EI4Q"
@@ -181,8 +190,16 @@
         function watchAdForTicket() {
             // Trigger Monetag Ad
             show_9014452().then(() => {
-                tickets++;
-                document.getElementById("tickets").innerText = tickets;
+                adCount++; // Increment ad count
+                document.getElementById("ad-count").innerText = adCount;
+
+                if (adCount >= 5) {
+                    tickets++; // Give 1 ticket after 5 ads
+                    document.getElementById("tickets").innerText = tickets;
+                    adCount = 0; // Reset ad count
+                    document.getElementById("ad-count").innerText = adCount;
+                    alert("You watched 5 ads! You earned 1 ticket.");
+                }
             }).catch((error) => {
                 alert("Ad failed to load. Please try again.");
             });
