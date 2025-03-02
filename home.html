@@ -103,14 +103,15 @@
             color: #fff;
         }
 
-        .invite-link input {
-            width: 80%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: #444;
-            color: #fff;
+        #spin-result {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #copy-code-button {
+            display: none; /* Hidden by default */
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -133,13 +134,12 @@
         </div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
+        <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
 
         <!-- Invite Friend Section -->
         <div class="invite-link">
             <p>Invite a friend to earn tickets!</p>
-            <input type="text" id="referral-link" value="https://t.me/redpacket_gift_bot" readonly>
-            <button class="spin-button" onclick="copyReferralLink()">📋 Copy Link</button>
             <button class="spin-button" onclick="shareOnTelegram()">📤 Share on Telegram</button>
         </div>
 
@@ -173,6 +173,7 @@
                 const winningSegment = Math.floor(actualDegrees / segmentDegree);
                 const resultCode = spinCodes[spins % spinCodes.length];
                 document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
+                document.getElementById("copy-code-button").style.display = "inline-block"; // Show Copy Code button
                 spins++;
 
                 if (spins >= 10) {
@@ -188,38 +189,34 @@
             document.getElementById("tickets").innerText = tickets;
         }
 
-        function copyReferralLink() {
-            const referralLink = document.getElementById("referral-link");
-            referralLink.select();
-            document.execCommand("copy");
-            alert("Referral link copied to clipboard! Share it with your friends.");
-        }
-
         function shareOnTelegram() {
-            const referralLink = document.getElementById("referral-link").value;
+            const referralLink = "https://yourwebsite.com?ref=user123"; // Replace with your referral link
             const message = `🎡 Spin & Win Crypto! 🎡\nUse my referral link to earn tickets: ${referralLink}`;
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
             
             // Open Telegram share dialog
             window.open(telegramUrl, '_blank');
 
-            // Simulate earning a ticket after sharing
-            setTimeout(() => {
-                tickets += 1; // Give 1 ticket for sharing
-                document.getElementById("tickets").innerText = tickets;
-                alert("You shared the link on Telegram! You earned 1 ticket.");
-            }, 1000); // Simulate a delay for sharing
-        }
-
-        // Simulate earning tickets when a friend uses the referral link
-        function simulateFriendReferral() {
-            tickets += 1; // Give 1 ticket for each friend who uses the link
+            // Give 1 ticket for sharing
+            tickets += 1;
             document.getElementById("tickets").innerText = tickets;
-            alert("Your friend used your referral link! You earned 1 ticket.");
+            alert("You shared the link on Telegram! You earned 1 ticket.");
         }
 
-        // Example: Simulate a friend using the referral link after 5 seconds
-        setTimeout(simulateFriendReferral, 5000); // Remove this in production
+        function copyResultCode() {
+            const resultText = document.getElementById("spin-result").innerText;
+            const resultCode = resultText.replace("You won: ", "").replace("! 😊", ""); // Extract the code
+
+            // Fallback method for copying text
+            const tempInput = document.createElement("input");
+            tempInput.value = resultCode;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            alert("Code copied to clipboard: " + resultCode);
+        }
     </script>
 </body>
 </html>
