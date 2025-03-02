@@ -52,7 +52,7 @@
         }
 
         .wheel::after {
-            content: "😊 🎁  🎉 😊 💰";
+            content: "😊 🎁 🎉 😊 💰";
             position: absolute;
             font-size: 24px;
             color: white;
@@ -104,52 +104,26 @@
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (10 Tickets)</button>
         <p id="spin-result"></p>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
-        <p id="code-box" style="display: none;">🎁 BPQDCNZZHO 🎁</p>
+        <button class="spin-button" onclick="shareForTicket()">📤 Share with a Friend for Ticket</button>
+        <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
 
     <script>
-        let balance = 0;
         let tickets = 0;
         let spins = 0;
+        const spinCodes = [
+            "Q8POG9XP", "BPQDCNZZHO", "02EV75SZ", "BPQDCNZZHO",
+            "02EV75SZ", "FPTTLYXP", "3HL1EI4Q", "JCICU3GR",
+            "9XRZ2HL3", "3HL1EI4Q"
+        ];
 
         function spinWheel() {
             if (tickets < 10) {
-                alert("You need 1 tickets to spin!");
+                alert("You need 10 tickets to spin!");
                 return;
             }
             tickets -= 10;
             document.getElementById("tickets").innerText = tickets;
             spins++;
 
-            const wheel = document.getElementById("wheel");
-            const degrees = Math.floor(Math.random() * 3600) + 1800; 
-            wheel.style.transform = `rotate(${degrees}deg)`;
-            setTimeout(() => {
-                const prizes = [10, 50, 100, 500, 1000, 0];
-                const index = Math.floor((degrees % 360) / 60);
-                const reward = prizes[index];
-                
-                if (reward > 0) {
-                    balance += reward;
-                    document.getElementById("spin-result").innerText = "You won: Q8POG9XP!😊";
-                
-                    
-                }
-                document.getElementById("balance").innerText = balance;
-                
-                if (spins >= 10) {
-                    document.getElementById("code-box").style.display = "block";
-                }
-            }, 3000);
-        }
-
-        function watchAdForTicket() {
-            show_9014452().then(() => {
-                alert('You watched an ad! You received 1 ticket.');
-                tickets++;
-                document.getElementById("tickets").innerText = tickets;
-            });
-        }
-    </script>
-</body>
-</html>
+            const
