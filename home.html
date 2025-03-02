@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Tasks</title>
+    <title>Spin & Win Crypto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="material/css/styles.css">
-    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #000;
+            background-color: #121212;
             color: #fff;
             margin: 0;
             padding: 0;
@@ -21,9 +19,14 @@
             margin: 20px auto;
             padding: 20px;
             max-width: 400px;
-            background-color: #333030;
+            background: linear-gradient(145deg, #444, #222);
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .wheel-container {
+            position: relative;
+            display: inline-block;
         }
 
         .wheel {
@@ -34,62 +37,41 @@
             position: relative;
             margin: 20px auto;
             background: conic-gradient(
-                #ff0000 0deg 60deg,    /* USDT🔴💰 */
-                #33cc33 60deg 120deg,  /* BTTC🟢💰 */
-                #ffcc00 100deg 160deg, /* LUNC🟡💰 */
-                #00ccff 180deg 240deg, /* PEPE🔵💰 */
-                #ff6600 200deg 300deg, /* BNB🟠💰 */
-            
+                #ff0000 0deg 60deg, 
+                #33cc33 60deg 120deg,  
+                #ffcc00 120deg 180deg, 
+                #00ccff 180deg 240deg, 
+                #ff6600 240deg 300deg, 
+                #8a2be2 300deg 360deg
             );
             transition: transform 3s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            position: relative;
         }
-
-        .wheel span {
-            position: absolute;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .wheel .usdt { top: 10%; left: 50%; transform: translate(-50%, -50%); }
-        .wheel .bttc { top: 30%; left: 85%; transform: translate(-50%, -50%); }
-        .wheel .lunc { bottom: 10%; left: 80%; transform: translate(-50%, 50%); }
-        .wheel .pepe { bottom: 10%; left: 20%; transform: translate(-50%, 50%); }
-        .wheel .bnb { top: 30%; left: 15%; transform: translate(-50%, -50%); }
-        .wheel .ltc { top: 10%; left: 50%; transform: translate(-50%, -50%); }
 
         .arrow {
             position: absolute;
-            top: -10px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid #fff;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #ffcc00;
         }
 
         .spin-button {
-            background-color: #ffffff;
+            background-color: #ffcc00;
             color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: 0.3s;
         }
 
         .spin-button:hover {
-            background-color: #2dd60c;
+            background-color: #ffa500;
         }
     </style>
 </head>
@@ -97,32 +79,17 @@
     <div class="game-container">
         <h3>🎡 Spin & Win Crypto 🎡</h3>
         <p>Spin the wheel to earn crypto rewards!</p>
-
         <p>Your Tickets: <span id="tickets">0</span></p>
         <div class="wheel-container">
             <div class="arrow"></div>
-            <div class="wheel" id="wheel">
-                <span class="usdt">USDT🔴💰</span>
-                <span class="bttc">BTTC🟢💰</span>
-                <span class="lunc">LUNC🟡💰</span>
-                <span class="pepe">PEPE🔵💰</span>
-                <span class="bnb">BNB🟠💰</span>
-                
-            </div>
+            <div class="wheel" id="wheel"></div>
         </div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
-        <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
-        <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
 
     <script>
-        let tickets = 0;
-        let spins = 0;
-        let spinCodes = [
-            "NA8KGY0N", "BPQDCNZZHO", "GPBG40K1", "NVR92VJ8", "1V5THSCD", 
-            "LOONY8ZD", "02EV75SZ", "IHOBQUCY", "12XDULY1", "3HL1EI4Q"
-        ];
+        let tickets = 3;
 
         function spinWheel() {
             if (tickets < 1) {
@@ -133,25 +100,12 @@
             document.getElementById("tickets").innerText = tickets;
             
             const wheel = document.getElementById("wheel");
-            const degrees = Math.floor(Math.random() * 3600) + 1800; 
+            const degrees = Math.floor(Math.random() * 3600) + 1800;
             wheel.style.transform = `rotate(${degrees}deg)`;
             
             setTimeout(() => {
-                let resultCode = spinCodes[spins % spinCodes.length];
-                document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
-                spins++;
-                if (spins >= 10) {
-                    document.getElementById("code-box").style.display = "block";
-                }
+                document.getElementById("spin-result").innerText = `🎉 You won a reward! 🎉`;
             }, 3000);
-        }
-
-        function watchAdForTicket() {
-            show_9014452().then(() => {
-                alert('You watched an ad! You received 1 ticket.');
-                tickets++;
-                document.getElementById("tickets").innerText = tickets;
-            });
         }
     </script>
 </body>
