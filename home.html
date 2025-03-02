@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Tasks</title>
+    <title>Spin Wheel Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="material/css/styles.css">
-    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,10 +90,27 @@
             cursor: pointer;
             border-radius: 8px;
             transition: background-color 0.3s ease;
+            margin: 5px;
         }
 
         .spin-button:hover {
             background-color: #2dd60c;
+        }
+
+        .invite-link {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .invite-link input {
+            width: 80%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #444;
+            color: #fff;
         }
     </style>
 </head>
@@ -119,16 +134,26 @@
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
+
+        <!-- Invite Friend Section -->
+        <div class="invite-link">
+            <p>Invite a friend to earn tickets!</p>
+            <input type="text" id="referral-link" value="https://yourwebsite.com?ref=user123" readonly>
+            <button class="spin-button" onclick="copyReferralLink()">📋 Copy Link</button>
+        </div>
+
         <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
-    
+
     <script>
         let tickets = 0;
         let spins = 0;
-        let spinCodes = [
+        const spinCodes = [
             "NA8KGY0N", "BPQDCNZZHO", "GPBG40K1", "NVR92VJ8", "1V5THSCD", 
             "LOONY8ZD", "02EV75SZ", "IHOBQUCY", "12XDULY1", "3HL1EI4Q"
         ];
+        const segments = 6; // Number of segments on the wheel
+        const segmentDegree = 360 / segments;
 
         function spinWheel() {
             if (tickets < 1) {
@@ -137,15 +162,18 @@
             }
             tickets -= 1;
             document.getElementById("tickets").innerText = tickets;
-            
+
             const wheel = document.getElementById("wheel");
-            const degrees = Math.floor(Math.random() * 3600) + 1800; 
+            const degrees = Math.floor(Math.random() * 3600) + 1800; // Random spin
             wheel.style.transform = `rotate(${degrees}deg)`;
-            
+
             setTimeout(() => {
-                let resultCode = spinCodes[spins % spinCodes.length];
+                const actualDegrees = degrees % 360;
+                const winningSegment = Math.floor(actualDegrees / segmentDegree);
+                const resultCode = spinCodes[spins % spinCodes.length];
                 document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
                 spins++;
+
                 if (spins >= 10) {
                     document.getElementById("code-box").style.display = "block";
                 }
@@ -153,12 +181,28 @@
         }
 
         function watchAdForTicket() {
-            show_9014452().then(() => {
-                alert('You watched an ad! You received 1 ticket.');
-                tickets++;
-                document.getElementById("tickets").innerText = tickets;
-            });
+            // Mock ad functionality
+            alert('You watched an ad! You received 1 ticket.');
+            tickets++;
+            document.getElementById("tickets").innerText = tickets;
         }
+
+        function copyReferralLink() {
+            const referralLink = document.getElementById("referral-link");
+            referralLink.select();
+            document.execCommand("copy");
+            alert("Referral link copied to clipboard! Share it with your friends.");
+        }
+
+        // Simulate earning tickets when a friend uses the referral link
+        function simulateFriendReferral() {
+            tickets += 1; // Give 1 ticket for each friend who uses the link
+            document.getElementById("tickets").innerText = tickets;
+            alert("Your friend used your referral link! You earned 1 ticket.");
+        }
+
+        // Example: Simulate a friend using the referral link after 5 seconds
+        setTimeout(simulateFriendReferral, 5000); // Remove this in production
     </script>
 </body>
 </html>
