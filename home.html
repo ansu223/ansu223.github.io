@@ -34,12 +34,12 @@
             position: relative;
             margin: 20px auto;
             background: conic-gradient(
-                #ff0000 0deg 60deg,   /* USDT */
-                #33cc33 60deg 120deg, /* BTTC */
-                #ffcc00 120deg 180deg, /* LUNC */
-                #00ccff 180deg 240deg, /* PEPE */
-                #ff6600 240deg 300deg, /* BNB */
-                #9900cc 300deg 360deg  /* LTC */
+                #ffcc00 0deg 60deg,
+                #ff6600 60deg 120deg,
+                #ff0000 120deg 180deg,
+                #00ccff 180deg 240deg,
+                #33cc33 240deg 300deg,
+                #9900cc 300deg 360deg
             );
             transition: transform 3s ease-out;
             display: flex;
@@ -49,6 +49,17 @@
             color: black;
             font-weight: bold;
             position: relative;
+        }
+
+        .wheel::after {
+            content: "😊 🎁  🎉 😊 💰";
+            position: absolute;
+            font-size: 24px;
+            color: white;
+            width: 100%;
+            text-align: center;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .arrow {
@@ -82,43 +93,50 @@
 <body>
     
     <div class="game-container">
-        <h3>🎡 Spin & Win Crypto 🎡</h3>
-        <p>Spin the wheel to earn crypto rewards! 💰</p>
+        <h3>🎡 Spin & Win BTTC 🎡</h3>
+        <p>Spin the wheel to earn BTTC Box rewards!</p>
 
         <p>Your Tickets: <span id="tickets">0</span></p>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel"></div>
         </div>
-        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
+        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (10 Tickets)</button>
         <p id="spin-result"></p>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
-        <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
+        <p id="code-box" style="display: none;">🎁 BPQDCNZZHO 🎁</p>
     </div>
 
     <script>
+        let balance = 0;
         let tickets = 0;
         let spins = 0;
-        const spinCodes = [
-            "USDT 💰", "BTTC 💰", "LUNC 💰", "PEPE 💰", "BNB 💰", "LTC 💰"
-        ];
 
         function spinWheel() {
-            if (tickets < 1) {
-                alert("You need 1 ticket to spin!");
+            if (tickets < 10) {
+                alert("You need 1 tickets to spin!");
                 return;
             }
-            tickets--;
+            tickets -= 10;
             document.getElementById("tickets").innerText = tickets;
             spins++;
 
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800; 
             wheel.style.transform = `rotate(${degrees}deg)`;
-
             setTimeout(() => {
-                const code = spinCodes[(spins - 1) % spinCodes.length];
-                document.getElementById("spin-result").innerText = `You won: ${code}! 😊`;
+                const prizes = [10, 50, 100, 500, 1000, 0];
+                const index = Math.floor((degrees % 360) / 60);
+                const reward = prizes[index];
+                
+                if (reward > 0) {
+                    balance += reward;
+                    document.getElementById("spin-result").innerText = "You won: Q8POG9XP!😊";
+                
+                    
+                }
+                document.getElementById("balance").innerText = balance;
+                
                 if (spins >= 10) {
                     document.getElementById("code-box").style.display = "block";
                 }
