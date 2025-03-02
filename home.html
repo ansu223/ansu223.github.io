@@ -35,13 +35,13 @@
             margin: 20px auto;
             background: conic-gradient(
                 #ff0000 0deg 60deg,    /* USDT🔴💰 */
-                #33cc33 120deg 180deg,  /* BTTC🟢💰 */
-                #ffcc00 180deg 240deg, /* LUNC🟡💰 */
-                #00ccff 240deg 300deg, /* PEPE🔵💰 */
-                #ff6600 300deg 3600deg, /* BNB🟠💰 */
-            
+                #33cc33 60deg 120deg,  /* BTTC🟢💰 */
+                #ffcc00 120deg 180deg, /* LUNC🟡💰 */
+                #00ccff 180deg 240deg, /* PEPE🔵💰 */
+                #ff6600 240deg 300deg, /* BNB🟠💰 */
+                #cc00ff 300deg 360deg  /* LTC🟣💰 */
             );
-            transition: transform 3s ease-out;
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -50,20 +50,26 @@
             font-weight: bold;
             text-align: center;
             position: relative;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
         .wheel span {
             position: absolute;
             font-size: 12px;
             font-weight: bold;
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(var(--rotate));
+            top: var(--top);
+            left: var(--left);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        .wheel .usdt { top: 10%; left: 50%; transform: translate(-50%, -50%); }
-        .wheel .bttc { top: 30%; left: 85%; transform: translate(-50%, -50%); }
-        .wheel .lunc { bottom: 10%; left: 80%; transform: translate(-50%, 50%); }
-        .wheel .pepe { bottom: 10%; left: 20%; transform: translate(-50%, 50%); }
-        .wheel .bnb { top: 30%; left: 15%; transform: translate(-50%, -50%); }
-        .wheel .ltc { top: 10%; left: 50%; transform: translate(-50%, -50%); }
+        .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; } /* USDT🔴💰 */
+        .wheel .bttc { --rotate: 30deg; --top: 15%; --left: 25%; }  /* BTTC🟢💰 */
+        .wheel .lunc { --rotate: 90deg; --top: 50%; --left: 10%; }  /* LUNC🟡💰 */
+        .wheel .pepe { --rotate: 150deg; --top: 85%; --left: 25%; } /* PEPE🔵💰 */
+        .wheel .bnb { --rotate: 210deg; --top: 85%; --left: 75%; }  /* BNB🟠💰 */
+        .wheel .ltc { --rotate: 270deg; --top: 50%; --left: 90%; }  /* LTC🟣💰 */
 
         .arrow {
             position: absolute;
@@ -107,7 +113,7 @@
                 <span class="lunc">LUNC🟡💰</span>
                 <span class="pepe">PEPE🔵💰</span>
                 <span class="bnb">BNB🟠💰</span>
-                
+                <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
@@ -115,7 +121,7 @@
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
         <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
-
+    
     <script>
         let tickets = 0;
         let spins = 0;
