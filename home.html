@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spin Wheel Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Monetag Ads SDK -->
+    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,15 +61,15 @@
             transform: translate(-50%, -50%) rotate(var(--rotate));
             top: var(--top);
             left: var(--left);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; } /* USDT🔴💰 */
-        .wheel .bttc { --rotate: 30deg; --top: 15%; --left: 25%; }  /* BTTC🟢💰 */
-        .wheel .lunc { --rotate: 90deg; --top: 50%; --left: 10%; }  /* LUNC🟡💰 */
-        .wheel .pepe { --rotate: 150deg; --top: 85%; --left: 25%; } /* PEPE🔵💰 */
-        .wheel .bnb { --rotate: 210deg; --top: 85%; --left: 75%; }  /* BNB🟠💰 */
-        .wheel .ltc { --rotate: 270deg; --top: 50%; --left: 90%; }  /* LTC🟣💰 */
+        .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; }
+        .wheel .bttc { --rotate: 30deg; --top: 15%; --left: 25%; }
+        .wheel .lunc { --rotate: 90deg; --top: 50%; --left: 10%; }
+        .wheel .pepe { --rotate: 150deg; --top: 85%; --left: 25%; }
+        .wheel .bnb { --rotate: 210deg; --top: 85%; --left: 75%; }
+        .wheel .ltc { --rotate: 270deg; --top: 50%; --left: 90%; }
 
         .arrow {
             position: absolute;
@@ -97,12 +99,6 @@
             background-color: #2dd60c;
         }
 
-        .invite-link {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #fff;
-        }
-
         #spin-result {
             margin-top: 10px;
             font-size: 16px;
@@ -110,7 +106,7 @@
         }
 
         #copy-code-button {
-            display: none; /* Hidden by default */
+            display: none;
             margin-top: 10px;
         }
     </style>
@@ -153,7 +149,7 @@
             "NA8KGY0N", "BPQDCNZZHO", "GPBG40K1", "NVR92VJ8", "1V5THSCD", 
             "LOONY8ZD", "02EV75SZ", "IHOBQUCY", "12XDULY1", "3HL1EI4Q"
         ];
-        const segments = 6; // Number of segments on the wheel
+        const segments = 6;
         const segmentDegree = 360 / segments;
 
         function spinWheel() {
@@ -165,7 +161,7 @@
             document.getElementById("tickets").innerText = tickets;
 
             const wheel = document.getElementById("wheel");
-            const degrees = Math.floor(Math.random() * 3600) + 1800; // Random spin
+            const degrees = Math.floor(Math.random() * 3600) + 1800;
             wheel.style.transform = `rotate(${degrees}deg)`;
 
             setTimeout(() => {
@@ -173,7 +169,7 @@
                 const winningSegment = Math.floor(actualDegrees / segmentDegree);
                 const resultCode = spinCodes[spins % spinCodes.length];
                 document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
-                document.getElementById("copy-code-button").style.display = "inline-block"; // Show Copy Code button
+                document.getElementById("copy-code-button").style.display = "inline-block";
                 spins++;
 
                 if (spins >= 10) {
@@ -183,21 +179,20 @@
         }
 
         function watchAdForTicket() {
-            // Mock ad functionality
-            alert('You watched an ad! You received 1 ticket.');
-            tickets++;
-            document.getElementById("tickets").innerText = tickets;
+            // Trigger Monetag Ad
+            show_9014452().then(() => {
+                tickets++;
+                document.getElementById("tickets").innerText = tickets;
+            }).catch((error) => {
+                alert("Ad failed to load. Please try again.");
+            });
         }
 
         function shareOnTelegram() {
-            const referralLink = "https://yourwebsite.com?ref=user123"; // Replace with your referral link
+            const referralLink = "https://yourwebsite.com?ref=user123";
             const message = `🎡 Spin & Win Crypto! 🎡\nUse my referral link to earn tickets: ${referralLink}`;
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
-            
-            // Open Telegram share dialog
             window.open(telegramUrl, '_blank');
-
-            // Give 1 ticket for sharing
             tickets += 1;
             document.getElementById("tickets").innerText = tickets;
             alert("You shared the link on Telegram! You earned 1 ticket.");
@@ -205,16 +200,13 @@
 
         function copyResultCode() {
             const resultText = document.getElementById("spin-result").innerText;
-            const resultCode = resultText.replace("You won: ", "").replace("! 😊", ""); // Extract the code
-
-            // Fallback method for copying text
+            const resultCode = resultText.replace("You won: ", "").replace("! 😊", "");
             const tempInput = document.createElement("input");
             tempInput.value = resultCode;
             document.body.appendChild(tempInput);
             tempInput.select();
             document.execCommand("copy");
             document.body.removeChild(tempInput);
-
             alert("Code copied to clipboard: " + resultCode);
         }
     </script>
