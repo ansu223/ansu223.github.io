@@ -210,7 +210,7 @@
             const message = `🎡 Spin & Win Crypto! 🎡\nUse my referral link to earn tickets: ${referralLink}`;
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
             window.open(telegramUrl, '_blank');
-            tickets += 1;
+            tickets += 0;
             document.getElementById("tickets").innerText = tickets;
             alert("You shared the link on Telegram! You earned 1 ticket.");
         }
