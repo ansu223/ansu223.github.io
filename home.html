@@ -8,7 +8,112 @@
     <!-- Monetag Ads SDK -->
     <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
-        /* Your existing CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 400px;
+            background-color: #333030;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            position: relative;
+            margin: 20px auto;
+            background: conic-gradient(
+                #ff0000 0deg 60deg,    /* USDT🔴💰 */
+                #33cc33 60deg 120deg,  /* BTTC🟢💰 */
+                #ffcc00 120deg 180deg, /* LUNC🟡💰 */
+                #00ccff 180deg 240deg, /* PEPE🔵💰 */
+                #ff6600 240deg 300deg, /* BNB🟠💰 */
+                #cc00ff 300deg 360deg  /* LTC🟣💰 */
+            );
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .wheel span {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(var(--rotate));
+            top: var(--top);
+            left: var(--left);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; }
+        .wheel .bttc { --rotate: 30deg; --top: 15%; --left: 25%; }
+        .wheel .lunc { --rotate: 90deg; --top: 50%; --left: 10%; }
+        .wheel .pepe { --rotate: 150deg; --top: 85%; --left: 25%; }
+        .wheel .bnb { --rotate: 210deg; --top: 85%; --left: 75%; }
+        .wheel .ltc { --rotate: 270deg; --top: 50%; --left: 90%; }
+
+        .arrow {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #fff;
+        }
+
+        .spin-button {
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        .spin-button:hover {
+            background-color: #2dd60c;
+        }
+
+        #spin-result {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #copy-code-button {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #ad-progress {
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -101,12 +206,11 @@
         }
 
         function shareOnTelegram() {
-            // Use the new deep link
-            const referralLink = "https://t.me/redpacket_gift_bot/giftbox";
+            const referralLink = "https://yourwebsite.com?ref=user123";
             const message = `🎡 Spin & Win Crypto! 🎡\nUse my referral link to earn tickets: ${referralLink}`;
             const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
             window.open(telegramUrl, '_blank');
-            tickets += 1; // Give 1 ticket for sharing
+            tickets += 0;
             document.getElementById("tickets").innerText = tickets;
             alert("You shared the link on Telegram! You earned 1 ticket.");
         }
