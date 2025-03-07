@@ -3,55 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main App</title>
+    <title>Loading...</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
+      
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; 
         }
-        .container {
-            margin: 50px auto;
-            padding: 20px;
-            max-width: 400px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        
+        
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('material/images/loading.gif') no-repeat center center fixed; 
+            background-size: cover; 
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
         }
-        button {
-            background-color: #2dd60c;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            margin: 10px;
+        
+        .loading-container h1 {
+            font-size: 24px;
+            margin: 0;
         }
-        button:hover {
-            background-color: #1fa809;
+        
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.1);
+            border-left: 8px solid #d5d7dd; 
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎡 Main App 🎡</h1>
-        <p>Welcome to the main app! Choose a game to play.</p>
-        <button onclick="openSpinGame()">🎰 Open Spin Wheel Game</button>
-        <button onclick="openFishingGame()">🎣 Open Fishing Game</button>
+    <div class="loading-container">
+        <div>
+            <h1>Loading...</h1>
+            <div class="spinner"></div>
+        </div>
     </div>
 
     <script>
-        function openSpinGame() {
-            window.open('spin-game.html', '_blank', 'width=500,height=700');
-        }
-
-        function openFishingGame() {
-            window.open('fishing-game.html', '_blank', 'width=500,height=700');
-        }
+       
+        setTimeout(function() {
+            window.location.href = 'home.html'; 
+        }, 5000);
     </script>
 </body>
 </html>
