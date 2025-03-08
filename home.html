@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin Wheel Game</title>
+    <title>Game App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Monetag Ads SDK -->
     <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
@@ -17,6 +17,35 @@
             padding: 0;
         }
 
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background-color: #333;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar button {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar button:hover {
+            background-color: #555;
+        }
+
         .game-container {
             margin: 20px auto;
             padding: 20px;
@@ -24,6 +53,7 @@
             background-color: #333030;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #fff;
         }
 
         .wheel {
@@ -34,12 +64,12 @@
             position: relative;
             margin: 20px auto;
             background: conic-gradient(
-                #ff0000 0deg 60deg,    /* USDT🔴💰 */
-                #33cc33 60deg 120deg,  /* BTTC🟢💰 */
-                #ffcc00 120deg 180deg, /* LUNC🟡💰 */
-                #00ccff 180deg 240deg, /* PEPE🔵💰 */
-                #ff6600 240deg 300deg, /* BNB🟠💰 */
-                #cc00ff 300deg 360deg  /* LTC🟣💰 */
+                #ff0000 0deg 60deg,
+                #33cc33 60deg 120deg,
+                #ffcc00 120deg 180deg,
+                #00ccff 180deg 240deg,
+                #ff6600 240deg 300deg,
+                #cc00ff 300deg 360deg
             );
             transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
             display: flex;
@@ -83,7 +113,7 @@
             border-bottom: 20px solid #fff;
         }
 
-        .spin-button {
+        .spin-button, .cast-button {
             background-color: #ffffff;
             color: black;
             border: none;
@@ -95,29 +125,81 @@
             margin: 5px;
         }
 
-        .spin-button:hover {
+        .spin-button:hover, .cast-button:hover {
             background-color: #2dd60c;
         }
 
-        #spin-result {
+        #spin-result, #catch-result {
             margin-top: 10px;
             font-size: 16px;
             font-weight: bold;
+            color: #fff;
         }
 
-        #copy-code-button {
+        #copy-code-button, #copy-code-button-fish {
             display: none;
             margin-top: 10px;
         }
 
-        #ad-progress {
+        #ad-progress, #ad-progress-fish {
             margin-top: 10px;
             font-size: 14px;
+            color: #fff;
+        }
+
+        .fish-pond {
+            width: 100%;
+            height: 200px;
+            background-color: #1c6e8c;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .fish {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            animation: swim 5s linear infinite;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .fish.winning-fish {
+            color: gold;
+            text-shadow: 0 0 10px gold, 0 0 20px gold;
+        }
+
+        @keyframes swim {
+            0% { left: -50px; }
+            100% { left: 100%; }
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1c6e8c;
+            border-radius: 8px;
+        }
+
+        .leaderboard h3 {
+            margin: 0;
+        }
+
+        .leaderboard ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .leaderboard li {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
+    <!-- Spin Game -->
+    <div id="spin-game" class="game-container">
         <h3>🎡 Spin & Win Crypto 🎡</h3>
         <p>Spin the wheel to earn crypto rewards!</p>
 
@@ -133,7 +215,7 @@
                 <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
-        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
+        <button class="spin-button" onclick="spinWheel()" aria-label="Spin the wheel to win crypto">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
@@ -150,17 +232,67 @@
         <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
 
+    <!-- Fish Game -->
+    <div id="fishing-game" class="game-container" style="display: none;">
+        <h1>🎣 Fishing for Crypto 🎣</h1>
+        <p>Catch fish to earn crypto codes!</p>
+
+        <div class="fish-pond" id="fish-pond">
+            <!-- Fish will appear here dynamically -->
+        </div>
+
+        <button class="cast-button" onclick="castLine()" aria-label="Cast a line to catch fish">🎣 Cast Line Now (1 Ticket)</button>
+        <button class="cast-button" onclick="watchAdForTicketFish()">🎥 Watch Ad for Ticket</button>
+
+        <p>Your Tickets: <span id="tickets-fish">0</span></p>
+        <p id="ad-progress-fish">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count-fish">0</span>/5</p>
+        <p id="catch-result"></p>
+        <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+            <h3>🏅 Leaderboard</h3>
+            <ul id="leaderboard-list">
+                <!-- Leaderboard entries will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <button onclick="showPage('spin-game')"><i class="fas fa-sync-alt"></i> Spin</button>
+        <button onclick="showPage('fishing-game')"><i class="fas fa-fish"></i> Fish</button>
+    </div>
+
     <script>
         let tickets = 0;
+        let ticketsFish = 0;
         let spins = 0;
-        let adCount = 0; // Track the number of ads watched
+        let adCount = 0;
+        let adCountFish = 0;
+        let fishCaught = 0;
+
         const spinCodes = [
-            "RTN48MR2", "DG1KFCQM", "HILZ2JLJ", "BPQDCNZZHO", "TL6JA019", 
-            "TL6JA019", "U4CJYQJY", "JS12PICI", "BPQDCNZZHO", "B3CJ71M3"
+            "MJGS83CV", "DG1KFCQM", "HILZ2JLJ", "BPQDCNZZHO", "TL6JA019", 
+            "TL6JA019", "NWR4N0DQ", "JS12PICI", "BPQDCNZZHO", "3HL1EI4Q"
         ];
+
+        const fishCodes = [
+            "NHJK34U9", "S42GMA4A", "BPQDCNZZHO", "VR4DKU6V", 
+            "WXI3KN1O", "MJGS83CV", "TL6JA019", "HILZ2JLJ"
+        ];
+
+        const fishTypes = [
+            { emoji: "🐟", value: 1 },
+            { emoji: "🐠", value: 2 },
+            { emoji: "🐡", value: 3 },
+            { emoji: "🦈", value: 5 },
+        ];
+
         const segments = 6;
         const segmentDegree = 360 / segments;
 
+        // Spin Game Functions
         function spinWheel() {
             if (tickets < 1) {
                 alert("You need 1 ticket to spin!");
@@ -187,45 +319,151 @@
             }, 3000);
         }
 
+        function copyResultCode() {
+            const resultText = document.getElementById("spin-result").innerText;
+            const resultCode = resultText.split("Code: ")[1];
+            navigator.clipboard.writeText(resultCode).then(() => {
+                alert("Code copied to clipboard: " + resultCode);
+            });
+        }
+
         function watchAdForTicket() {
-            // Trigger Monetag Ad
+            if (typeof show_9014452 === "undefined") {
+                alert("Ad SDK not loaded. Please try again later.");
+                return;
+            }
+
             show_9014452().then(() => {
-                adCount++; // Increment ad count
+                adCount++;
                 document.getElementById("ad-count").innerText = adCount;
 
                 if (adCount >= 5) {
-                    tickets++; // Give 1 ticket after 5 ads
+                    tickets++;
                     document.getElementById("tickets").innerText = tickets;
-                    adCount = 0; // Reset ad count
+                    adCount = 0;
                     document.getElementById("ad-count").innerText = adCount;
                     alert("You watched 5 ads! You earned 1 ticket.");
                 }
             }).catch((error) => {
+                console.error("Ad failed to load:", error);
                 alert("Ad failed to load. Please try again.");
             });
         }
 
         function shareOnTelegram() {
-            const referralLink = "https://yourwebsite.com?ref=user123";
-            const message = `🎡 Spin & Win Crypto! 🎡\nUse my referral link to earn tickets: ${referralLink}`;
-            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
-            window.open(telegramUrl, '_blank');
-            tickets += 0;
-            document.getElementById("tickets").innerText = tickets;
-            alert("You shared the link on Telegram! You earned 1 ticket.");
+            const inviteLink = "https://t.me/share/url?url=YourInviteLinkHere&text=Join%20this%20awesome%20game%20and%20earn%20crypto!";
+            window.open(inviteLink, "_blank");
         }
 
-        function copyResultCode() {
-            const resultText = document.getElementById("spin-result").innerText;
-            const resultCode = resultText.replace("You won: ", "").replace("! 😊", "");
-            const tempInput = document.createElement("input");
-            tempInput.value = resultCode;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            alert("Code copied to clipboard: " + resultCode);
+        // Fish Game Functions
+        function castLine() {
+            if (ticketsFish < 1) {
+                alert("You need 1 ticket to cast a line! Watch ads to earn tickets.");
+                return;
+            }
+            ticketsFish -= 1;
+            document.getElementById("tickets-fish").innerText = ticketsFish;
+
+            const fishPond = document.getElementById("fish-pond");
+            fishPond.innerHTML = "";
+
+            // Generate 10 non-winning fish and 1 winning fish
+            for (let i = 0; i < 10; i++) {
+                createFish(false); // Non-winning fish
+            }
+            createFish(true); // Winning fish
         }
+
+        function createFish(isWinningFish) {
+            const fishPond = document.getElementById("fish-pond");
+            const fish = document.createElement("div");
+            fish.className = "fish";
+            const randomFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
+            fish.innerText = randomFish.emoji;
+
+            // Add gold styling for the winning fish
+            if (isWinningFish) {
+                fish.classList.add("winning-fish");
+            }
+
+            fish.style.top = `${Math.random() * 70 + 10}%`; // Random vertical position
+            fish.style.left = `-50px`; // Start fish off-screen
+            fish.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random speed
+
+            fish.addEventListener("click", () => catchFish(isWinningFish));
+            fishPond.appendChild(fish);
+        }
+
+        function catchFish(isWinningFish) {
+            if (isWinningFish) {
+                if (fishCodes.length === 0) {
+                    alert("No more codes available!");
+                    return;
+                }
+
+                const randomIndex = Math.floor(Math.random() * fishCodes.length);
+                const resultCode = fishCodes[randomIndex];
+                fishCodes.splice(randomIndex, 1); // Remove the used code
+
+                document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
+                document.getElementById("copy-code-button-fish").style.display = "inline-block"; // Show copy button
+                fishCaught++;
+
+                // Reset ad progress after winning
+                adCountFish = 0;
+                document.getElementById("ad-count-fish").innerText = adCountFish;
+                alert("You won a code! Watch 5 more ads to catch another fish.");
+            } else {
+                document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
+                document.getElementById("copy-code-button-fish").style.display = "none"; // Hide copy button
+            }
+        }
+
+        function copyResultCodeFish() {
+            const resultText = document.getElementById("catch-result").innerText;
+            const resultCode = resultText.split("Code: ")[1];
+            navigator.clipboard.writeText(resultCode).then(() => {
+                alert("Code copied to clipboard: " + resultCode);
+            });
+        }
+
+        function watchAdForTicketFish() {
+            if (typeof show_9014452 === "undefined") {
+                alert("Ad SDK not loaded. Please try again later.");
+                return;
+            }
+
+            show_9014452('pop').then(() => {
+                adCountFish++;
+                document.getElementById("ad-count-fish").innerText = adCountFish;
+
+                if (adCountFish >= 5) {
+                    ticketsFish++;
+                    document.getElementById("tickets-fish").innerText = ticketsFish;
+                    adCountFish = 0;
+                    document.getElementById("ad-count-fish").innerText = adCountFish;
+                    alert("You watched 5 ads! You earned 1 ticket.");
+                }
+            }).catch((e) => {
+                console.error("Ad failed to load:", e);
+                alert("Ad failed to load. Please try again.");
+            });
+        }
+
+        function updateLeaderboard(userId, score) {
+            const leaderboardList = document.getElementById("leaderboard-list");
+            const entry = document.createElement("li");
+            entry.innerText = `${userId}: ${score} fish caught`;
+            leaderboardList.appendChild(entry);
+        }
+
+        function showPage(pageId) {
+            document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
+            document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
+        }
+
+        // Initialize the first page
+        showPage('spin-game');
     </script>
 </body>
 </html>
