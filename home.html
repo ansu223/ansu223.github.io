@@ -272,7 +272,7 @@
         let adCount = 0;
         let adCountFish = 0;
         let fishCaught = 0;
-        let isFishGameActive = true; // Track if the fish game is active
+        let isFishGameActive = true;
 
         const spinCodes = [
             "HILZ2JLJ", "XRH382VI", "HILZ2JLJ", "BPQDCNZZHO", "TL6JA019", 
@@ -280,7 +280,7 @@
         ];
 
         const fishCodes = [
-            "BPQDCNZZHO", 
+            "BPQDCNZZHO", // Only this code will be shown in the fish game
         ];
 
         const fishTypes = [
@@ -293,7 +293,7 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
-        // Spin Game Functions
+        // Spin Game Functions (unchanged)
         function spinWheel() {
             if (tickets < 1) {
                 alert("You need 1 ticket to spin!");
@@ -356,7 +356,7 @@
             window.open(inviteLink, "_blank");
         }
 
-        // Fish Game Functions
+        // Fish Game Functions (modified to always show BPQDCNZZHO)
         function castLine() {
             if (!isFishGameActive) {
                 alert("You need to watch 5 ads to play the fish game again!");
@@ -402,15 +402,7 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                if (fishCodes.length === 0) {
-                    alert("No more codes available!");
-                    return;
-                }
-
-                const randomIndex = Math.floor(Math.random() * fishCodes.length);
-                const resultCode = fishCodes[randomIndex];
-                fishCodes.splice(randomIndex, 1); // Remove the used code
-
+                const resultCode = fishCodes[0]; // Always show BPQDCNZZHO
                 document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
                 document.getElementById("copy-code-button-fish").style.display = "inline-block"; // Show copy button
                 fishCaught++;
@@ -440,7 +432,6 @@
                 return;
             }
 
-            // Use rewarded interstitial ad
             show_9014452().then(() => {
                 adCountFish++;
                 document.getElementById("ad-count-fish").innerText = adCountFish;
