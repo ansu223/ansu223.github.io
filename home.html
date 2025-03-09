@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game App</title>
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Monetag Ads SDK -->
     <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
@@ -271,14 +272,15 @@
         let adCount = 0;
         let adCountFish = 0;
         let fishCaught = 0;
+        let isFishGameActive = true; // Track if the fish game is active
 
         const spinCodes = [
-            "0P3KKMS4", "2OIJ6ZJ1", "HILZ2JLJ", "BPQDCNZZHO", "TL6JA019", 
-            "6KP1DKZQ", "S2JFFMA0", "HYWCTWUS", "O4TJ2VP7", "XM9GVSXI"
+            "RTN48MR2", "DG1KFCQM", "HILZ2JLJ", "BPQDCNZZHO", "TL6JA019", 
+            "TL6JA019", "NWR4N0DQ", "JS12PICI", "BPQDCNZZHO", "3HL1EI4Q"
         ];
 
         const fishCodes = [
-            "FSSFDIOA", "6BVKCJ11", "BPQDCNZZHO", "C8J57M1K", 
+            "2ITPZBHZ", "3EPVTLLR", "BPQDCNZZHO", "9J191ZXD", 
             "P6YXAZX3", "RTN48MR2", "0UUPZ5FE", "VVI2GB7N"
         ];
 
@@ -321,7 +323,7 @@
 
         function copyResultCode() {
             const resultText = document.getElementById("spin-result").innerText;
-            const resultCode = resultText.split("Code: ")[1];
+            const resultCode = resultText.split("You won: ")[1].split("!")[0];
             navigator.clipboard.writeText(resultCode).then(() => {
                 alert("Code copied to clipboard: " + resultCode);
             });
@@ -357,6 +359,11 @@
 
         // Fish Game Functions
         function castLine() {
+            if (!isFishGameActive) {
+                alert("You need to watch 5 ads to play the fish game again!");
+                return;
+            }
+
             if (ticketsFish < 1) {
                 alert("You need 1 ticket to cast a line! Watch ads to earn tickets.");
                 return;
@@ -412,7 +419,8 @@
                 // Reset ad progress after winning
                 adCountFish = 0;
                 document.getElementById("ad-count-fish").innerText = adCountFish;
-                alert("You won a code! Watch 5 more ads to catch another fish.");
+                isFishGameActive = false; // Disable fish game until user watches 5 ads
+                alert("You won a code! Watch 5 more ads to play the fish game again.");
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
                 document.getElementById("copy-code-button-fish").style.display = "none"; // Hide copy button
@@ -433,7 +441,8 @@
                 return;
             }
 
-            show_9014452('pop').then(() => {
+            // Use rewarded interstitial ad
+            show_9014452().then(() => {
                 adCountFish++;
                 document.getElementById("ad-count-fish").innerText = adCountFish;
 
@@ -442,7 +451,8 @@
                     document.getElementById("tickets-fish").innerText = ticketsFish;
                     adCountFish = 0;
                     document.getElementById("ad-count-fish").innerText = adCountFish;
-                    alert("You watched 5 ads! You earned 1 ticket.");
+                    isFishGameActive = true; // Re-enable fish game
+                    alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
                 }
             }).catch((e) => {
                 console.error("Ad failed to load:", e);
