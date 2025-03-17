@@ -4,7 +4,7 @@ from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 BOT_TOKEN = '7432253073:AAFTts6hbQ0ehD9D_uyGG9MBeYiLBsO4HOg'
 
 # Replace with your chat ID
-YOUR_CHAT_ID = '123456789'  # Replace this with your actual chat ID
+YOUR_CHAT_ID = '823543373'  # Replace this with your actual chat ID
 
 # Initialize the bot
 bot = Bot(token=BOT_TOKEN)
