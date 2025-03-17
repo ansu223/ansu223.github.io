@@ -15,7 +15,7 @@ def send_messages():
 
     # Create an inline keyboard with a button
     keyboard = [
-        [InlineKeyboardButton("Visit My Website", url="https://example.com")],
+        [InlineKeyboardButton("Visit My Website", url="https://t.me/redpacket_gift_bot/giftbox")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
