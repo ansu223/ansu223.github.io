@@ -1,10 +1,18 @@
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
+import os
 
 # Replace with your bot token
 BOT_TOKEN = '7432253073:AAFTts6hbQ0ehD9D_uyGG9MBeYiLBsO4HOg'
 
 # File containing chat IDs
 CHAT_IDS_FILE = 'chat_ids.txt'
+
+# Debugging: Check if the file exists
+if not os.path.exists(CHAT_IDS_FILE):
+    print(f"Error: The file '{CHAT_IDS_FILE}' does not exist in the current directory.")
+    print(f"Current working directory: {os.getcwd()}")
+else:
+    print(f"The file '{CHAT_IDS_FILE}' exists. Proceeding...")
 
 # Initialize the bot
 bot = Bot(token=BOT_TOKEN)
@@ -38,3 +46,4 @@ def send_messages():
 
 if __name__ == '__main__':
     send_messages()
+        
