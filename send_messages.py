@@ -1,5 +1,9 @@
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
-import os
+import logging
+
+# Enable logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Replace with your NEW bot token
 BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'  # Replace with the new token
@@ -22,13 +26,13 @@ def send_messages():
 
     # Send the message to your chat ID
     try:
-        print(f"Sending message to chat ID: {YOUR_CHAT_ID}")
+        logger.info(f"Sending message to chat ID: {YOUR_CHAT_ID}")
         bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text, reply_markup=reply_markup)
-        print(f"Message sent to {YOUR_CHAT_ID}")
+        logger.info(f"Message sent to {YOUR_CHAT_ID}")
     except Exception as e:
-        print(f"Failed to send message to {YOUR_CHAT_ID}: {e}")
+        logger.error(f"Failed to send message to {YOUR_CHAT_ID}: {e}")
 
-    print("Broadcast completed.")
+    logger.info("Broadcast completed.")
 
 if __name__ == '__main__':
     send_messages()
