@@ -1,32 +1,27 @@
-from telegram import Bot
 import logging
+from telegram import Bot
+import asyncio
 
-# Enable logging
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Replace with your bot token
-BOT_TOKEN = "7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg"  
+# Replace with your bot token and chat ID
+BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'  # Your bot token
+YOUR_CHAT_ID = 823543373  # Replace with your chat ID
 
-# Replace with your chat ID (must be an integer)
-YOUR_CHAT_ID = 823543373  
-
-# Initialize the bot
+# Create the bot instance
 bot = Bot(token=BOT_TOKEN)
 
-def send_messages():
-    message_text = "Hello! This is a simple message from your bot."
-
-    # Send the message
+# Define an async function to send the message
+async def send_message():
+    message_text = "Hello, this is a test message!"
+    logging.info(f"🚀 Sending message to chat ID: {YOUR_CHAT_ID}")
     try:
-        logger.info(f"🚀 Sending message to chat ID: {YOUR_CHAT_ID}")
-        bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text)
-        logger.info(f"✅ Message successfully sent to {YOUR_CHAT_ID}")
+        await bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text)
+        logging.info(f"✅ Message successfully sent to {YOUR_CHAT_ID}")
     except Exception as e:
-        logger.error(f"❌ Failed to send message: {e}")
-        logger.error(f"Details: {str(e)}")  # Log the full error details
+        logging.error(f"❌ Failed to send message: {e}")
 
-    logger.info("📢 Broadcast completed.")
-
+# Run the async function
 if __name__ == "__main__":
-    send_messages()
+    asyncio.run(send_message())
