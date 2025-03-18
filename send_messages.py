@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 logger = logging.getLogger(__name__)
 
 # Replace with your bot token
-BOT_TOKEN = "7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg"
+BOT_TOKEN = "7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg"  
 
 # Replace with your chat ID (Remove quotes, it should be an integer)
 YOUR_CHAT_ID = 823543373  
@@ -24,8 +24,8 @@ def send_messages():
     # Send the message
     try:
         logger.info(f"🚀 Sending message to chat ID: {YOUR_CHAT_ID}")
-        response = bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text, reply_markup=reply_markup)
-        logger.info(f"✅ Message successfully sent: {response}")
+        bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text, reply_markup=reply_markup)
+        logger.info(f"✅ Message successfully sent to {YOUR_CHAT_ID}")
     except Exception as e:
         logger.error(f"❌ Failed to send message: {e}")
 
