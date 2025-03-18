@@ -1,7 +1,7 @@
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 
 # Replace with your bot token
-BOT_TOKEN = '7432253073:AAFTts6hbQ0ehD9D_uyGG9MBeYiLBsO4HOg'
+BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'
 
 # Replace with your chat ID
 YOUR_CHAT_ID = '823543373'  # Your chat ID
