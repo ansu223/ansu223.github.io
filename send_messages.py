@@ -1,4 +1,4 @@
-from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Bot
 import logging
 
 # Enable logging
@@ -16,18 +16,12 @@ bot = Bot(token=BOT_TOKEN)
 
 def send_messages():
     # Message text
-    message_text = "Hello! Check out this link:"
-
-    # Create an inline keyboard with a button
-    keyboard = [
-        [InlineKeyboardButton("Visit My Website", url="https://t.me/redpacket_gift_bot/giftbox")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    message_text = "Hello! This is a simple message from your bot."
 
     # Send the message to your chat ID
     try:
         logger.info(f"Sending message to chat ID: {YOUR_CHAT_ID}")
-        bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text, reply_markup=reply_markup)
+        bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text)
         logger.info(f"Message sent to {YOUR_CHAT_ID}")
     except Exception as e:
         logger.error(f"Failed to send message to {YOUR_CHAT_ID}: {e}")
