@@ -1,7 +1,8 @@
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
+import os
 
-# Replace with your bot token
-BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'
+# Replace with your NEW bot token
+BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'  # Replace with the new token
 
 # Replace with your chat ID
 YOUR_CHAT_ID = '823543373'  # Your chat ID
@@ -15,12 +16,13 @@ def send_messages():
 
     # Create an inline keyboard with a button
     keyboard = [
-        [InlineKeyboardButton("Visit My Website", url="https://t.me/redpacket_box")],
+        [InlineKeyboardButton("Visit My Website", url="https://t.me/redpacket_gift_bot/giftbox")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Send the message to your chat ID
     try:
+        print(f"Sending message to chat ID: {YOUR_CHAT_ID}")
         bot.send_message(chat_id=YOUR_CHAT_ID, text=message_text, reply_markup=reply_markup)
         print(f"Message sent to {YOUR_CHAT_ID}")
     except Exception as e:
