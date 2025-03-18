@@ -1,16 +1,16 @@
 import logging
-from telegram import Bot, Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 import asyncio
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 # Replace with your bot token
 BOT_TOKEN = '7432253073:AAEXeDaKZ5SnYPkLlGy6GH-N11GzLXxS4Yg'
-
-# Create the bot instance
-bot = Bot(token=BOT_TOKEN)
 
 # Define the message text
 message_text = (
@@ -37,6 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Main function to run the bot
 async def main():
+    # Create the Application instance
     application = Application.builder().token(BOT_TOKEN).build()
 
     # Add command handlers
@@ -45,5 +46,6 @@ async def main():
     # Start the bot
     await application.run_polling()
 
+# Run the bot
 if __name__ == "__main__":
     asyncio.run(main())
