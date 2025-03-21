@@ -6,6 +6,8 @@
     <title>Game App</title>
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Monetag Ads SDK -->
+    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -263,26 +265,7 @@
         <button onclick="showPage('fishing-game')"><i class="fas fa-fish"></i> Fish</button>
     </div>
 
-    <!-- Unity Ads SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/unityads-web@latest/dist/unityads.min.js"></script>
-
     <script>
-        // Unity Ads Configuration
-        const GAME_ID = "5817551"; // Your Unity Ads Game ID
-        const PLACEMENT_ID = "rewardedVideo"; // Placement ID for rewarded video ads
-
-        // Initialize Unity Ads
-        UnityAds.init({
-            gameId: GAME_ID,
-            onInitComplete: () => {
-                console.log("Unity Ads initialized successfully!");
-            },
-            onInitFailed: (error) => {
-                console.error("Unity Ads initialization failed:", error);
-            },
-            testMode: true, // Set to false for production
-        });
-
         let tickets = 0;
         let ticketsFish = 0;
         let spins = 0;
@@ -292,7 +275,7 @@
         let isFishGameActive = true;
 
         const spinCodes = [
-            "UCLNKH4B", "TKDK8UO7", "EZGMB1BI", "681854YJ", "BPQDCNZZHO", 
+            "TKVAQAFF", "TKDK8UO7", "EZGMB1BI", "681854YJ", "BPQDCNZZHO", 
             "MOBZU00U", "79272LW7", "JKZX9BYB", "74X1WNWL", "4VJXB3GD"
         ];
 
@@ -310,7 +293,7 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
-        // Spin Game Functions
+        // Spin Game Functions (unchanged)
         function spinWheel() {
             if (tickets < 1) {
                 alert("You need 1 ticket to spin!");
@@ -346,19 +329,22 @@
         }
 
         function watchAdForTicket() {
-            UnityAds.showAd(PLACEMENT_ID, {
-                onAdComplete: () => {
-                    adCount++;
-                    document.getElementById("ad-count").innerText = adCount;
+            if (typeof show_9014452 === "undefined") {
+                alert("Ad SDK not loaded. Please try again later.");
+                return;
+            }
 
-                    if (adCount >= 5) {
-                        tickets++;
-                        document.getElementById("tickets").innerText = tickets;
-                        adCount = 0;
-                        document.getElementById("ad-count").innerText = adCount;
-                        alert("You watched 5 ads! You earned 1 ticket.");
-                    }
-                },
+            show_9014452().then(() => {
+                adCount++;
+                document.getElementById("ad-count").innerText = adCount;
+
+                if (adCount >= 5) {
+                    tickets++;
+                    document.getElementById("tickets").innerText = tickets;
+                    adCount = 0;
+                    document.getElementById("ad-count").innerText = adCount;
+                    alert("You watched 5 ads! You earned 1 ticket.");
+                }
             }).catch((error) => {
                 console.error("Ad failed to load:", error);
                 alert("Ad failed to load. Please try again.");
@@ -370,7 +356,7 @@
             window.open(inviteLink, "_blank");
         }
 
-        // Fish Game Functions
+        // Fish Game Functions (modified to always show BPQDCNZZHO)
         function castLine() {
             if (!isFishGameActive) {
                 alert("You need to watch 5 ads to play the fish game again!");
@@ -441,22 +427,25 @@
         }
 
         function watchAdForTicketFish() {
-            UnityAds.showAd(PLACEMENT_ID, {
-                onAdComplete: () => {
-                    adCountFish++;
-                    document.getElementById("ad-count-fish").innerText = adCountFish;
+            if (typeof show_9014452 === "undefined") {
+                alert("Ad SDK not loaded. Please try again later.");
+                return;
+            }
 
-                    if (adCountFish >= 5) {
-                        ticketsFish++;
-                        document.getElementById("tickets-fish").innerText = ticketsFish;
-                        adCountFish = 0;
-                        document.getElementById("ad-count-fish").innerText = adCountFish;
-                        isFishGameActive = true; // Re-enable fish game
-                        alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
-                    }
-                },
-            }).catch((error) => {
-                console.error("Ad failed to load:", error);
+            show_9014452().then(() => {
+                adCountFish++;
+                document.getElementById("ad-count-fish").innerText = adCountFish;
+
+                if (adCountFish >= 5) {
+                    ticketsFish++;
+                    document.getElementById("tickets-fish").innerText = ticketsFish;
+                    adCountFish = 0;
+                    document.getElementById("ad-count-fish").innerText = adCountFish;
+                    isFishGameActive = true; // Re-enable fish game
+                    alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
+                }
+            }).catch((e) => {
+                console.error("Ad failed to load:", e);
                 alert("Ad failed to load. Please try again.");
             });
         }
