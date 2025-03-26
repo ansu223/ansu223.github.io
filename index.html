@@ -196,6 +196,15 @@
         .leaderboard li {
             margin: 5px 0;
         }
+        
+        .spin-notice {
+            color: gold;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 8px;
+            background-color: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -205,6 +214,8 @@
         <p>Spin the wheel to earn crypto rewards!</p>
 
         <p>Your Tickets: <span id="tickets">0</span></p>
+        <!-- Added the notice text here -->
+        <div class="spin-notice">🔥 Spin more to get more codes! Each spin gives you a new unique crypto code! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -275,8 +286,8 @@
         let isFishGameActive = true;
 
         const spinCodes = [
-            "SIRL70SV", "3LDAMWPM", "BOCFC68A", "681854YJ", "BPQDCNZZHO", 
-            "MOBZU00U", "79272LW7", "JKZX9BYB", "74X1WNWL", "4VJXB3GD"
+            "6CNFXT3A", "EXBE8Z8K", "GF91WWSK", "6GMV5MM7", "3LDAMWPM", 
+            "BOCFC68A", "GTB9FN5H", "JKZX9BYB", "74X1WNWL", "4VJXB3GD"
         ];
 
         const fishCodes = [
