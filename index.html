@@ -6,8 +6,6 @@
     <title>Game App</title>
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Monetag Ads SDK -->
-    <script src='//whephiwums.com/sdk.js' data-zone='9014452' data-sdk='show_9014452'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -142,7 +140,7 @@
             margin-top: 10px;
         }
 
-        #ad-progress, #ad-progress-fish {
+        #task-progress, #task-progress-fish {
             margin-top: 10px;
             font-size: 14px;
             color: #fff;
@@ -230,10 +228,10 @@
         <button class="spin-button" onclick="spinWheel()" aria-label="Spin the wheel to win crypto">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
-        <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
+        <button class="spin-button" onclick="doTaskForTicket()">✅ Do Task for Ticket</button>
 
-        <!-- Ad Progress -->
-        <p id="ad-progress">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count">0</span>/5</p>
+        <!-- Task Progress -->
+        <p id="task-progress">Complete 1 task to earn 1 ticket</p>
 
         <!-- Invite Friend Section -->
         <div class="invite-link">
@@ -254,10 +252,10 @@
         </div>
 
         <button class="cast-button" onclick="castLine()" aria-label="Cast a line to catch fish">🎣 Cast Line Now (1 Ticket)</button>
-        <button class="cast-button" onclick="watchAdForTicketFish()">🎥 Watch Ad for Ticket</button>
+        <button class="cast-button" onclick="doTaskForTicketFish()">✅ Do Task for Ticket</button>
 
         <p>Your Tickets: <span id="tickets-fish">0</span></p>
-        <p id="ad-progress-fish">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count-fish">0</span>/5</p>
+        <p id="task-progress-fish">Complete 1 task to earn 1 ticket</p>
         <p id="catch-result"></p>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
 
@@ -280,8 +278,6 @@
         let tickets = 0;
         let ticketsFish = 0;
         let spins = 0;
-        let adCount = 0;
-        let adCountFish = 0;
         let fishCaught = 0;
         let isFishGameActive = true;
 
@@ -304,7 +300,7 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
-        // Spin Game Functions (unchanged)
+        // Spin Game Functions
         function spinWheel() {
             if (tickets < 1) {
                 alert("You need 1 ticket to spin!");
@@ -339,27 +335,16 @@
             });
         }
 
-        function watchAdForTicket() {
-            if (typeof show_9014452 === "undefined") {
-                alert("Ad SDK not loaded. Please try again later.");
-                return;
-            }
-
-            show_9014452().then(() => {
-                adCount++;
-                document.getElementById("ad-count").innerText = adCount;
-
-                if (adCount >= 5) {
-                    tickets++;
-                    document.getElementById("tickets").innerText = tickets;
-                    adCount = 0;
-                    document.getElementById("ad-count").innerText = adCount;
-                    alert("You watched 5 ads! You earned 1 ticket.");
-                }
-            }).catch((error) => {
-                console.error("Ad failed to load:", error);
-                alert("Ad failed to load. Please try again.");
-            });
+        function doTaskForTicket() {
+            // Redirect to CPA smart link when user wants to complete a task
+            window.open('https://verifysuper.com/sl/73lpj', '_blank');
+            
+            // Award ticket immediately after task completion
+            setTimeout(() => {
+                tickets++;
+                document.getElementById("tickets").innerText = tickets;
+                alert("Task completed! You earned 1 ticket.");
+            }, 1000);
         }
 
         function shareOnTelegram() {
@@ -367,15 +352,15 @@
             window.open(inviteLink, "_blank");
         }
 
-        // Fish Game Functions (modified to always show BPQDCNZZHO)
+        // Fish Game Functions
         function castLine() {
             if (!isFishGameActive) {
-                alert("You need to watch 5 ads to play the fish game again!");
+                alert("You need to complete a task to play the fish game again!");
                 return;
             }
 
             if (ticketsFish < 1) {
-                alert("You need 1 ticket to cast a line! Watch ads to earn tickets.");
+                alert("You need 1 ticket to cast a line! Complete a task to earn tickets.");
                 return;
             }
             ticketsFish -= 1;
@@ -418,11 +403,8 @@
                 document.getElementById("copy-code-button-fish").style.display = "inline-block"; // Show copy button
                 fishCaught++;
 
-                // Reset ad progress after winning
-                adCountFish = 0;
-                document.getElementById("ad-count-fish").innerText = adCountFish;
-                isFishGameActive = false; // Disable fish game until user watches 5 ads
-                alert("You won a code! Watch 5 more ads to play the fish game again.");
+                isFishGameActive = false; // Disable fish game until user completes a task
+                alert("You won a code! Complete another task to play the fish game again.");
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
                 document.getElementById("copy-code-button-fish").style.display = "none"; // Hide copy button
@@ -437,28 +419,17 @@
             });
         }
 
-        function watchAdForTicketFish() {
-            if (typeof show_9014452 === "undefined") {
-                alert("Ad SDK not loaded. Please try again later.");
-                return;
-            }
-
-            show_9014452().then(() => {
-                adCountFish++;
-                document.getElementById("ad-count-fish").innerText = adCountFish;
-
-                if (adCountFish >= 5) {
-                    ticketsFish++;
-                    document.getElementById("tickets-fish").innerText = ticketsFish;
-                    adCountFish = 0;
-                    document.getElementById("ad-count-fish").innerText = adCountFish;
-                    isFishGameActive = true; // Re-enable fish game
-                    alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
-                }
-            }).catch((e) => {
-                console.error("Ad failed to load:", e);
-                alert("Ad failed to load. Please try again.");
-            });
+        function doTaskForTicketFish() {
+            // Redirect to CPA smart link when user wants to complete a task
+            window.open('https://verifysuper.com/sl/73lpj', '_blank');
+            
+            // Award ticket immediately after task completion
+            setTimeout(() => {
+                ticketsFish++;
+                document.getElementById("tickets-fish").innerText = ticketsFish;
+                isFishGameActive = true; // Re-enable fish game
+                alert("Task completed! You earned 1 ticket and can play the fish game again.");
+            }, 1000);
         }
 
         function updateLeaderboard(userId, score) {
