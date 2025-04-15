@@ -282,7 +282,7 @@
         let isFishGameActive = true;
 
         const spinCodes = [
-            "6XNL63E5", "P6BWR8BL", "NKEU6AEU", "BPGI76V857", "P3AROEB6", 
+            "KC10YNMC", "FQO4S3RS", "NKEU6AEU", "BPGI76V857", "P3AROEB6", 
             "PI2JDHKU", "Q6RFSTTO", "Y87K92F1", "74X1WNWL", "4VJXB3GD"
         ];
 
@@ -339,12 +339,9 @@
             // Redirect to CPA smart link when user wants to complete a task
             window.open('https://verifysuper.com/sl/73lpj', '_blank');
             
-            // Award ticket immediately after task completion
-            setTimeout(() => {
-                tickets++;
-                document.getElementById("tickets").innerText = tickets;
-                alert("Task completed! You earned 1 ticket.");
-            }, 1000);
+            // Award ticket immediately without showing completion message
+            tickets++;
+            document.getElementById("tickets").innerText = tickets;
         }
 
         function shareOnTelegram() {
@@ -423,13 +420,10 @@
             // Redirect to CPA smart link when user wants to complete a task
             window.open('https://verifysuper.com/sl/73lpj', '_blank');
             
-            // Award ticket immediately after task completion
-            setTimeout(() => {
-                ticketsFish++;
-                document.getElementById("tickets-fish").innerText = ticketsFish;
-                isFishGameActive = true; // Re-enable fish game
-                alert("Task completed! You earned 1 ticket and can play the fish game again.");
-            }, 1000);
+            // Award ticket immediately without showing completion message
+            ticketsFish++;
+            document.getElementById("tickets-fish").innerText = ticketsFish;
+            isFishGameActive = true; // Re-enable fish game
         }
 
         function updateLeaderboard(userId, score) {
