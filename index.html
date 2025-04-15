@@ -331,7 +331,7 @@
             const resultText = document.getElementById("spin-result").innerText;
             const resultCode = resultText.split("You won: ")[1].split("!")[0];
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard: " + resultCode);
+                alert("Code copied to clipboard");
             });
         }
 
@@ -412,7 +412,7 @@
             const resultText = document.getElementById("catch-result").innerText;
             const resultCode = resultText.split("Code: ")[1];
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard: " + resultCode);
+                alert("Code copied to clipboard");
             });
         }
 
