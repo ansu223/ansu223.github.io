@@ -3,18 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='admaven-placement' content=BqdC7pdr5>
     <title>Game App</title>
-    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- RichAds Script -->
-    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-    <script>
-        window.TelegramAdsController = new TelegramAdsController();
-        window.TelegramAdsController.initialize({
-            pubId: "969333",
-            appId: "2109",
-        });
-    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -149,7 +140,7 @@
             margin-top: 10px;
         }
 
-        #ad-progress, #ad-progress-fish {
+        #task-progress, #task-progress-fish {
             margin-top: 10px;
             font-size: 14px;
             color: #fff;
@@ -212,6 +203,27 @@
             background-color: rgba(255, 215, 0, 0.1);
             border-radius: 8px;
         }
+        
+        .click-counter {
+            margin: 5px 0;
+            font-size: 14px;
+            color: gold;
+        }
+        
+        .task-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .task-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -221,8 +233,7 @@
         <p>Spin the wheel to earn crypto rewards!</p>
 
         <p>Your Tickets: <span id="tickets">0</span></p>
-        <!-- Added the notice text here -->
-        <div class="spin-notice">🔥  Every spin gives you a new unique crypto code! 🔥</div>
+        <div class="spin-notice">🔥 Every spin gives you a new unique crypto code! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -234,13 +245,14 @@
                 <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
-        <button class="spin-button" onclick="spinWheel()" aria-label="Spin the wheel to win crypto">🎰 Spin Now (1 Ticket)</button>
+        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
-        <button class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
-
-        <!-- Ad Progress -->
-        <p id="ad-progress">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count">0</span>/5</p>
+        
+        <!-- Task Section -->
+        <button class="task-button" onclick="completeTask()">✅ Complete Task (5 Clicks)</button>
+        <p class="click-counter">Clicks: <span id="task-clicks">0</span>/5</p>
+        <p id="task-progress">Complete 5 clicks to earn 1 ticket</p>
 
         <!-- Invite Friend Section -->
         <div class="invite-link">
@@ -260,11 +272,13 @@
             <!-- Fish will appear here dynamically -->
         </div>
 
-        <button class="cast-button" onclick="castLine()" aria-label="Cast a line to catch fish">🎣 Cast Line Now (1 Ticket)</button>
-        <button class="cast-button" onclick="watchAdForTicketFish()">🎥 Watch Ad for Ticket</button>
-
-        <p>Your Tickets: <span id="tickets-fish">0</span></p>
-        <p id="ad-progress-fish">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count-fish">0</span>/5</p>
+        <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
+        
+        <!-- Fish Game Task Section -->
+        <button class="task-button" onclick="completeTaskFish()">✅ Complete Task (5 Clicks)</button>
+        <p class="click-counter">Clicks: <span id="task-clicks-fish">0</span>/5</p>
+        <p id="task-progress-fish">Complete 5 clicks to earn 1 ticket</p>
+        
         <p id="catch-result"></p>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
 
@@ -287,18 +301,19 @@
         let tickets = 0;
         let ticketsFish = 0;
         let spins = 0;
-        let adCount = 0;
-        let adCountFish = 0;
         let fishCaught = 0;
         let isFishGameActive = true;
+        let taskClicks = 0;
+        let taskClicksFish = 0;
+        const cpaLink = "https://mobileverify.net/sl/73lpj";
 
         const spinCodes = [
-            "KC10YNMC", "FQO4S3RS", "NKEU6AEU", "BPGI76V857", "QXHNCQJ5", 
-            "P3AROEB6", "73OTSJXL", "Y87K92F1", "74X1WNWL", "4VJXB3GD"
+            "LXOVPK5K", "FQO4S3RS", "NKEU6AEU", "BPGI76V857", "A3AZGMA1", 
+            "VI753XKF", "LQ43KWWY", "K1T0HX1E", "8FK3OPAW", "898NZRGE"
         ];
 
         const fishCodes = [
-            "BPGI76V857", // Only this code will be shown in the fish game
+            "BPGI76V857",
         ];
 
         const fishTypes = [
@@ -311,6 +326,40 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
+        // Task Functions
+        function completeTask() {
+            taskClicks++;
+            document.getElementById("task-clicks").textContent = taskClicks;
+            
+            // Open CPA link on every click
+            window.open(cpaLink, '_blank');
+            
+            if (taskClicks >= 5) {
+                tickets++;
+                document.getElementById("tickets").textContent = tickets;
+                taskClicks = 0;
+                document.getElementById("task-clicks").textContent = taskClicks;
+                alert("Task completed! You earned 1 ticket.");
+            }
+        }
+
+        function completeTaskFish() {
+            taskClicksFish++;
+            document.getElementById("task-clicks-fish").textContent = taskClicksFish;
+            
+            // Open CPA link on every click
+            window.open(cpaLink, '_blank');
+            
+            if (taskClicksFish >= 5) {
+                ticketsFish++;
+                document.getElementById("tickets-fish").textContent = ticketsFish;
+                isFishGameActive = true;
+                taskClicksFish = 0;
+                document.getElementById("task-clicks-fish").textContent = taskClicksFish;
+                alert("Task completed! You earned 1 ticket.");
+            }
+        }
+
         // Spin Game Functions
         function spinWheel() {
             if (tickets < 1) {
@@ -318,7 +367,7 @@
                 return;
             }
             tickets -= 1;
-            document.getElementById("tickets").innerText = tickets;
+            document.getElementById("tickets").textContent = tickets;
 
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800;
@@ -342,31 +391,7 @@
             const resultText = document.getElementById("spin-result").innerText;
             const resultCode = resultText.split("You won: ")[1].split("!")[0];
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard: " + resultCode);
-            });
-        }
-
-        function watchAdForTicket() {
-            if (typeof TelegramAdsController === "undefined") {
-                alert("Ad SDK not loaded. Please try again later.");
-                return;
-            }
-
-            // Use TelegramAdsController instead of show_9014452
-            TelegramAdsController.showAd().then(() => {
-                adCount++;
-                document.getElementById("ad-count").innerText = adCount;
-
-                if (adCount >= 5) {
-                    tickets++;
-                    document.getElementById("tickets").innerText = tickets;
-                    adCount = 0;
-                    document.getElementById("ad-count").innerText = adCount;
-                    alert("You watched 5 ads! You earned 1 ticket.");
-                }
-            }).catch((error) => {
-                console.error("Ad failed to load:", error);
-                alert("Ad failed to load. Please try again.");
+                alert("Code copied to clipboard");
             });
         }
 
@@ -378,25 +403,25 @@
         // Fish Game Functions
         function castLine() {
             if (!isFishGameActive) {
-                alert("You need to watch 5 ads to play the fish game again!");
+                alert("You need to complete tasks to play the fish game again!");
                 return;
             }
 
             if (ticketsFish < 1) {
-                alert("You need 1 ticket to cast a line! Watch ads to earn tickets.");
+                alert("You need 1 ticket to cast a line! Complete tasks to earn tickets.");
                 return;
             }
             ticketsFish -= 1;
-            document.getElementById("tickets-fish").innerText = ticketsFish;
+            document.getElementById("tickets-fish").textContent = ticketsFish;
 
             const fishPond = document.getElementById("fish-pond");
             fishPond.innerHTML = "";
 
             // Generate 10 non-winning fish and 1 winning fish
             for (let i = 0; i < 10; i++) {
-                createFish(false); // Non-winning fish
+                createFish(false);
             }
-            createFish(true); // Winning fish
+            createFish(true);
         }
 
         function createFish(isWinningFish) {
@@ -406,14 +431,13 @@
             const randomFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
             fish.innerText = randomFish.emoji;
 
-            // Add gold styling for the winning fish
             if (isWinningFish) {
                 fish.classList.add("winning-fish");
             }
 
-            fish.style.top = `${Math.random() * 70 + 10}%`; // Random vertical position
-            fish.style.left = `-50px`; // Start fish off-screen
-            fish.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random speed
+            fish.style.top = `${Math.random() * 70 + 10}%`;
+            fish.style.left = `-50px`;
+            fish.style.animationDuration = `${Math.random() * 3 + 2}s`;
 
             fish.addEventListener("click", () => catchFish(isWinningFish));
             fishPond.appendChild(fish);
@@ -421,19 +445,15 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                const resultCode = fishCodes[0]; // Always show BPQDCNZZHO
+                const resultCode = fishCodes[0];
                 document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
-                document.getElementById("copy-code-button-fish").style.display = "inline-block"; // Show copy button
+                document.getElementById("copy-code-button-fish").style.display = "inline-block";
                 fishCaught++;
-
-                // Reset ad progress after winning
-                adCountFish = 0;
-                document.getElementById("ad-count-fish").innerText = adCountFish;
-                isFishGameActive = false; // Disable fish game until user watches 5 ads
-                alert("You won a code! Watch 5 more ads to play the fish game again.");
+                isFishGameActive = false;
+                alert("You won a code! Complete more tasks to play again.");
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
-                document.getElementById("copy-code-button-fish").style.display = "none"; // Hide copy button
+                document.getElementById("copy-code-button-fish").style.display = "none";
             }
         }
 
@@ -441,31 +461,7 @@
             const resultText = document.getElementById("catch-result").innerText;
             const resultCode = resultText.split("Code: ")[1];
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard: " + resultCode);
-            });
-        }
-
-        function watchAdForTicketFish() {
-            if (typeof TelegramAdsController === "undefined") {
-                alert("Ad SDK not loaded. Please try again later.");
-                return;
-            }
-
-            TelegramAdsController.showAd().then(() => {
-                adCountFish++;
-                document.getElementById("ad-count-fish").innerText = adCountFish;
-
-                if (adCountFish >= 5) {
-                    ticketsFish++;
-                    document.getElementById("tickets-fish").innerText = ticketsFish;
-                    adCountFish = 0;
-                    document.getElementById("ad-count-fish").innerText = adCountFish;
-                    isFishGameActive = true; // Re-enable fish game
-                    alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
-                }
-            }).catch((e) => {
-                console.error("Ad failed to load:", e);
-                alert("Ad failed to load. Please try again.");
+                alert("Code copied to clipboard");
             });
         }
 
