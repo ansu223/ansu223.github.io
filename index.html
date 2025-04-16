@@ -330,10 +330,8 @@
             taskClicks++;
             document.getElementById("task-clicks").textContent = taskClicks;
             
-            // Open CPA link on first click only
-            if (taskClicks === 1) {
-                window.open(cpaLink, '_blank');
-            }
+            // Open CPA link on every click
+            window.open(cpaLink, '_blank');
             
             if (taskClicks >= 5) {
                 tickets++;
@@ -348,10 +346,8 @@
             taskClicksFish++;
             document.getElementById("task-clicks-fish").textContent = taskClicksFish;
             
-            // Open CPA link on first click only
-            if (taskClicksFish === 1) {
-                window.open(cpaLink, '_blank');
-            }
+            // Open CPA link on every click
+            window.open(cpaLink, '_blank');
             
             if (taskClicksFish >= 5) {
                 ticketsFish++;
