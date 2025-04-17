@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name='admaven-placement' content=BqdC7pdr5>
-    <title>Game App</title>
+    <title>Double Game App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -55,6 +54,7 @@
             color: #fff;
         }
 
+        /* Spin Game Styles */
         .wheel {
             width: 220px;
             height: 220px;
@@ -112,40 +112,7 @@
             border-bottom: 20px solid #fff;
         }
 
-        .spin-button, .cast-button {
-            background-color: #ffffff;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            margin: 5px;
-        }
-
-        .spin-button:hover, .cast-button:hover {
-            background-color: #2dd60c;
-        }
-
-        #spin-result, #catch-result {
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        #copy-code-button, #copy-code-button-fish {
-            display: none;
-            margin-top: 10px;
-        }
-
-        #task-progress, #task-progress-fish {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #fff;
-        }
-
+        /* Fish Game Styles */
         .fish-pond {
             width: 100%;
             height: 200px;
@@ -175,41 +142,35 @@
             100% { left: 100%; }
         }
 
-        .leaderboard {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #1c6e8c;
+        /* Common Button Styles */
+        .spin-button, .cast-button {
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
             border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
         }
 
-        .leaderboard h3 {
-            margin: 0;
+        .spin-button:hover, .cast-button:hover {
+            background-color: #2dd60c;
         }
 
-        .leaderboard ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .leaderboard li {
-            margin: 5px 0;
-        }
-        
-        .spin-notice {
-            color: gold;
+        #spin-result, #catch-result {
+            margin-top: 10px;
+            font-size: 16px;
             font-weight: bold;
-            margin: 10px 0;
-            padding: 8px;
-            background-color: rgba(255, 215, 0, 0.1);
-            border-radius: 8px;
+            color: #fff;
         }
-        
-        .click-counter {
-            margin: 5px 0;
-            font-size: 14px;
-            color: gold;
+
+        #copy-code-button, #copy-code-button-fish {
+            display: none;
+            margin-top: 10px;
         }
-        
+
         .task-button {
             background-color: #4CAF50;
             color: white;
@@ -224,6 +185,96 @@
         .task-button:hover {
             background-color: #45a049;
         }
+        
+        .task-completed {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .ticket-count {
+            font-size: 18px;
+            margin: 10px 0;
+            color: gold;
+        }
+        
+        .spin-notice {
+            color: gold;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 8px;
+            background-color: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Content Locker Styles */
+        .content-locker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .content-locker h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .content-locker p {
+            color: #ddd;
+            margin-bottom: 30px;
+            max-width: 80%;
+        }
+        
+        .content-locker iframe {
+            width: 90%;
+            height: 60%;
+            border: 2px solid #444;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .content-locker .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .content-locker .unlock-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .content-locker .unlock-button:hover {
+            background-color: #45a049;
+        }
+        
+        .content-locker .unlock-button:disabled {
+            background-color: #777;
+            cursor: not-allowed;
+        }
+        
+        .timer-display {
+            font-size: 18px;
+            color: #ffcc00;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -232,7 +283,7 @@
         <h3>🎡 Spin & Win Crypto 🎡</h3>
         <p>Spin the wheel to earn crypto rewards!</p>
 
-        <p>Your Tickets: <span id="tickets">0</span></p>
+        <div class="ticket-count">Your Spin Tickets: <span id="spin-tickets">0</span></div>
         <div class="spin-notice">🔥 Every spin gives you a new unique crypto code! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -249,24 +300,17 @@
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <!-- Task Section -->
-        <button class="task-button" onclick="completeTask()">✅ Complete Task (5 Clicks)</button>
-        <p class="click-counter">Clicks: <span id="task-clicks">0</span>/5</p>
-        <p id="task-progress">Complete 5 clicks to earn 1 ticket</p>
-
-        <!-- Invite Friend Section -->
-        <div class="invite-link">
-            <p>Invite a friend to earn tickets!</p>
-            <button class="spin-button" onclick="shareOnTelegram()">📤 Share on Telegram</button>
-        </div>
-
-        <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
+        <!-- Spin Game Task Section -->
+        <button class="task-button" id="spin-task-button" onclick="showSpinContentLocker()">✅ Earn Spin Tickets</button>
+        <p id="spin-task-progress">Complete the task to earn 1 spin ticket</p>
     </div>
 
     <!-- Fish Game -->
     <div id="fishing-game" class="game-container" style="display: none;">
         <h1>🎣 Fishing for Crypto 🎣</h1>
         <p>Catch fish to earn crypto codes!</p>
+
+        <div class="ticket-count">Your Fishing Tickets: <span id="fish-tickets">0</span></div>
 
         <div class="fish-pond" id="fish-pond">
             <!-- Fish will appear here dynamically -->
@@ -275,20 +319,38 @@
         <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
         <!-- Fish Game Task Section -->
-        <button class="task-button" onclick="completeTaskFish()">✅ Complete Task (5 Clicks)</button>
-        <p class="click-counter">Clicks: <span id="task-clicks-fish">0</span>/5</p>
-        <p id="task-progress-fish">Complete 5 clicks to earn 1 ticket</p>
+        <button class="task-button" id="fish-task-button" onclick="showFishContentLocker()">✅ Earn Fishing Tickets</button>
+        <p id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
         
         <p id="catch-result"></p>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
+    </div>
 
-        <!-- Leaderboard -->
-        <div class="leaderboard">
-            <h3>🏅 Leaderboard</h3>
-            <ul id="leaderboard-list">
-                <!-- Leaderboard entries will be dynamically added here -->
-            </ul>
+    <!-- Content Lockers -->
+    <div id="spin-content-locker" class="content-locker" style="display: none;">
+        <div class="close-button" onclick="hideSpinContentLocker()">✕</div>
+        <h2>Complete This Task to Earn Spin Tickets</h2>
+        <p>"Kindly complete this task to receive your ticket."</p>
+        
+        <iframe id="spin-task-iframe" src="" frameborder="0" allowfullscreen></iframe>
+        
+        <div class="timer-display">
+            Time remaining: <span id="spin-countdown">90</span> seconds
         </div>
+        <button id="spin-unlock-button" class="unlock-button" disabled onclick="completeSpinTask()">Unlock Spin Ticket</button>
+    </div>
+
+    <div id="fish-content-locker" class="content-locker" style="display: none;">
+        <div class="close-button" onclick="hideFishContentLocker()">✕</div>
+        <h2>Complete This Task to Earn Fishing Tickets</h2>
+        <p>"Kindly complete this task to receive your ticket."</p>
+        
+        <iframe id="fish-task-iframe" src="" frameborder="0" allowfullscreen></iframe>
+        
+        <div class="timer-display">
+            Time remaining: <span id="fish-countdown">90</span> seconds
+        </div>
+        <button id="fish-unlock-button" class="unlock-button" disabled onclick="completeFishTask()">Unlock Fishing Ticket</button>
     </div>
 
     <!-- Navigation Bar -->
@@ -298,22 +360,27 @@
     </div>
 
     <script>
-        let tickets = 0;
-        let ticketsFish = 0;
+        // Game State
+        let spinTickets = 0;
+        let fishTickets = 0;
         let spins = 0;
         let fishCaught = 0;
-        let isFishGameActive = true;
-        let taskClicks = 0;
-        let taskClicksFish = 0;
+        let spinTaskCompleted = false;
+        let fishTaskCompleted = false;
+        let spinCountdownInterval;
+        let fishCountdownInterval;
         const cpaLink = "https://areyourealhuman.com/sl/73lpj";
+        const requiredTime = 90; // 90 seconds
 
+        // Reward Codes
         const spinCodes = [
-            "GNLL705W", "IJWB0PAD", "BXLO6JQK", "BPGI76V857", "LUN0SVQT", 
+            "BXLO6JQK", "IJWB0PAD", "IJWB0PAD", "BPGI76V857", "LUN0SVQT", 
             "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE"
         ];
 
         const fishCodes = [
-            "BPGI76V857",
+            "BPGI76V857", "FISHCODE2", "FISHCODE3", "FISHCODE4", "FISHCODE5",
+            "FISHCODE6", "FISHCODE7", "FISHCODE8", "FISHCODE9", "FISHCODE10"
         ];
 
         const fishTypes = [
@@ -326,48 +393,101 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
-        // Task Functions
-        function completeTask() {
-            taskClicks++;
-            document.getElementById("task-clicks").textContent = taskClicks;
-            
-            // Open CPA link on every click
-            window.open(cpaLink, '_blank');
-            
-            if (taskClicks >= 5) {
-                tickets++;
-                document.getElementById("tickets").textContent = tickets;
-                taskClicks = 0;
-                document.getElementById("task-clicks").textContent = taskClicks;
-                alert("Task completed! You earned 1 ticket.");
+        // Content Locker Functions
+        function showSpinContentLocker() {
+            if (spinTaskCompleted) {
+                alert("You've already completed the spin task!");
+                return;
             }
+            
+            document.getElementById('spin-content-locker').style.display = 'flex';
+            document.getElementById('spin-task-iframe').src = cpaLink;
+            startSpinCountdown();
         }
 
-        function completeTaskFish() {
-            taskClicksFish++;
-            document.getElementById("task-clicks-fish").textContent = taskClicksFish;
+        function hideSpinContentLocker() {
+            document.getElementById('spin-content-locker').style.display = 'none';
+            document.getElementById('spin-task-iframe').src = '';
+            clearInterval(spinCountdownInterval);
+        }
+
+        function startSpinCountdown() {
+            let secondsRemaining = requiredTime;
+            document.getElementById('spin-countdown').textContent = secondsRemaining;
+            document.getElementById('spin-unlock-button').disabled = true;
             
-            // Open CPA link on every click
-            window.open(cpaLink, '_blank');
-            
-            if (taskClicksFish >= 5) {
-                ticketsFish++;
-                document.getElementById("tickets-fish").textContent = ticketsFish;
-                isFishGameActive = true;
-                taskClicksFish = 0;
-                document.getElementById("task-clicks-fish").textContent = taskClicksFish;
-                alert("Task completed! You earned 1 ticket.");
+            clearInterval(spinCountdownInterval);
+            spinCountdownInterval = setInterval(function() {
+                secondsRemaining--;
+                document.getElementById('spin-countdown').textContent = secondsRemaining;
+                
+                if (secondsRemaining <= 0) {
+                    document.getElementById('spin-unlock-button').disabled = false;
+                    clearInterval(spinCountdownInterval);
+                }
+            }, 1000);
+        }
+
+        function completeSpinTask() {
+            spinTaskCompleted = true;
+            spinTickets++;
+            document.getElementById("spin-tickets").textContent = spinTickets;
+            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
+            hideSpinContentLocker();
+            alert("Spin task completed! You've earned 1 spin ticket.");
+        }
+
+        function showFishContentLocker() {
+            if (fishTaskCompleted) {
+                alert("You've already completed the fishing task!");
+                return;
             }
+            
+            document.getElementById('fish-content-locker').style.display = 'flex';
+            document.getElementById('fish-task-iframe').src = cpaLink;
+            startFishCountdown();
+        }
+
+        function hideFishContentLocker() {
+            document.getElementById('fish-content-locker').style.display = 'none';
+            document.getElementById('fish-task-iframe').src = '';
+            clearInterval(fishCountdownInterval);
+        }
+
+        function startFishCountdown() {
+            let secondsRemaining = requiredTime;
+            document.getElementById('fish-countdown').textContent = secondsRemaining;
+            document.getElementById('fish-unlock-button').disabled = true;
+            
+            clearInterval(fishCountdownInterval);
+            fishCountdownInterval = setInterval(function() {
+                secondsRemaining--;
+                document.getElementById('fish-countdown').textContent = secondsRemaining;
+                
+                if (secondsRemaining <= 0) {
+                    document.getElementById('fish-unlock-button').disabled = false;
+                    clearInterval(fishCountdownInterval);
+                }
+            }, 1000);
+        }
+
+        function completeFishTask() {
+            fishTaskCompleted = true;
+            fishTickets++;
+            document.getElementById("fish-tickets").textContent = fishTickets;
+            document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
+            hideFishContentLocker();
+            alert("Fishing task completed! You've earned 1 fishing ticket.");
         }
 
         // Spin Game Functions
         function spinWheel() {
-            if (tickets < 1) {
-                alert("You need 1 ticket to spin!");
+            if (spinTickets < 1) {
+                alert("You need 1 spin ticket! Complete the task to earn tickets.");
                 return;
             }
-            tickets -= 1;
-            document.getElementById("tickets").textContent = tickets;
+            spinTickets -= 1;
+            document.getElementById("spin-tickets").textContent = spinTickets;
 
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800;
@@ -380,10 +500,6 @@
                 document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
                 document.getElementById("copy-code-button").style.display = "inline-block";
                 spins++;
-
-                if (spins >= 10) {
-                    document.getElementById("code-box").style.display = "block";
-                }
             }, 3000);
         }
 
@@ -395,24 +511,14 @@
             });
         }
 
-        function shareOnTelegram() {
-            const inviteLink = "https://t.me/share/url?url=YourInviteLinkHere&text=Join%20this%20awesome%20game%20and%20earn%20crypto!";
-            window.open(inviteLink, "_blank");
-        }
-
         // Fish Game Functions
         function castLine() {
-            if (!isFishGameActive) {
-                alert("You need to complete tasks to play the fish game again!");
+            if (fishTickets < 1) {
+                alert("You need 1 fishing ticket! Complete the task to earn tickets.");
                 return;
             }
-
-            if (ticketsFish < 1) {
-                alert("You need 1 ticket to cast a line! Complete tasks to earn tickets.");
-                return;
-            }
-            ticketsFish -= 1;
-            document.getElementById("tickets-fish").textContent = ticketsFish;
+            fishTickets -= 1;
+            document.getElementById("fish-tickets").textContent = fishTickets;
 
             const fishPond = document.getElementById("fish-pond");
             fishPond.innerHTML = "";
@@ -445,12 +551,10 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                const resultCode = fishCodes[0];
+                const resultCode = fishCodes[fishCaught % fishCodes.length];
                 document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
                 document.getElementById("copy-code-button-fish").style.display = "inline-block";
                 fishCaught++;
-                isFishGameActive = false;
-                alert("You won a code! Complete more tasks to play again.");
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
                 document.getElementById("copy-code-button-fish").style.display = "none";
@@ -465,13 +569,7 @@
             });
         }
 
-        function updateLeaderboard(userId, score) {
-            const leaderboardList = document.getElementById("leaderboard-list");
-            const entry = document.createElement("li");
-            entry.innerText = `${userId}: ${score} fish caught`;
-            leaderboardList.appendChild(entry);
-        }
-
+        // Navigation
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
