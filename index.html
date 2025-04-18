@@ -13,6 +13,7 @@
             color: #fff;
             margin: 0;
             padding: 0;
+            padding-bottom: 60px;
         }
 
         .navbar {
@@ -48,20 +49,26 @@
             margin: 20px auto;
             padding: 20px;
             max-width: 400px;
-            background-color: #333030;
+            background-color: #222;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             color: #fff;
         }
 
         /* Spin Game Styles */
+        .wheel-container {
+            position: relative;
+            margin: 20px auto;
+            width: 230px;
+            height: 230px;
+        }
+
         .wheel {
-            width: 220px;
-            height: 220px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             border: 5px solid #fff;
             position: relative;
-            margin: 20px auto;
             background: conic-gradient(
                 #ff0000 0deg 60deg,
                 #33cc33 60deg 120deg,
@@ -74,11 +81,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            position: relative;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
@@ -110,6 +112,7 @@
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
             border-bottom: 20px solid #fff;
+            z-index: 10;
         }
 
         /* Fish Game Styles */
@@ -215,7 +218,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.9);
             z-index: 2000;
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -233,13 +236,19 @@
             max-width: 80%;
         }
         
-        .content-locker iframe {
+        .iframe-container {
+            position: relative;
             width: 90%;
             height: 60%;
+            margin-bottom: 20px;
+        }
+        
+        .content-locker iframe {
+            width: 100%;
+            height: 100%;
             border: 2px solid #444;
             border-radius: 8px;
-            margin-bottom: 20px;
-            background-color: #333;
+            background-color: #fff;
         }
         
         .content-locker .close-button {
@@ -271,16 +280,60 @@
             cursor: not-allowed;
         }
         
-        .timer-display {
-            font-size: 18px;
+        .click-counter {
             color: #ffcc00;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        
+        .progress-container {
+            width: 80%;
+            background-color: #333;
+            border-radius: 10px;
             margin: 10px 0;
         }
         
-        .interaction-message {
-            color: #ff5555;
-            font-weight: bold;
-            margin: 10px 0;
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Verification Styles */
+        .verification-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .verify-button {
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .verify-button:hover {
+            background-color: #FF8C00;
+        }
+        
+        .verify-button:disabled {
+            background-color: #777;
+            cursor: not-allowed;
+        }
+        
+        .small-note {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -307,7 +360,6 @@
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <!-- Spin Game Task Section -->
         <button class="task-button" id="spin-task-button" onclick="showSpinContentLocker()">✅ Earn Spin Tickets</button>
         <p id="spin-task-progress">Complete the task to earn 1 spin ticket</p>
     </div>
@@ -325,7 +377,6 @@
 
         <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
-        <!-- Fish Game Task Section -->
         <button class="task-button" id="fish-task-button" onclick="showFishContentLocker()">✅ Earn Fishing Tickets</button>
         <p id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
         
@@ -334,36 +385,38 @@
     </div>
 
     <!-- Content Lockers -->
-    <div id="spin-content-locker" class="content-locker" style="display: none;">
+    <div id="spin-content-locker" class="content-locker">
         <div class="close-button" onclick="hideSpinContentLocker()">✕</div>
         <h2>Complete This Task to Earn Spin Tickets</h2>
-        <p>"Kindly complete this task to receive your ticket."</p>
+        <p>Interact with the offer below then verify completion</p>
         
-        <iframe id="spin-task-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" src="" frameborder="0" allowfullscreen></iframe>
+        <div class="iframe-container">
+            <iframe id="spin-task-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" 
+                    src="" frameborder="0" allowfullscreen></iframe>
+        </div>
         
-        <div class="timer-display">
-            Time remaining: <span id="spin-countdown">60</span> seconds
+        <div class="verification-section">
+            <p>After completing the offer:</p>
+            <button id="spin-verify-button" class="verify-button" disabled onclick="verifySpinTask()">✅ Verify Completion</button>
+            <p class="small-note">"The verification button will be enabled after you complete the offer"</p>
         </div>
-        <div class="interaction-message" id="spin-interaction-message" style="display: none;">
-            Please interact with the offer to unlock your ticket
-        </div>
-        <button id="spin-unlock-button" class="unlock-button" disabled onclick="completeSpinTask()">Unlock Spin Ticket</button>
     </div>
 
-    <div id="fish-content-locker" class="content-locker" style="display: none;">
+    <div id="fish-content-locker" class="content-locker">
         <div class="close-button" onclick="hideFishContentLocker()">✕</div>
         <h2>Complete This Task to Earn Fishing Tickets</h2>
-        <p>"Kindly complete this task to receive your ticket."</p>
+        <p>Complete the offer to enable the verification button</p>
         
-        <iframe id="fish-task-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" src="" frameborder="0" allowfullscreen></iframe>
+        <div class="iframe-container">
+            <iframe id="fish-task-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" 
+                    src="" frameborder="0" allowfullscreen></iframe>
+        </div>
         
-        <div class="timer-display">
-            Time remaining: <span id="fish-countdown">90</span> seconds
+        <div class="verification-section">
+            <p>After completing the offer:</p>
+            <button id="fish-verify-button" class="verify-button" disabled onclick="verifyFishTask()">✅ Verify Completion</button>
+            <p class="small-note">Verification button will enable after 30 seconds</p>
         </div>
-        <div class="interaction-message" id="fish-interaction-message" style="display: none;">
-            Please interact with the offer to unlock your ticket
-        </div>
-        <button id="fish-unlock-button" class="unlock-button" disabled onclick="completeFishTask()">Unlock Fishing Ticket</button>
     </div>
 
     <!-- Navigation Bar -->
@@ -380,15 +433,7 @@
         let fishCaught = 0;
         let spinTaskCompleted = false;
         let fishTaskCompleted = false;
-        let spinCountdownInterval;
-        let fishCountdownInterval;
-        let spinClickCount = 0;
-        let fishClickCount = 0;
-        let spinTimerFinished = false;
-        let fishTimerFinished = false;
         const cpaLink = "https://unlockcontent.net/sl/73lpj";
-        const requiredTime = 60; // 60 seconds
-        const requiredClicks = 5; // Minimum 5 clicks to unlock
 
         // Reward Codes
         const spinCodes = [
@@ -418,86 +463,15 @@
                 return;
             }
             
-            // Reset all tracking
-            spinClickCount = 0;
-            spinTimerFinished = false;
-            
             document.getElementById('spin-content-locker').style.display = 'flex';
-            document.getElementById('spin-task-iframe').src = cpaLink;
-            document.getElementById('spin-interaction-message').style.display = 'none';
-            document.getElementById('spin-unlock-button').disabled = true;
+            loadCPAOffer('spin');
             
-            // Setup iframe tracking
-            setupIframeTracking('spin');
-            startSpinCountdown();
-        }
-
-        function setupIframeTracking(type) {
-            const container = document.getElementById(`${type}-content-locker`);
-            
-            container.addEventListener('click', function() {
-                if (type === 'spin') {
-                    spinClickCount++;
-                    checkSpinUnlockConditions();
-                } else {
-                    fishClickCount++;
-                    checkFishUnlockConditions();
-                }
-            });
-        }
-
-        function checkSpinUnlockConditions() {
-            if (spinTimerFinished && spinClickCount >= requiredClicks) {
-                document.getElementById('spin-unlock-button').disabled = false;
-                document.getElementById('spin-interaction-message').style.display = 'none';
-            }
-        }
-
-        function checkFishUnlockConditions() {
-            if (fishTimerFinished && fishClickCount >= requiredClicks) {
-                document.getElementById('fish-unlock-button').disabled = false;
-                document.getElementById('fish-interaction-message').style.display = 'none';
-            }
-        }
-
-        function startSpinCountdown() {
-            let secondsRemaining = requiredTime;
-            document.getElementById('spin-countdown').textContent = secondsRemaining;
-            
-            clearInterval(spinCountdownInterval);
-            spinCountdownInterval = setInterval(function() {
-                secondsRemaining--;
-                document.getElementById('spin-countdown').textContent = secondsRemaining;
-                
-                if (secondsRemaining <= 0) {
-                    spinTimerFinished = true;
-                    clearInterval(spinCountdownInterval);
-                    checkSpinUnlockConditions();
-                    
-                    if (spinClickCount < requiredClicks) {
-                        document.getElementById('spin-interaction-message').style.display = 'block';
-                    }
-                }
-            }, 1000);
-        }
-
-        function completeSpinTask() {
-            if (!spinTimerFinished || spinClickCount < requiredClicks) {
-                alert("Please complete the requirements (wait for timer and interact with the offer)");
-                return;
-            }
-            
-            spinTaskCompleted = true;
-            spinTickets++;
-            document.getElementById("spin-tickets").textContent = spinTickets;
-            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
-            hideSpinContentLocker();
-        }
-
-        function hideSpinContentLocker() {
-            document.getElementById('spin-content-locker').style.display = 'none';
-            document.getElementById('spin-task-iframe').src = '';
-            clearInterval(spinCountdownInterval);
+            // Disable verify button for 30 seconds
+            const verifyBtn = document.getElementById('spin-verify-button');
+            verifyBtn.disabled = true;
+            setTimeout(() => {
+                verifyBtn.disabled = false;
+            }, 30000);
         }
 
         function showFishContentLocker() {
@@ -506,47 +480,43 @@
                 return;
             }
             
-            // Reset all tracking
-            fishClickCount = 0;
-            fishTimerFinished = false;
-            
             document.getElementById('fish-content-locker').style.display = 'flex';
-            document.getElementById('fish-task-iframe').src = cpaLink;
-            document.getElementById('fish-interaction-message').style.display = 'none';
-            document.getElementById('fish-unlock-button').disabled = true;
+            loadCPAOffer('fish');
             
-            // Setup iframe tracking
-            setupIframeTracking('fish');
-            startFishCountdown();
+            // Disable verify button for 30 seconds
+            const verifyBtn = document.getElementById('fish-verify-button');
+            verifyBtn.disabled = true;
+            setTimeout(() => {
+                verifyBtn.disabled = false;
+            }, 30000);
         }
 
-        function startFishCountdown() {
-            let secondsRemaining = requiredTime;
-            document.getElementById('fish-countdown').textContent = secondsRemaining;
-            
-            clearInterval(fishCountdownInterval);
-            fishCountdownInterval = setInterval(function() {
-                secondsRemaining--;
-                document.getElementById('fish-countdown').textContent = secondsRemaining;
-                
-                if (secondsRemaining <= 0) {
-                    fishTimerFinished = true;
-                    clearInterval(fishCountdownInterval);
-                    checkFishUnlockConditions();
-                    
-                    if (fishClickCount < requiredClicks) {
-                        document.getElementById('fish-interaction-message').style.display = 'block';
-                    }
-                }
-            }, 1000);
+        function loadCPAOffer(type) {
+            const iframe = document.getElementById(`${type}-task-iframe`);
+            iframe.src = cpaLink;
+        }
+
+        function verifySpinTask() {
+            if (confirm("Did you genuinely complete the offer?")) {
+                completeSpinTask();
+            }
+        }
+
+        function verifyFishTask() {
+            if (confirm("Did you genuinely complete the offer?")) {
+                completeFishTask();
+            }
+        }
+
+        function completeSpinTask() {
+            spinTaskCompleted = true;
+            spinTickets++;
+            document.getElementById("spin-tickets").textContent = spinTickets;
+            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
+            hideSpinContentLocker();
         }
 
         function completeFishTask() {
-            if (!fishTimerFinished || fishClickCount < requiredClicks) {
-                alert("Please complete the requirements (wait for timer and interact with the offer)");
-                return;
-            }
-            
             fishTaskCompleted = true;
             fishTickets++;
             document.getElementById("fish-tickets").textContent = fishTickets;
@@ -554,10 +524,16 @@
             hideFishContentLocker();
         }
 
+        function hideSpinContentLocker() {
+            document.getElementById('spin-content-locker').style.display = 'none';
+            const iframe = document.getElementById('spin-task-iframe');
+            iframe.src = "about:blank";
+        }
+
         function hideFishContentLocker() {
             document.getElementById('fish-content-locker').style.display = 'none';
-            document.getElementById('fish-task-iframe').src = '';
-            clearInterval(fishCountdownInterval);
+            const iframe = document.getElementById('fish-task-iframe');
+            iframe.src = "about:blank";
         }
 
         // Spin Game Functions
@@ -603,7 +579,6 @@
             const fishPond = document.getElementById("fish-pond");
             fishPond.innerHTML = "";
 
-            // Generate 10 non-winning fish and 1 winning fish
             for (let i = 0; i < 10; i++) {
                 createFish(false);
             }
@@ -655,7 +630,7 @@
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
         }
 
-        // Initialize the first page
+        // Initialize
         showPage('spin-game');
     </script>
 </body>
