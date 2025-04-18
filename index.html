@@ -275,6 +275,17 @@
             color: #ffcc00;
             margin: 10px 0;
         }
+        
+        .interaction-required {
+            color: #ff5555;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .captcha-container {
+            margin: 20px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -337,6 +348,12 @@
         <div class="timer-display">
             Time remaining: <span id="spin-countdown">60</span> seconds
         </div>
+        <div class="interaction-required" id="spin-interaction-message" style="display: none;">
+            Please interact with the offer to unlock your reward!
+        </div>
+        <div class="captcha-container" id="spin-captcha-container">
+            <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
+        </div>
         <button id="spin-unlock-button" class="unlock-button" disabled onclick="completeSpinTask()">Unlock Spin Ticket</button>
     </div>
 
@@ -349,6 +366,12 @@
         
         <div class="timer-display">
             Time remaining: <span id="fish-countdown">90</span> seconds
+        </div>
+        <div class="interaction-required" id="fish-interaction-message" style="display: none;">
+            Please interact with the offer to unlock your reward!
+        </div>
+        <div class="captcha-container" id="fish-captcha-container">
+            <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
         </div>
         <button id="fish-unlock-button" class="unlock-button" disabled onclick="completeFishTask()">Unlock Fishing Ticket</button>
     </div>
@@ -369,6 +392,8 @@
         let fishTaskCompleted = false;
         let spinCountdownInterval;
         let fishCountdownInterval;
+        let spinUserInteracted = false;
+        let fishUserInteracted = false;
         const cpaLink = "https://unlockcontent.net/sl/73lpj";
         const requiredTime = 60; // 60 seconds
 
@@ -402,16 +427,55 @@
             
             document.getElementById('spin-content-locker').style.display = 'flex';
             document.getElementById('spin-task-iframe').src = cpaLink;
+            document.getElementById('spin-interaction-message').style.display = 'none';
+            document.getElementById('spin-captcha-container').style.display = 'none';
             startSpinCountdown();
+            
+            // Setup iframe tracking
+            setupIframeTracking('spin');
         }
 
         function hideSpinContentLocker() {
             document.getElementById('spin-content-locker').style.display = 'none';
             document.getElementById('spin-task-iframe').src = '';
             clearInterval(spinCountdownInterval);
+            spinUserInteracted = false;
+        }
+
+        function setupIframeTracking(type) {
+            // Try to detect interaction with iframe
+            const iframe = document.getElementById(`${type}-task-iframe`);
+            
+            // This will only work if the iframe is from the same origin
+            try {
+                iframe.contentWindow.document.addEventListener('click', function() {
+                    if (type === 'spin') {
+                        spinUserInteracted = true;
+                    } else {
+                        fishUserInteracted = true;
+                    }
+                });
+            } catch (e) {
+                // Cross-origin iframe - we can't track clicks directly
+                // Fallback to message events if the CPA provider supports it
+                window.addEventListener('message', function(event) {
+                    if (event.data === 'CPA_COMPLETED' || event.data.type === 'CPA_COMPLETED') {
+                        if (type === 'spin') {
+                            spinUserInteracted = true;
+                            document.getElementById('spin-unlock-button').disabled = false;
+                            clearInterval(spinCountdownInterval);
+                        } else {
+                            fishUserInteracted = true;
+                            document.getElementById('fish-unlock-button').disabled = false;
+                            clearInterval(fishCountdownInterval);
+                        }
+                    }
+                });
+            }
         }
 
         function startSpinCountdown() {
+            spinUserInteracted = false;
             let secondsRemaining = requiredTime;
             document.getElementById('spin-countdown').textContent = secondsRemaining;
             document.getElementById('spin-unlock-button').disabled = true;
@@ -422,19 +486,49 @@
                 document.getElementById('spin-countdown').textContent = secondsRemaining;
                 
                 if (secondsRemaining <= 0) {
-                    document.getElementById('spin-unlock-button').disabled = false;
-                    clearInterval(spinCountdownInterval);
+                    if (spinUserInteracted) {
+                        // Show CAPTCHA to verify human interaction
+                        document.getElementById('spin-captcha-container').style.display = 'block';
+                        document.getElementById('spin-interaction-message').style.display = 'none';
+                        loadRecaptcha('spin');
+                    } else {
+                        // Show message that interaction is required
+                        document.getElementById('spin-interaction-message').style.display = 'block';
+                        // Reset timer to encourage actual completion
+                        secondsRemaining = 30;
+                        document.getElementById('spin-countdown').textContent = secondsRemaining;
+                    }
                 }
             }, 1000);
         }
 
+        function loadRecaptcha(type) {
+            // Load reCAPTCHA script if not already loaded
+            if (!document.querySelector('script[src*="recaptcha/api.js"]')) {
+                const script = document.createElement('script');
+                script.src = 'https://www.google.com/recaptcha/api.js';
+                document.body.appendChild(script);
+            }
+            
+            // Enable unlock button when CAPTCHA is solved
+            window[`onRecaptcha${type.charAt(0).toUpperCase() + type.slice(1)}Verified`] = function(response) {
+                if (response) {
+                    document.getElementById(`${type}-unlock-button`).disabled = false;
+                }
+            };
+        }
+
         function completeSpinTask() {
+            if (!spinUserInteracted) {
+                alert("Please actually complete the offer to receive your ticket");
+                return;
+            }
+            
             spinTaskCompleted = true;
             spinTickets++;
             document.getElementById("spin-tickets").textContent = spinTickets;
             document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
             hideSpinContentLocker();
-            alert("Spin task completed! You've earned 1 spin ticket.");
         }
 
         function showFishContentLocker() {
@@ -445,16 +539,23 @@
             
             document.getElementById('fish-content-locker').style.display = 'flex';
             document.getElementById('fish-task-iframe').src = cpaLink;
+            document.getElementById('fish-interaction-message').style.display = 'none';
+            document.getElementById('fish-captcha-container').style.display = 'none';
             startFishCountdown();
+            
+            // Setup iframe tracking
+            setupIframeTracking('fish');
         }
 
         function hideFishContentLocker() {
             document.getElementById('fish-content-locker').style.display = 'none';
             document.getElementById('fish-task-iframe').src = '';
             clearInterval(fishCountdownInterval);
+            fishUserInteracted = false;
         }
 
         function startFishCountdown() {
+            fishUserInteracted = false;
             let secondsRemaining = requiredTime;
             document.getElementById('fish-countdown').textContent = secondsRemaining;
             document.getElementById('fish-unlock-button').disabled = true;
@@ -465,19 +566,33 @@
                 document.getElementById('fish-countdown').textContent = secondsRemaining;
                 
                 if (secondsRemaining <= 0) {
-                    document.getElementById('fish-unlock-button').disabled = false;
-                    clearInterval(fishCountdownInterval);
+                    if (fishUserInteracted) {
+                        // Show CAPTCHA to verify human interaction
+                        document.getElementById('fish-captcha-container').style.display = 'block';
+                        document.getElementById('fish-interaction-message').style.display = 'none';
+                        loadRecaptcha('fish');
+                    } else {
+                        // Show message that interaction is required
+                        document.getElementById('fish-interaction-message').style.display = 'block';
+                        // Reset timer to encourage actual completion
+                        secondsRemaining = 30;
+                        document.getElementById('fish-countdown').textContent = secondsRemaining;
+                    }
                 }
             }, 1000);
         }
 
         function completeFishTask() {
+            if (!fishUserInteracted) {
+                alert("Please actually complete the offer to receive your ticket");
+                return;
+            }
+            
             fishTaskCompleted = true;
             fishTickets++;
             document.getElementById("fish-tickets").textContent = fishTickets;
             document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
             hideFishContentLocker();
-            alert("Fishing task completed! You've earned 1 fishing ticket.");
         }
 
         // Spin Game Functions
