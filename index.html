@@ -466,12 +466,12 @@
             document.getElementById('spin-content-locker').style.display = 'flex';
             loadCPAOffer('spin');
             
-            // Disable verify button for 45 seconds
+            // Disable verify button for 30 seconds
             const verifyBtn = document.getElementById('spin-verify-button');
             verifyBtn.disabled = true;
             setTimeout(() => {
                 verifyBtn.disabled = false;
-            }, 45000);
+            }, 30000);
         }
 
         function showFishContentLocker() {
@@ -483,12 +483,12 @@
             document.getElementById('fish-content-locker').style.display = 'flex';
             loadCPAOffer('fish');
             
-            // Disable verify button for 45 seconds
+            // Disable verify button for 30 seconds
             const verifyBtn = document.getElementById('fish-verify-button');
             verifyBtn.disabled = true;
             setTimeout(() => {
                 verifyBtn.disabled = false;
-            }, 45000);
+            }, 30000);
         }
 
         function loadCPAOffer(type) {
