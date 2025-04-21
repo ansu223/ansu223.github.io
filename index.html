@@ -3,96 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Double Game App</title>
+    <title>💰 Crypto Rewards Arcade 💰</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000;
-            color: #fff;
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #00cec9;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --neumorph: 8px 8px 15px rgba(0,0,0,0.2), -8px -8px 15px rgba(255,255,255,0.05);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            padding-bottom: 60px;
         }
 
-        .navbar {
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2d2d44);
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(30, 30, 47, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #a29bfe, #00cec9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .app-subtitle {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 300;
+        }
+
+        /* User Info Bar */
+        .user-info-bar {
             display: flex;
-            justify-content: space-around;
-            background-color: #333;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(40, 40, 60, 0.7);
+            margin: 10px auto;
+            border-radius: 10px;
+            max-width: 450px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .navbar button {
-            background-color: #444;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+        .expiry-timer {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .user-id {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Winners Section */
+        .winners-section {
+            background: rgba(40, 40, 60, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px auto;
+            max-width: 450px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .winners-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--accent);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .navbar button:hover {
-            background-color: #555;
+        .winners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .winner-prize {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        /* Game Containers */
         .game-container {
-            margin: 20px auto;
-            padding: 20px;
-            max-width: 400px;
-            background-color: #222;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: #fff;
+            margin: 10px auto;
+            padding: 25px;
+            max-width: 450px;
+            background: rgba(40, 40, 60, 0.7);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
         }
 
-        /* Spin Game Styles */
+        .game-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .game-description {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Ticket System */
+        .ticket-display {
+            background: rgba(0, 206, 201, 0.1);
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin: 15px auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(0, 206, 201, 0.3);
+        }
+
+        .ticket-icon {
+            color: var(--warning);
+            font-size: 1.2rem;
+        }
+
+        .ticket-count {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .ticket-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Spin Game */
         .wheel-container {
             position: relative;
-            margin: 20px auto;
-            width: 230px;
-            height: 230px;
+            margin: 30px auto;
+            width: 260px;
+            height: 260px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
         }
 
         .wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 5px solid #fff;
+            border: 8px solid rgba(255,255,255,0.1);
             position: relative;
             background: conic-gradient(
-                #ff0000 0deg 60deg,
-                #33cc33 60deg 120deg,
-                #ffcc00 120deg 180deg,
-                #00ccff 180deg 240deg,
-                #ff6600 240deg 300deg,
-                #cc00ff 300deg 360deg
+                #ff7675 0deg 60deg,
+                #55efc4 60deg 120deg,
+                #ffeaa7 120deg 180deg,
+                #74b9ff 180deg 240deg,
+                #a29bfe 240deg 300deg,
+                #fd79a8 300deg 360deg
             );
-            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--dark);
+            border-radius: 50%;
+            border: 5px solid rgba(255,255,255,0.2);
+            z-index: 5;
         }
 
         .wheel span {
             position: absolute;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             transform-origin: center;
             transform: translate(-50%, -50%) rotate(var(--rotate));
             top: var(--top);
             left: var(--left);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            z-index: 2;
+            background: rgba(0,0,0,0.3);
+            padding: 3px 8px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; }
@@ -104,40 +254,67 @@
 
         .arrow {
             position: absolute;
-            top: -10px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid #fff;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid var(--accent);
             z-index: 10;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
-        /* Fish Game Styles */
+        /* Fish Game */
         .fish-pond {
             width: 100%;
-            height: 200px;
-            background-color: #1c6e8c;
-            border-radius: 12px;
+            height: 220px;
+            background: linear-gradient(to bottom, #0984e3, #74b9ff);
+            border-radius: 15px;
             position: relative;
             overflow: hidden;
-            margin: 20px 0;
+            margin: 25px 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
+            border: 5px solid rgba(255,255,255,0.1);
         }
 
         .fish {
             position: absolute;
-            font-size: 30px;
+            font-size: 36px;
             cursor: pointer;
             animation: swim 5s linear infinite;
             top: 50%;
             transform: translateY(-50%);
+            transition: transform 0.2s ease;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .fish:hover {
+            transform: translateY(-50%) scale(1.1);
         }
 
         .fish.winning-fish {
-            color: gold;
-            text-shadow: 0 0 10px gold, 0 0 20px gold;
+            color: var(--warning);
+            text-shadow: 0 0 15px gold, 0 0 30px gold;
+            animation: swim 5s linear infinite, glow 1.5s ease-in-out infinite alternate;
+        }
+
+        .pond-decoration {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to bottom, #00b894, #0984e3);
+            z-index: 1;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            animation: float-up 4s infinite ease-in;
         }
 
         @keyframes swim {
@@ -145,189 +322,411 @@
             100% { left: 100%; }
         }
 
-        /* Common Button Styles */
-        .spin-button, .cast-button {
-            background-color: #ffffff;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            margin: 5px;
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px gold); }
+            to { filter: drop-shadow(0 0 15px gold); }
         }
 
-        .spin-button:hover, .cast-button:hover {
-            background-color: #2dd60c;
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100px); opacity: 0; }
         }
 
-        #spin-result, #catch-result {
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        #copy-code-button, #copy-code-button-fish {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .task-button {
-            background-color: #4CAF50;
+        /* Buttons */
+        .game-button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 10px 20px;
-            margin: 5px 0;
-            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
             cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .task-button:hover {
-            background-color: #45a049;
-        }
-        
-        .task-completed {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        .ticket-count {
-            font-size: 18px;
-            margin: 10px 0;
-            color: gold;
-        }
-        
-        .spin-notice {
-            color: gold;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 8px;
-            background-color: rgba(255, 215, 0, 0.1);
-            border-radius: 8px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            margin: 5px;
+            width: calc(100% - 10px);
+            max-width: 300px;
         }
 
-        /* Content Locker Styles */
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .game-button:active {
+            transform: translateY(1px);
+        }
+
+        .game-button.secondary {
+            background: rgba(255,255,255,0.1);
+            box-shadow: none;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .game-button.secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .game-button.success {
+            background: linear-gradient(to right, var(--success), #55efc4);
+        }
+
+        .game-button.warning {
+            background: linear-gradient(to right, var(--warning), #ffeaa7);
+            color: var(--dark);
+        }
+
+        .game-button.danger {
+            background: linear-gradient(to right, var(--danger), #ff7675);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* Results */
+        .result-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 206, 201, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 206, 201, 0.2);
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .result-code {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+            font-family: monospace;
+            color: var(--warning);
+        }
+
+        /* Task System */
+        .task-progress {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .task-completed {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Content Lockers */
         .content-locker {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 2000;
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
         }
         
         .content-locker h2 {
-            color: #fff;
-            margin-bottom: 20px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
         }
         
         .content-locker p {
-            color: #ddd;
-            margin-bottom: 30px;
-            max-width: 80%;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 25px;
+            max-width: 90%;
+            line-height: 1.6;
         }
         
         .verification-steps {
-            background: #333;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+            background: rgba(40, 40, 60, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
             text-align: left;
-            width: 80%;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .step {
-            margin-bottom: 8px;
+            margin-bottom: 15px;
             display: flex;
-            align-items: center;
-            color: #fff;
+            align-items: flex-start;
+            color: var(--light);
         }
         
         .step-number {
-            background: #4CAF50;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            margin-right: 10px;
+            margin-right: 15px;
             flex-shrink: 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .step-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            padding-top: 2px;
         }
         
         .content-locker .close-button {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 24px;
+            top: 25px;
+            right: 25px;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.5rem;
             cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .content-locker .close-button:hover {
+            color: var(--accent);
+            background: rgba(255,255,255,0.1);
         }
         
         .verify-button {
-            background-color: #FFA500;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 12px 24px;
-            margin-top: 10px;
-            border-radius: 8px;
+            padding: 15px 30px;
+            margin-top: 15px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
         }
         
         .verify-button:hover {
-            background-color: #FF8C00;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+        
+        .verify-button:active {
+            transform: translateY(1px);
         }
         
         .verify-button:disabled {
-            background-color: #777;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
             cursor: not-allowed;
+            box-shadow: none;
         }
         
         #verification-status {
             margin-top: 20px;
             min-height: 24px;
-            font-size: 14px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+            border-radius: 5px;
+            max-width: 90%;
         }
         
         .status-success {
-            color: #4CAF50;
+            color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid rgba(0, 184, 148, 0.3);
         }
         
         .status-error {
-            color: #f44336;
+            color: var(--danger);
+            background: rgba(214, 48, 49, 0.1);
+            border: 1px solid rgba(214, 48, 49, 0.3);
         }
         
         .status-loading {
-            color: #FFA500;
+            color: var(--warning);
+            background: rgba(253, 203, 110, 0.1);
+            border: 1px solid rgba(253, 203, 110, 0.3);
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(30, 30, 47, 0.9);
+            padding: 12px 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-button {
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 80px;
+        }
+
+        .nav-button.active {
+            color: var(--accent);
+            background: rgba(0, 206, 201, 0.1);
+        }
+
+        .nav-button i {
+            font-size: 1.2rem;
+        }
+
+        .nav-button:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 20px 15px;
+                margin: 15px 10px;
+            }
+            
+            .wheel-container {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .game-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-button {
+                min-width: 70px;
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .nav-button i {
+                font-size: 1rem;
+            }
+        }
+
+        /* Telegram WebView Specific Adjustments */
+        .telegram-webview .game-container {
+            max-width: 100%;
+            margin: 15px;
+            border-radius: 15px;
+        }
+        
+        .telegram-webview .content-locker {
+            padding: 15px;
+        }
+        
+        .telegram-webview .verification-steps {
+            width: 100%;
         }
     </style>
 </head>
 <body>
+    <!-- App Header -->
+    <div class="app-header">
+        <h1 class="app-title">💰 Crypto Rewards Arcade</h1>
+        <p class="app-subtitle">Play games & earn crypto rewards!</p>
+    </div>
+
+    <!-- User Info Bar -->
+    <div class="user-info-bar">
+        <div class="expiry-timer">
+            <i class="fas fa-clock"></i> Expires in: <span id="expiry-timer">23:59:59</span>
+        </div>
+        <div class="user-id">
+            <i class="fas fa-user"></i> ID: <span id="user-id-display">web_ia...p0y</span>
+        </div>
+    </div>
+
     <!-- Spin Game -->
     <div id="spin-game" class="game-container">
-        <h3>🎡 Spin & Win Crypto 🎡</h3>
-        <p>Spin the wheel to earn crypto rewards!</p>
+        <h2 class="game-title"><i class="fas fa-sync-alt"></i> Spin & Win</h2>
+        <p class="game-description">Spin the wheel to win crypto codes! Each spin gives you a unique reward.</p>
 
-        <div class="ticket-count">Your Spin Tickets: <span id="spin-tickets">0</span></div>
-        <div class="spin-notice">🔥 Every spin gives you a new unique crypto code! 🔥</div>
+        <div class="ticket-display">
+            <span class="ticket-icon"><i class="fas fa-ticket-alt"></i></span>
+            <span class="ticket-count" id="spin-tickets">0</span>
+            <span class="ticket-label">Spin Tickets</span>
+        </div>
+
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
+                <div class="wheel-center"></div>
                 <span class="usdt">USDT🔴💰</span>
                 <span class="bttc">BTTC🟢💰</span>
                 <span class="lunc">LUNC🟡💰</span>
@@ -336,98 +735,202 @@
                 <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
-        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
-        <p id="spin-result"></p>
-        <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
-        
-        <button class="task-button" id="spin-task-button" onclick="showSpinContentLocker()">✅ Earn Spin Tickets</button>
-        <p id="spin-task-progress">Complete the task to earn 1 spin ticket</p>
+
+        <div class="button-group">
+            <button class="game-button pulse" onclick="spinWheel()">
+                <i class="fas fa-sync-alt"></i> SPIN NOW (1 TICKET)
+            </button>
+            
+            <button class="game-button secondary" id="spin-task-button" onclick="showSpinContentLocker()">
+                <i class="fas fa-tasks"></i> EARN SPIN TICKETS
+            </button>
+        </div>
+
+        <p class="task-progress" id="spin-task-progress">Complete the task to earn 1 spin ticket</p>
+
+        <div id="spin-result-container" class="result-container" style="display: none;">
+            <h3 class="result-title">🎉 Congratulations! You won:</h3>
+            <div class="result-code" id="spin-result-code"></div>
+            <button class="game-button success" id="copy-code-button" onclick="copyResultCode()">
+                <i class="fas fa-copy"></i> COPY CODE
+            </button>
+        </div>
+
+        <!-- SPIN GAME WINNERS SECTION -->
+        <div class="winners-section">
+            <h3 class="winners-title"><i class="fas fa-trophy"></i> Recent Spin Winners</h3>
+            <div class="winners-list" id="spin-winners-list">
+                <div class="winner-item">
+                    <span>User_8f...k9m</span>
+                    <span class="winner-prize">USDT 0.05</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_3g...p2x</span>
+                    <span class="winner-prize">BNB 0.01</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_7h...q5y</span>
+                    <span class="winner-prize">PEPE 400</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_2j...m8n</span>
+                    <span class="winner-prize">BTTC 1000</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Fish Game -->
     <div id="fishing-game" class="game-container" style="display: none;">
-        <h1>🎣 Fishing for Crypto 🎣</h1>
-        <p>Catch fish to earn crypto codes!</p>
+        <h2 class="game-title"><i class="fas fa-fish"></i> Fishing for Crypto</h2>
+        <p class="game-description">Catch the special fish to win crypto rewards!</p>
 
-        <div class="ticket-count">Your Fishing Tickets: <span id="fish-tickets">0</span></div>
+        <div class="ticket-display">
+            <span class="ticket-icon"><i class="fas fa-ticket-alt"></i></span>
+            <span class="ticket-count" id="fish-tickets">0</span>
+            <span class="ticket-label">Fishing Tickets</span>
+        </div>
 
         <div class="fish-pond" id="fish-pond">
+            <div class="pond-decoration"></div>
             <!-- Fish will appear here dynamically -->
         </div>
 
-        <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
-        
-        <button class="task-button" id="fish-task-button" onclick="showFishContentLocker()">✅ Earn Fishing Tickets</button>
-        <p id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
-        
-        <p id="catch-result"></p>
-        <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
+        <div class="button-group">
+            <button class="game-button pulse" onclick="castLine()">
+                <i class="fas fa-fish"></i> CAST LINE (1 TICKET)
+            </button>
+            
+            <button class="game-button secondary" id="fish-task-button" onclick="showFishContentLocker()">
+                <i class="fas fa-tasks"></i> EARN FISHING TICKETS
+            </button>
+        </div>
+
+        <p class="task-progress" id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
+
+        <div id="fish-result-container" class="result-container" style="display: none;">
+            <h3 class="result-title">🎣 You caught a special fish!</h3>
+            <div class="result-code" id="fish-result-code"></div>
+            <button class="game-button success" id="copy-code-button-fish" onclick="copyResultCodeFish()">
+                <i class="fas fa-copy"></i> COPY CODE
+            </button>
+        </div>
+
+        <!-- FISH GAME WINNERS SECTION -->
+        <div class="winners-section">
+            <h3 class="winners-title"><i class="fas fa-trophy"></i> Recent Fishing Winners</h3>
+            <div class="winners-list" id="fish-winners-list">
+                <div class="winner-item">
+                    <span>User_5k...n3d</span>
+                    <span class="winner-prize">USDT 0.3</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_9l...o7f</span>
+                    <span class="winner-prize">BNB 0.2</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_1m...p9g</span>
+                    <span class="winner-prize">PEPE 10000</span>
+                </div>
+                <div class="winner-item">
+                    <span>User_4n...q1h</span>
+                    <span class="winner-prize">LTC 0.1</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Content Lockers -->
     <div id="spin-content-locker" class="content-locker">
-        <div class="close-button" onclick="hideSpinContentLocker()">✕</div>
-        <h2>Complete Offer to Earn Spin Tickets</h2>
+        <div class="close-button" onclick="hideSpinContentLocker()">×</div>
+        <h2><i class="fas fa-ticket-alt"></i> Earn Spin Tickets</h2>
+        <p>Complete this simple offer to get 1 spin ticket and play the wheel!</p>
         
         <div class="verification-steps">
             <div class="step">
                 <span class="step-number">1</span>
-                <span>Open the offer, complete all steps, then come back to verify and get your ticket</spa
+                <span class="step-text">Click "Open Offer" below to view the offer in your browser</span>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-text">Complete all required steps in the offer (usually takes 1 minutes)</span>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-text">Return here and click "Verify Completion" to get your ticket</span>
             </div>
         </div>
         
         <button id="open-spin-offer-button" class="verify-button" onclick="openOffer('spin')">
-            <i class="fas fa-external-link-alt"></i> Open Offer
+            <i class="fas fa-external-link-alt"></i> OPEN OFFER
         </button>
         
-        <div id="spin-verification-section" style="display: none; margin-top: 20px;">
+        <div id="spin-verification-section" style="display: none; margin-top: 20px; width: 100%; max-width: 300px;">
             <button id="spin-verify-button" class="verify-button" onclick="verifyCompletion('spin')">
-                <i class="fas fa-check-circle"></i> Verify Completion
+                <i class="fas fa-check-circle"></i> VERIFY COMPLETION
             </button>
         </div>
         
-        <div id="spin-verification-status" class="verification-status"></div>
+        <div id="spin-verification-status"></div>
     </div>
 
     <div id="fish-content-locker" class="content-locker">
-        <div class="close-button" onclick="hideFishContentLocker()">✕</div>
-        <h2>Complete Offer to Earn Fishing Tickets</h2>
+        <div class="close-button" onclick="hideFishContentLocker()">×</div>
+        <h2><i class="fas fa-ticket-alt"></i> Earn Fishing Tickets</h2>
+        <p>Complete this simple offer to get 1 fishing ticket and play the game!</p>
         
         <div class="verification-steps">
             <div class="step">
                 <span class="step-number">1</span>
-                <span>Click below to open the offer in your browser</span>
+                <span class="step-text">Click "Open Offer" below to view the offer in your browser</span>
             </div>
             <div class="step">
                 <span class="step-number">2</span>
-                <span>Complete all required steps in the offer</span>
+                <span class="step-text">Complete all required steps in the offer (usually takes 1 minutes)</span>
             </div>
             <div class="step">
                 <span class="step-number">3</span>
-                <span>Return here and verify completion</span>
+                <span class="step-text">Return here and click "Verify Completion" to get your ticket</span>
             </div>
         </div>
         
         <button id="open-fish-offer-button" class="verify-button" onclick="openOffer('fish')">
-            <i class="fas fa-external-link-alt"></i> Open Offer
+            <i class="fas fa-external-link-alt"></i> OPEN OFFER
         </button>
         
-        <div id="fish-verification-section" style="display: none; margin-top: 20px;">
+        <div id="fish-verification-section" style="display: none; margin-top: 20px; width: 100%; max-width: 300px;">
             <button id="fish-verify-button" class="verify-button" onclick="verifyCompletion('fish')">
-                <i class="fas fa-check-circle"></i> Verify Completion
+                <i class="fas fa-check-circle"></i> VERIFY COMPLETION
             </button>
         </div>
         
-        <div id="fish-verification-status" class="verification-status"></div>
+        <div id="fish-verification-status"></div>
     </div>
 
     <!-- Navigation Bar -->
     <div class="navbar">
-        <button onclick="showPage('spin-game')"><i class="fas fa-sync-alt"></i> Spin</button>
-        <button onclick="showPage('fishing-game')"><i class="fas fa-fish"></i> Fish</button>
+        <button class="nav-button active" onclick="showPage('spin-game')">
+            <i class="fas fa-sync-alt"></i>
+            <span>Spin</span>
+        </button>
+        <button class="nav-button" onclick="showPage('fishing-game')">
+            <i class="fas fa-fish"></i>
+            <span>Fish</span>
+        </button>
     </div>
 
     <script>
+        // Detect Telegram WebView
+        if (window.Telegram && Telegram.WebApp) {
+            document.body.classList.add('telegram-webview');
+            
+            // Expand the WebView to full height
+            Telegram.WebApp.expand();
+            
+            // Set background color to match theme
+            Telegram.WebApp.setBackgroundColor('#1e1e2f');
+        }
+
         // Game State
         let spinTickets = 0;
         let fishTickets = 0;
@@ -464,9 +967,147 @@
         function generateUserId() {
             // Use Telegram user ID if available, otherwise generate random
             if (window.Telegram && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
-                return Telegram.WebApp.initDataUnsafe.user.id;
+                const tgId = Telegram.WebApp.initDataUnsafe.user.id.toString();
+                const partialId = tgId.substring(0, 3) + '...' + tgId.substring(tgId.length - 3);
+                document.getElementById('user-id-display').textContent = `tg_${partialId}`;
+                return tgId;
             }
-            return 'web_' + Math.random().toString(36).substr(2, 9);
+            const randomId = 'web_' + Math.random().toString(36).substr(2, 9);
+            const partialId = randomId.substring(0, 5) + '...' + randomId.substring(randomId.length - 3);
+            document.getElementById('user-id-display').textContent = partialId;
+            return randomId;
+        }
+
+        // Initialize countdown timer (24 hours)
+        function startCountdown() {
+            let hours = 23;
+            let minutes = 59;
+            let seconds = 59;
+            
+            const timerElement = document.getElementById('expiry-timer');
+            
+            const countdown = setInterval(() => {
+                timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    if (minutes > 0) {
+                        minutes--;
+                        seconds = 59;
+                    } else {
+                        if (hours > 0) {
+                            hours--;
+                            minutes = 59;
+                            seconds = 59;
+                        } else {
+                            clearInterval(countdown);
+                            timerElement.textContent = "EXPIRED!";
+                            timerElement.style.color = "#ff7675";
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        // Generate random winners for both games
+        function generateRandomWinners() {
+            const spinPrizes = ["USDT 0.5", "BNB 0.1", "PEPE 5000", "LTC 0.05", "BTTC 10000", "LUNC 50000"];
+            const fishPrizes = ["USDT 0.3", "BNB 0.2", "PEPE 10000", "LTC 0.1", "BTTC 20000", "LUNC 30000"];
+            
+            // Update spin winners
+            const spinWinnersList = document.getElementById('spin-winners-list');
+            spinWinnersList.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                const randomPrefix = Math.random().toString(36).substr(2, 2);
+                const randomSuffix = Math.random().toString(36).substr(2, 2);
+                const randomMiddle = Math.random().toString(36).substr(2, 1);
+                const userId = `User_${randomPrefix}...${randomMiddle}${randomSuffix}`;
+                const prize = spinPrizes[Math.floor(Math.random() * spinPrizes.length)];
+                
+                const winnerItem = document.createElement('div');
+                winnerItem.className = 'winner-item';
+                winnerItem.innerHTML = `
+                    <span>${userId}</span>
+                    <span class="winner-prize">${prize}</span>
+                `;
+                
+                spinWinnersList.appendChild(winnerItem);
+            }
+            
+            // Update fish winners
+            const fishWinnersList = document.getElementById('fish-winners-list');
+            fishWinnersList.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                const randomPrefix = Math.random().toString(36).substr(2, 2);
+                const randomSuffix = Math.random().toString(36).substr(2, 2);
+                const randomMiddle = Math.random().toString(36).substr(2, 1);
+                const userId = `User_${randomPrefix}...${randomMiddle}${randomSuffix}`;
+                const prize = fishPrizes[Math.floor(Math.random() * fishPrizes.length)];
+                
+                const winnerItem = document.createElement('div');
+                winnerItem.className = 'winner-item';
+                winnerItem.innerHTML = `
+                    <span>${userId}</span>
+                    <span class="winner-prize">${prize}</span>
+                `;
+                
+                fishWinnersList.appendChild(winnerItem);
+            }
+        }
+
+        // Update spin winners list
+        function updateSpinWinners() {
+            const spinPrizes = ["USDT 0.5", "BNB 0.1", "PEPE 5000", "LTC 0.05", "BTTC 10000", "LUNC 50000"];
+            const spinWinnersList = document.getElementById('spin-winners-list');
+            
+            // Shift winners up (remove first, add new at bottom)
+            if (spinWinnersList.children.length > 0) {
+                spinWinnersList.removeChild(spinWinnersList.children[0]);
+            }
+            
+            const randomPrefix = Math.random().toString(36).substr(2, 2);
+            const randomSuffix = Math.random().toString(36).substr(2, 2);
+            const randomMiddle = Math.random().toString(36).substr(2, 1);
+            const userId = `User_${randomPrefix}...${randomMiddle}${randomSuffix}`;
+            const prize = spinPrizes[Math.floor(Math.random() * spinPrizes.length)];
+            
+            const winnerItem = document.createElement('div');
+            winnerItem.className = 'winner-item';
+            winnerItem.innerHTML = `
+                <span>${userId}</span>
+                <span class="winner-prize">${prize}</span>
+            `;
+            
+            spinWinnersList.appendChild(winnerItem);
+        }
+
+        // Update fish winners list
+        function updateFishWinners() {
+            const fishPrizes = ["USDT 0.3", "BNB 0.2", "PEPE 10000", "LTC 0.1", "BTTC 20000", "LUNC 30000"];
+            const fishWinnersList = document.getElementById('fish-winners-list');
+            
+            // Shift winners up (remove first, add new at bottom)
+            if (fishWinnersList.children.length > 0) {
+                fishWinnersList.removeChild(fishWinnersList.children[0]);
+            }
+            
+            const randomPrefix = Math.random().toString(36).substr(2, 2);
+            const randomSuffix = Math.random().toString(36).substr(2, 2);
+            const randomMiddle = Math.random().toString(36).substr(2, 1);
+            const userId = `User_${randomPrefix}...${randomMiddle}${randomSuffix}`;
+            const prize = fishPrizes[Math.floor(Math.random() * fishPrizes.length)];
+            
+            const winnerItem = document.createElement('div');
+            winnerItem.className = 'winner-item';
+            winnerItem.innerHTML = `
+                <span>${userId}</span>
+                <span class="winner-prize">${prize}</span>
+            `;
+            
+            fishWinnersList.appendChild(winnerItem);
         }
 
         // Offer Verification System
@@ -479,73 +1120,77 @@
             currentOfferType = offerType;
             const url = offerLinks[offerType];
             
-            // Track offer start (in a real app, you would send this to your server)
             console.log(`Offer started: ${offerType} by ${userId}`);
             
-            // Open in external browser
             if (window.Telegram && Telegram.WebApp) {
                 Telegram.WebApp.openLink(url, {try_instant_view: false});
             } else {
                 window.open(url, '_blank');
             }
             
-            // Show verification section after delay
             setTimeout(() => {
                 document.getElementById(`${offerType}-verification-section`).style.display = 'block';
                 document.getElementById(`open-${offerType}-offer-button`).style.display = 'none';
-                updateVerificationStatus(offerType, 'Click "Verify Completion" after finishing the offer', 'status-loading');
-            }, 40000);
+                updateVerificationStatus(offerType, '<i class="fas fa-spinner fa-spin"></i> Please complete the offer and click "Verify Completion"', 'status-loading');
+            }, 2000);
         }
 
         function verifyCompletion(offerType) {
             const statusElement = document.getElementById(`${offerType}-verification-status`);
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Complete Task...';
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Complete Task...';
             statusElement.className = 'status-loading';
             
-            // In a real implementation, this would call your backend API
-            // For this demo, we'll simulate API call with 70% success rate
-            simulateApiCall(offerType)
-                .then(completed => {
-                    if (completed) {
-                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Verified! Ticket added to your account.';
-                        statusElement.className = 'status-success';
-                        
-                        if (offerType === 'spin') {
-                            completeSpinTask();
-                        } else {
-                            completeFishTask();
-                        }
-                        
-                        // Hide the content locker after 3 seconds
-                        setTimeout(() => {
-                            if (offerType === 'spin') {
-                                hideSpinContentLocker();
+            document.getElementById(`${offerType}-verify-button`).disabled = true;
+            
+            // Keep the 40-second timer but don't show it to the user
+            let secondsLeft = 40;
+            
+            const countdownInterval = setInterval(() => {
+                secondsLeft--;
+                
+                if (secondsLeft < 0) {
+                    clearInterval(countdownInterval);
+                    simulateApiCall(offerType)
+                        .then(completed => {
+                            if (completed) {
+                                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Verified! Ticket added to your account.';
+                                statusElement.className = 'status-success';
+                                
+                                if (offerType === 'spin') {
+                                    completeSpinTask();
+                                } else {
+                                    completeFishTask();
+                                }
+                                
+                                setTimeout(() => {
+                                    if (offerType === 'spin') {
+                                        hideSpinContentLocker();
+                                    } else {
+                                        hideFishContentLocker();
+                                    }
+                                }, 3000);
                             } else {
-                                hideFishContentLocker();
+                                statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Offer not completed yet. Please finish all steps.';
+                                statusElement.className = 'status-error';
+                                document.getElementById(`${offerType}-verify-button`).disabled = false;
                             }
-                        }, 3000);
-                    } else {
-                        statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Offer not completed yet. Please finish all steps.';
-                        statusElement.className = 'status-error';
-                    }
-                })
-                .catch(error => {
-                    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Verification failed. Please try again.';
-                    statusElement.className = 'status-error';
-                    console.error('Verification error:', error);
-                });
+                        })
+                        .catch(error => {
+                            statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Verification failed. Please try again.';
+                            statusElement.className = 'status-error';
+                            console.error('Verification error:', error);
+                            document.getElementById(`${offerType}-verify-button`).disabled = false;
+                        });
+                }
+            }, 1000);
         }
 
         function simulateApiCall(offerType) {
             return new Promise((resolve) => {
-                // Simulate network delay
                 setTimeout(() => {
-                    // For demo purposes, we'll assume 70% completion rate
                     const randomSuccess = Math.random() > 0.3;
-                    
-                    // In a real app, this would check your database for the conversion
                     console.log(`Checking completion for ${offerType} offer by ${userId}: ${randomSuccess ? 'Completed' : 'Not completed'}`);
-                    
                     resolve(randomSuccess);
                 }, 1500);
             });
@@ -553,7 +1198,7 @@
 
         function updateVerificationStatus(offerType, message, statusClass) {
             const statusElement = document.getElementById(`${offerType}-verification-status`);
-            statusElement.textContent = message;
+            statusElement.innerHTML = message;
             statusElement.className = statusClass || '';
         }
 
@@ -581,22 +1226,33 @@
         function resetVerificationUI(offerType) {
             document.getElementById(`${offerType}-verification-section`).style.display = 'none';
             document.getElementById(`open-${offerType}-offer-button`).style.display = 'inline-block';
-            document.getElementById(`${offerType}-verification-status`).textContent = '';
+            document.getElementById(`${offerType}-verification-status`).innerHTML = '';
             document.getElementById(`${offerType}-verification-status`).className = '';
         }
 
         function completeSpinTask() {
             spinTaskCompleted = true;
             spinTickets++;
-            document.getElementById("spin-tickets").textContent = spinTickets;
-            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
+            updateTicketDisplay();
+            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed"><i class="fas fa-check-circle"></i> Task completed! You earned 1 spin ticket.</span>';
+            
+            document.getElementById("spin-task-button").classList.add('success');
+            document.getElementById("spin-task-button").innerHTML = '<i class="fas fa-check"></i> TASK COMPLETED';
         }
 
         function completeFishTask() {
             fishTaskCompleted = true;
             fishTickets++;
+            updateTicketDisplay();
+            document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed"><i class="fas fa-check-circle"></i> Task completed! You earned 1 fishing ticket.</span>';
+            
+            document.getElementById("fish-task-button").classList.add('success');
+            document.getElementById("fish-task-button").innerHTML = '<i class="fas fa-check"></i> TASK COMPLETED';
+        }
+
+        function updateTicketDisplay() {
+            document.getElementById("spin-tickets").textContent = spinTickets;
             document.getElementById("fish-tickets").textContent = fishTickets;
-            document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
         }
 
         function hideSpinContentLocker() {
@@ -613,28 +1269,64 @@
                 alert("You need 1 spin ticket! Complete the task to earn tickets.");
                 return;
             }
+            
             spinTickets -= 1;
-            document.getElementById("spin-tickets").textContent = spinTickets;
+            updateTicketDisplay();
 
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800;
             wheel.style.transform = `rotate(${degrees}deg)`;
 
+            document.querySelector('.game-button[onclick="spinWheel()"]').disabled = true;
+            
             setTimeout(() => {
-                const actualDegrees = degrees % 360;
-                const winningSegment = Math.floor(actualDegrees / segmentDegree);
                 const resultCode = spinCodes[spins % spinCodes.length];
-                document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
+                document.getElementById("spin-result-code").textContent = resultCode;
+                document.getElementById("spin-result-container").style.display = "block";
                 document.getElementById("copy-code-button").style.display = "inline-block";
+                
                 spins++;
+                document.querySelector('.game-button[onclick="spinWheel()"]').disabled = false;
+                
+                if (spins % 3 === 0) {
+                    updateSpinWinners();
+                }
             }, 3000);
         }
 
         function copyResultCode() {
-            const resultText = document.getElementById("spin-result").innerText;
-            const resultCode = resultText.split("You won: ")[1].split("!")[0];
+            const resultCode = document.getElementById("spin-result-code").textContent;
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard");
+                const copyBtn = document.getElementById("copy-code-button");
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+                copyBtn.classList.add('success');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement("textarea");
+                textArea.value = resultCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const copyBtn = document.getElementById("copy-code-button");
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+                    copyBtn.classList.add('success');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> COPY CODE';
+                        copyBtn.classList.remove('success');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                    alert('Failed to copy code. Please try again.');
+                }
+                document.body.removeChild(textArea);
             });
         }
 
@@ -644,16 +1336,41 @@
                 alert("You need 1 fishing ticket! Complete the task to earn tickets.");
                 return;
             }
+            
             fishTickets -= 1;
-            document.getElementById("fish-tickets").textContent = fishTickets;
+            updateTicketDisplay();
 
             const fishPond = document.getElementById("fish-pond");
-            fishPond.innerHTML = "";
+            fishPond.innerHTML = '<div class="pond-decoration"></div>';
+            
+            for (let i = 0; i < 15; i++) {
+                createBubble();
+            }
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 8; i++) {
                 createFish(false);
             }
+            
             createFish(true);
+            
+            document.getElementById("fish-result-container").style.display = "none";
+        }
+
+        function createBubble() {
+            const pond = document.getElementById("fish-pond");
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            
+            const size = Math.random() * 10 + 5;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.bottom = `${Math.random() * 20}px`;
+            
+            bubble.style.animationDelay = `${Math.random() * 3}s`;
+            
+            pond.appendChild(bubble);
         }
 
         function createFish(isWinningFish) {
@@ -670,6 +1387,7 @@
             fish.style.top = `${Math.random() * 70 + 10}%`;
             fish.style.left = `-50px`;
             fish.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            fish.style.animationDelay = `${Math.random() * 0.5}s`;
 
             fish.addEventListener("click", () => catchFish(isWinningFish));
             fishPond.appendChild(fish);
@@ -678,20 +1396,56 @@
         function catchFish(isWinningFish) {
             if (isWinningFish) {
                 const resultCode = fishCodes[fishCaught % fishCodes.length];
-                document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
+                document.getElementById("fish-result-code").textContent = resultCode;
+                document.getElementById("fish-result-container").style.display = "block";
                 document.getElementById("copy-code-button-fish").style.display = "inline-block";
                 fishCaught++;
+                
+                document.querySelectorAll('.fish').forEach(fish => fish.remove());
+                
+                if (fishCaught % 2 === 0) {
+                    updateFishWinners();
+                }
             } else {
-                document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
+                document.getElementById("fish-result-code").textContent = "🐟 Try again! Find the golden fish 🎣";
+                document.getElementById("fish-result-container").style.display = "block";
                 document.getElementById("copy-code-button-fish").style.display = "none";
             }
         }
 
         function copyResultCodeFish() {
-            const resultText = document.getElementById("catch-result").innerText;
-            const resultCode = resultText.split("Code: ")[1];
+            const resultCode = document.getElementById("fish-result-code").textContent;
             navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard");
+                const copyBtn = document.getElementById("copy-code-button-fish");
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+                copyBtn.classList.add('success');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement("textarea");
+                textArea.value = resultCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const copyBtn = document.getElementById("copy-code-button-fish");
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> COPIED!';
+                    copyBtn.classList.add('success');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> COPY CODE';
+                        copyBtn.classList.remove('success');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                    alert('Failed to copy code. Please try again.');
+                }
+                document.body.removeChild(textArea);
             });
         }
 
@@ -699,10 +1453,28 @@
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
+            
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (pageId === 'spin-game') {
+                document.querySelector('.nav-button:nth-child(1)').classList.add('active');
+            } else {
+                document.querySelector('.nav-button:nth-child(2)').classList.add('active');
+            }
         }
 
         // Initialize
         showPage('spin-game');
+        startCountdown();
+        generateRandomWinners();
+        
+        if (document.getElementById('fish-pond')) {
+            for (let i = 0; i < 10; i++) {
+                createBubble();
+            }
+        }
     </script>
 </body>
 </html>
