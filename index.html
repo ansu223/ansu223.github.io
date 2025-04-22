@@ -209,111 +209,27 @@
             border-radius: 8px;
         }
 
-        /* Content Locker Styles */
-        .content-locker {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .content-locker h2 {
-            color: #fff;
-            margin-bottom: 20px;
-        }
-        
-        .content-locker p {
-            color: #ddd;
-            margin-bottom: 30px;
-            max-width: 80%;
-        }
-        
-        .verification-steps {
-            background: #333;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            width: 80%;
-        }
-        
-        .step {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            color: #fff;
-        }
-        
-        .step-number {
-            background: #4CAF50;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        
-        .content-locker .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        .verify-button {
+        /* Verify Button Styles */
+        .verify-completion-button {
             background-color: #FFA500;
             color: white;
             border: none;
-            padding: 12px 24px;
-            margin-top: 10px;
+            padding: 10px 20px;
+            margin: 10px 0;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            display: none;
+            width: 100%;
             transition: background-color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        .verify-button:hover {
+        .verify-completion-button:hover {
             background-color: #FF8C00;
         }
         
-        .verify-button:disabled {
-            background-color: #777;
-            cursor: not-allowed;
-        }
-        
-        #verification-status {
-            margin-top: 20px;
-            min-height: 24px;
-            font-size: 14px;
-        }
-        
-        .status-success {
-            color: #4CAF50;
-        }
-        
-        .status-error {
-            color: #f44336;
-        }
-        
-        .status-loading {
-            color: #FFA500;
+        .verify-completion-button i {
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -340,8 +256,11 @@
         <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <button class="task-button" id="spin-task-button" onclick="showSpinContentLocker()">✅ Earn Spin Tickets</button>
-        <p id="spin-task-progress">Complete the Survey to earn 1 spin ticket</p>
+        <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">✅ Earn Spin Tickets</button>
+        <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
+            <i class="fas fa-check-circle"></i> Verify Completion
+        </button>
+        <p id="spin-task-progress">Complete the survey and return to verify For ticket.</p>
     </div>
 
     <!-- Fish Game -->
@@ -364,63 +283,6 @@
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
     </div>
 
-    <!-- Content Lockers -->
-    <div id="spin-content-locker" class="content-locker">
-        <div class="close-button" onclick="hideSpinContentLocker()">✕</div>
-        <h2>Complete Offer to Earn Spin Tickets</h2>
-        
-        <div class="verification-steps">
-            <div class="step">
-                <span class="step-number">1</span>
-                <span>"Complete the survey, then return here to verify and claim your ticket!"</spa
-            </div>
-        </div>
-        
-        <button id="open-spin-offer-button" class="verify-button" onclick="openOffer('spin')">
-            <i class="fas fa-external-link-alt"></i> Open Offer
-        </button>
-        
-        <div id="spin-verification-section" style="display: none; margin-top: 20px;">
-            <button id="spin-verify-button" class="verify-button" onclick="verifyCompletion('spin')">
-                <i class="fas fa-check-circle"></i> Verify Completion
-            </button>
-        </div>
-        
-        <div id="spin-verification-status" class="verification-status"></div>
-    </div>
-
-    <div id="fish-content-locker" class="content-locker">
-        <div class="close-button" onclick="hideFishContentLocker()">✕</div>
-        <h2>Complete Offer to Earn Fishing Tickets</h2>
-        
-        <div class="verification-steps">
-            <div class="step">
-                <span class="step-number">1</span>
-                <span>Click below to open the offer in your browser</span>
-            </div>
-            <div class="step">
-                <span class="step-number">2</span>
-                <span>Complete all required steps in the offer</span>
-            </div>
-            <div class="step">
-                <span class="step-number">3</span>
-                <span>Return here and verify completion</span>
-            </div>
-        </div>
-        
-        <button id="open-fish-offer-button" class="verify-button" onclick="openOffer('fish')">
-            <i class="fas fa-external-link-alt"></i> Open Offer
-        </button>
-        
-        <div id="fish-verification-section" style="display: none; margin-top: 20px;">
-            <button id="fish-verify-button" class="verify-button" onclick="verifyCompletion('fish')">
-                <i class="fas fa-check-circle"></i> Verify Completion
-            </button>
-        </div>
-        
-        <div id="fish-verification-status" class="verification-status"></div>
-    </div>
-
     <!-- Navigation Bar -->
     <div class="navbar">
         <button onclick="showPage('spin-game')"><i class="fas fa-sync-alt"></i> Spin</button>
@@ -435,10 +297,11 @@
         let fishCaught = 0;
         let spinTaskCompleted = false;
         let fishTaskCompleted = false;
+        let spinOfferStarted = false;
         
         // Reward Codes
         const spinCodes = [
-            "CEENZC5W", "LDL9BR5Q", "V15KWB88", "BPGI76V857", "LUN0SVQT", 
+            "2CKEF8MG", "LDL9BR5Q", "V15KWB88", "BPGI76V857", "LUN0SVQT", 
             "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE"
         ];
 
@@ -459,130 +322,83 @@
 
         // Generate unique user ID
         const userId = generateUserId();
-        let currentOfferType = '';
         
         function generateUserId() {
-            // Use Telegram user ID if available, otherwise generate random
-            if (window.Telegram && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
-                return Telegram.WebApp.initDataUnsafe.user.id;
-            }
-            return 'web_' + Math.random().toString(36).substr(2, 9);
+            return 'user_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Offer Verification System
-        const offerLinks = {
-            spin: "https://areyourealhuman.com/sl/4lrv9?pub=YOUR_ID&sub=SPIN_" + userId,
-            fish: "https://areyourealhuman.com/sl/4lrv9?pub=YOUR_ID&sub=FISH_" + userId
-        };
-
-        function openOffer(offerType) {
-            currentOfferType = offerType;
-            const url = offerLinks[offerType];
-            
-            // Track offer start (in a real app, you would send this to your server)
-            console.log(`Offer started: ${offerType} by ${userId}`);
-            
-            // Open in external browser
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(url, {try_instant_view: false});
-            } else {
-                window.open(url, '_blank');
-            }
-            
-            // Show verification section after delay
-            setTimeout(() => {
-                document.getElementById(`${offerType}-verification-section`).style.display = 'block';
-                document.getElementById(`open-${offerType}-offer-button`).style.display = 'none';
-                updateVerificationStatus(offerType, 'Click "Verify Completion" after finishing the offer', 'status-loading');
-            }, 40000);
-        }
-
-        function verifyCompletion(offerType) {
-            const statusElement = document.getElementById(`${offerType}-verification-status`);
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-            statusElement.className = 'status-loading';
-            
-            // In a real implementation, this would call your backend API
-            // For this demo, we'll simulate API call with 70% success rate
-            simulateApiCall(offerType)
-                .then(completed => {
-                    if (completed) {
-                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Verified! Ticket added to your account.';
-                        statusElement.className = 'status-success';
-                        
-                        if (offerType === 'spin') {
-                            completeSpinTask();
-                        } else {
-                            completeFishTask();
-                        }
-                        
-                        // Hide the content locker after 3 seconds
-                        setTimeout(() => {
-                            if (offerType === 'spin') {
-                                hideSpinContentLocker();
-                            } else {
-                                hideFishContentLocker();
-                            }
-                        }, 3000);
-                    } else {
-                        statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Offer not completed yet. Please finish all steps.';
-                        statusElement.className = 'status-error';
-                    }
-                })
-                .catch(error => {
-                    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Verification failed. Please try again.';
-                    statusElement.className = 'status-error';
-                    console.error('Verification error:', error);
-                });
-        }
-
-        function simulateApiCall(offerType) {
-            return new Promise((resolve) => {
-                // Simulate network delay
-                setTimeout(() => {
-                    // For demo purposes, we'll assume 70% completion rate
-                    const randomSuccess = Math.random() > 0.3;
-                    
-                    // In a real app, this would check your database for the conversion
-                    console.log(`Checking completion for ${offerType} offer by ${userId}: ${randomSuccess ? 'Completed' : 'Not completed'}`);
-                    
-                    resolve(randomSuccess);
-                }, 1500);
-            });
-        }
-
-        function updateVerificationStatus(offerType, message, statusClass) {
-            const statusElement = document.getElementById(`${offerType}-verification-status`);
-            statusElement.textContent = message;
-            statusElement.className = statusClass || '';
-        }
-
-        // Content Locker Functions
-        function showSpinContentLocker() {
+        function startSpinOffer() {
             if (spinTaskCompleted) {
                 alert("You've already completed the spin task!");
                 return;
             }
             
-            document.getElementById('spin-content-locker').style.display = 'flex';
-            resetVerificationUI('spin');
-        }
-
-        function showFishContentLocker() {
-            if (fishTaskCompleted) {
-                alert("You've already completed the fishing task!");
-                return;
+            if (!spinOfferStarted) {
+                spinOfferStarted = true;
+                openOffer('spin');
+                
+                // Show verification button after 40 seconds
+                setTimeout(() => {
+                    document.getElementById('verify-spin-button').style.display = 'block';
+                    document.getElementById('spin-task-progress').innerHTML = 
+                        'Finished the offer? Click "Verify Completion" below!';
+                }, 40000);
+                
+                document.getElementById('spin-task-progress').innerHTML = 
+                    'Offer opened! Complete the survey and return to verify For ticket.';
+            } else {
+                alert("Please complete the Survey first and wait for verification.");
             }
-            
-            document.getElementById('fish-content-locker').style.display = 'flex';
-            resetVerificationUI('fish');
         }
 
-        function resetVerificationUI(offerType) {
-            document.getElementById(`${offerType}-verification-section`).style.display = 'none';
-            document.getElementById(`open-${offerType}-offer-button`).style.display = 'inline-block';
-            document.getElementById(`${offerType}-verification-status`).textContent = '';
-            document.getElementById(`${offerType}-verification-status`).className = '';
+        function openOffer(offerType) {
+            // Replace with your actual offer URL
+            const url = "https://areyourealhuman.com/sl/0m5zj?user=" + userId + "&type=" + offerType;
+            
+            console.log(`Opening offer: ${url}`);
+            
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.openLink(url, {try_instant_view: false});
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function verifyCompletion(offerType) {
+            const verifyButton = document.getElementById(`verify-${offerType}-button`);
+            
+            verifyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            verifyButton.disabled = true;
+            
+            // Simulate API verification (replace with real API call)
+            setTimeout(() => {
+                // For demo purposes, we'll assume 70% success rate
+                const isSuccess = Math.random() > 0.3;
+                
+                if (isSuccess) {
+                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
+                    verifyButton.style.backgroundColor = '#4CAF50';
+                    
+                    if (offerType === 'spin') {
+                        completeSpinTask();
+                        setTimeout(() => {
+                            verifyButton.style.display = 'none';
+                            verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                            verifyButton.style.backgroundColor = '#FFA500';
+                            verifyButton.disabled = false;
+                            spinOfferStarted = false;
+                        }, 2000);
+                    }
+                } else {
+                    verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Try Again';
+                    verifyButton.style.backgroundColor = '#f44336';
+                    setTimeout(() => {
+                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                        verifyButton.style.backgroundColor = '#FFA500';
+                        verifyButton.disabled = false;
+                    }, 2000);
+                }
+            }, 1500);
         }
 
         function completeSpinTask() {
@@ -597,14 +413,6 @@
             fishTickets++;
             document.getElementById("fish-tickets").textContent = fishTickets;
             document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
-        }
-
-        function hideSpinContentLocker() {
-            document.getElementById('spin-content-locker').style.display = 'none';
-        }
-
-        function hideFishContentLocker() {
-            document.getElementById('fish-content-locker').style.display = 'none';
         }
 
         // Spin Game Functions
