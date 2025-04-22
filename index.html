@@ -209,7 +209,6 @@
             border-radius: 8px;
         }
 
-        /* Verify Button Styles */
         .verify-completion-button {
             background-color: #FFA500;
             color: white;
@@ -230,6 +229,21 @@
         
         .verify-completion-button i {
             margin-right: 8px;
+        }
+        
+        .code-display {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 18px;
+            word-break: break-all;
+        }
+        
+        .offer-opened {
+            color: #FFA500;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -253,14 +267,15 @@
             </div>
         </div>
         <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
-        <p id="spin-result"></p>
+        <div id="spin-result"></div>
+        <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
         <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">✅ Earn Spin Tickets</button>
         <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
             <i class="fas fa-check-circle"></i> Verify Completion
         </button>
-        <p id="spin-task-progress">Complete the survey and return to verify For ticket.</p>
+        <p id="spin-task-progress">Click "Earn Spin Tickets" to start an offer</p>
     </div>
 
     <!-- Fish Game -->
@@ -276,10 +291,14 @@
 
         <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
-        <button class="task-button" id="fish-task-button" onclick="showFishContentLocker()">✅ Earn Fishing Tickets</button>
+        <button class="task-button" id="fish-task-button" onclick="startFishOffer()">✅ Earn Fishing Tickets</button>
+        <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
+            <i class="fas fa-check-circle"></i> Verify Completion
+        </button>
         <p id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
         
-        <p id="catch-result"></p>
+        <div id="catch-result"></div>
+        <div id="fish-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
     </div>
 
@@ -295,9 +314,10 @@
         let fishTickets = 0;
         let spins = 0;
         let fishCaught = 0;
-        let spinTaskCompleted = false;
-        let fishTaskCompleted = false;
         let spinOfferStarted = false;
+        let fishOfferStarted = false;
+        let currentSpinCode = '';
+        let currentFishCode = '';
         
         // Reward Codes
         const spinCodes = [
@@ -328,23 +348,33 @@
         }
 
         function startSpinOffer() {
-            if (spinTaskCompleted) {
-                alert("You've already completed the spin task!");
-                return;
-            }
+            spinOfferStarted = true;
+            openOffer('spin');
             
-            if (!spinOfferStarted) {
-                spinOfferStarted = true;
-                openOffer('spin');
-                
-                // Show verification button after 40 seconds
-                setTimeout(() => {
-                    document.getElementById('verify-spin-button').style.display = 'block';
-                    document.getElementById('spin-task-progress').innerHTML = 
-                        'Finished the offer? Click "Verify Completion" below!';
-                }, 40000);
-                
+            // Show verification button after 35 seconds
+            setTimeout(() => {
+                document.getElementById('verify-spin-button').style.display = 'block';
                 document.getElementById('spin-task-progress').innerHTML = 
+                    '<span class="offer-opened">Offer opened! Click "Verify Completion" below when done.</span>';
+            }, 35000);
+            
+            document.getElementById('spin-task-progress').innerHTML = 
+                '<span class="offer-opened">Opening offer... Please complete the survey for ticket.</span>';
+        }
+        
+        function startFishOffer() {
+            if (!fishOfferStarted) {
+                fishOfferStarted = true;
+                openOffer('fish');
+                
+                // Show verification button after 35 seconds
+                setTimeout(() => {
+                    document.getElementById('verify-fish-button').style.display = 'block';
+                    document.getElementById('fish-task-progress').innerHTML = 
+                        'Finished the offer? Click "Verify Completion" below!';
+                }, 35000);
+                
+                document.getElementById('fish-task-progress').innerHTML = 
                     'Offer opened! Complete the survey for ticket.';
             } else {
                 alert("Please complete the Survey first and wait for verification.");
@@ -380,13 +410,30 @@
                     verifyButton.style.backgroundColor = '#4CAF50';
                     
                     if (offerType === 'spin') {
-                        completeSpinTask();
+                        spinTickets++;
+                        document.getElementById("spin-tickets").textContent = spinTickets;
+                        document.getElementById("spin-task-progress").innerHTML = 
+                            '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
+                        
                         setTimeout(() => {
                             verifyButton.style.display = 'none';
                             verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
                             verifyButton.style.backgroundColor = '#FFA500';
                             verifyButton.disabled = false;
                             spinOfferStarted = false;
+                        }, 2000);
+                    } else if (offerType === 'fish') {
+                        fishTickets++;
+                        document.getElementById("fish-tickets").textContent = fishTickets;
+                        document.getElementById("fish-task-progress").innerHTML = 
+                            '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
+                        
+                        setTimeout(() => {
+                            verifyButton.style.display = 'none';
+                            verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                            verifyButton.style.backgroundColor = '#FFA500';
+                            verifyButton.disabled = false;
+                            fishOfferStarted = false;
                         }, 2000);
                     }
                 } else {
@@ -399,20 +446,6 @@
                     }, 2000);
                 }
             }, 1500);
-        }
-
-        function completeSpinTask() {
-            spinTaskCompleted = true;
-            spinTickets++;
-            document.getElementById("spin-tickets").textContent = spinTickets;
-            document.getElementById("spin-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
-        }
-
-        function completeFishTask() {
-            fishTaskCompleted = true;
-            fishTickets++;
-            document.getElementById("fish-tickets").textContent = fishTickets;
-            document.getElementById("fish-task-progress").innerHTML = '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
         }
 
         // Spin Game Functions
@@ -431,19 +464,48 @@
             setTimeout(() => {
                 const actualDegrees = degrees % 360;
                 const winningSegment = Math.floor(actualDegrees / segmentDegree);
-                const resultCode = spinCodes[spins % spinCodes.length];
-                document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
+                currentSpinCode = spinCodes[spins % spinCodes.length];
+                
+                document.getElementById("spin-result").innerHTML = `You won: <strong>${currentSpinCode}</strong>! 😊`;
+                document.getElementById("spin-code-display").textContent = currentSpinCode;
+                document.getElementById("spin-code-display").style.display = "block";
                 document.getElementById("copy-code-button").style.display = "inline-block";
                 spins++;
             }, 3000);
         }
 
         function copyResultCode() {
-            const resultText = document.getElementById("spin-result").innerText;
-            const resultCode = resultText.split("You won: ")[1].split("!")[0];
-            navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard");
-            });
+            if (!currentSpinCode) {
+                alert("No code available to copy");
+                return;
+            }
+            
+            // Create a temporary textarea element
+            const textarea = document.createElement('textarea');
+            textarea.value = currentSpinCode;
+            textarea.style.position = 'fixed';  // Prevent scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                // Try to copy using modern clipboard API
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const copyButton = document.getElementById("copy-code-button");
+                    copyButton.innerHTML = '✓ Copied!';
+                    copyButton.style.backgroundColor = '#4CAF50';
+                    setTimeout(() => {
+                        copyButton.innerHTML = '📋 Copy Code';
+                        copyButton.style.backgroundColor = '#ffffff';
+                    }, 2000);
+                } else {
+                    fallbackCopy(currentSpinCode);
+                }
+            } catch (err) {
+                fallbackCopy(currentSpinCode);
+            } finally {
+                document.body.removeChild(textarea);
+            }
         }
 
         // Fish Game Functions
@@ -485,22 +547,64 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                const resultCode = fishCodes[fishCaught % fishCodes.length];
-                document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
+                currentFishCode = fishCodes[fishCaught % fishCodes.length];
+                document.getElementById("catch-result").innerHTML = `🎉 You Caught a Winning Fish! Code: <strong>${currentFishCode}</strong>`;
+                document.getElementById("fish-code-display").textContent = currentFishCode;
+                document.getElementById("fish-code-display").style.display = "block";
                 document.getElementById("copy-code-button-fish").style.display = "inline-block";
                 fishCaught++;
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
+                document.getElementById("fish-code-display").style.display = "none";
                 document.getElementById("copy-code-button-fish").style.display = "none";
             }
         }
 
         function copyResultCodeFish() {
-            const resultText = document.getElementById("catch-result").innerText;
-            const resultCode = resultText.split("Code: ")[1];
-            navigator.clipboard.writeText(resultCode).then(() => {
-                alert("Code copied to clipboard");
-            });
+            if (!currentFishCode) {
+                alert("No code available to copy");
+                return;
+            }
+            
+            // Create a temporary textarea element
+            const textarea = document.createElement('textarea');
+            textarea.value = currentFishCode;
+            textarea.style.position = 'fixed';  // Prevent scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                // Try to copy using modern clipboard API
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const copyButton = document.getElementById("copy-code-button-fish");
+                    copyButton.innerHTML = '✓ Copied!';
+                    copyButton.style.backgroundColor = '#4CAF50';
+                    setTimeout(() => {
+                        copyButton.innerHTML = '📋 Copy Code';
+                        copyButton.style.backgroundColor = '#ffffff';
+                    }, 2000);
+                } else {
+                    fallbackCopy(currentFishCode);
+                }
+            } catch (err) {
+                fallbackCopy(currentFishCode);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function fallbackCopy(text) {
+            // Fallback method for browsers that don't support clipboard API
+            try {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert("Code copied to clipboard!");
+                }).catch(err => {
+                    prompt("Please copy this code manually:", text);
+                });
+            } catch (err) {
+                prompt("Please copy this code manually:", text);
+            }
         }
 
         // Navigation
