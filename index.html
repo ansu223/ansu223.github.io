@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Double Game App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Game App</title>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Adsgram Video Ads SDK -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +16,6 @@
             color: #fff;
             margin: 0;
             padding: 0;
-            padding-bottom: 60px;
         }
 
         .navbar {
@@ -49,26 +51,19 @@
             margin: 20px auto;
             padding: 20px;
             max-width: 400px;
-            background-color: #222;
+            background-color: #333030;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             color: #fff;
         }
 
-        /* Spin Game Styles */
-        .wheel-container {
-            position: relative;
-            margin: 20px auto;
-            width: 230px;
-            height: 230px;
-        }
-
         .wheel {
-            width: 100%;
-            height: 100%;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             border: 5px solid #fff;
             position: relative;
+            margin: 20px auto;
             background: conic-gradient(
                 #ff0000 0deg 60deg,
                 #33cc33 60deg 120deg,
@@ -81,6 +76,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
@@ -112,10 +112,42 @@
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
             border-bottom: 20px solid #fff;
-            z-index: 10;
         }
 
-        /* Fish Game Styles */
+        .spin-button, .cast-button {
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        .spin-button:hover, .cast-button:hover {
+            background-color: #2dd60c;
+        }
+
+        #spin-result, #catch-result {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        #copy-code-button, #copy-code-button-fish {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #ad-progress, #ad-progress-fish {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #fff;
+        }
+
         .fish-pond {
             width: 100%;
             height: 200px;
@@ -145,59 +177,24 @@
             100% { left: 100%; }
         }
 
-        /* Common Button Styles */
-        .spin-button, .cast-button {
-            background-color: #ffffff;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+        .leaderboard {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1c6e8c;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
-            margin: 5px;
         }
 
-        .spin-button:hover, .cast-button:hover {
-            background-color: #2dd60c;
+        .leaderboard h3 {
+            margin: 0;
         }
 
-        #spin-result, #catch-result {
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
+        .leaderboard ul {
+            list-style: none;
+            padding: 0;
         }
 
-        #copy-code-button, #copy-code-button-fish {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .task-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        .leaderboard li {
             margin: 5px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .task-button:hover {
-            background-color: #45a049;
-        }
-        
-        .task-completed {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        .ticket-count {
-            font-size: 18px;
-            margin: 10px 0;
-            color: gold;
         }
         
         .spin-notice {
@@ -208,57 +205,15 @@
             background-color: rgba(255, 215, 0, 0.1);
             border-radius: 8px;
         }
-
-        .verify-completion-button {
-            background-color: #FFA500;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 10px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            display: none;
-            width: 100%;
-            transition: background-color 0.3s;
+        
+        .ad-loading {
+            background-color: #ffcc00 !important;
+            color: #000 !important;
         }
         
-        .verify-completion-button:hover {
-            background-color: #FF8C00;
-        }
-        
-        .verify-completion-button i {
-            margin-right: 8px;
-        }
-        
-        .code-display {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-family: monospace;
-            font-size: 18px;
-            word-break: break-all;
-        }
-        
-        .offer-opened {
-            color: #FFA500;
-            font-weight: bold;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .ad-error {
+            background-color: #ff3333 !important;
+            color: #fff !important;
         }
     </style>
 </head>
@@ -268,7 +223,8 @@
         <h3>🎡 Spin & Win Crypto 🎡</h3>
         <p>Spin the wheel to earn crypto rewards!</p>
 
-        <div class="ticket-count">Your Spin Tickets: <span id="spin-tickets">0</span></div>
+        <p>Your Tickets: <span id="tickets">0</span></p>
+        <!-- Added the notice text here -->
         <div class="spin-notice">🔥 Every spin gives you a new unique crypto code! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -281,16 +237,21 @@
                 <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
-        <button class="spin-button" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
-        <div id="spin-result"></div>
-        <div id="spin-code-display" class="code-display" style="display: none;"></div>
+        <button class="spin-button" onclick="spinWheel()" aria-label="Spin the wheel to win crypto">🎰 Spin Now (1 Ticket)</button>
+        <p id="spin-result"></p>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
-        
-        <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">✅ Earn Spin Tickets</button>
-        <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
-            <i class="fas fa-check-circle"></i> Verify Completion
-        </button>
-        <p id="spin-task-progress">Complete the survey to earn 1 Spin Ticket</p>
+        <button id="watch-ad-button" class="spin-button" onclick="watchAdForTicket()">🎥 Watch Ad for Ticket</button>
+
+        <!-- Ad Progress -->
+        <p id="ad-progress">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count">0</span>/5</p>
+
+        <!-- Invite Friend Section -->
+        <div class="invite-link">
+            <p>Invite a friend to earn tickets!</p>
+            <button class="spin-button" onclick="shareOnTelegram()">📤 Share on Telegram</button>
+        </div>
+
+        <p id="code-box" style="display: none;">🎁 Q8POG9XP 🎁</p>
     </div>
 
     <!-- Fish Game -->
@@ -298,23 +259,25 @@
         <h1>🎣 Fishing for Crypto 🎣</h1>
         <p>Catch fish to earn crypto codes!</p>
 
-        <div class="ticket-count">Your Fishing Tickets: <span id="fish-tickets">0</span></div>
-
         <div class="fish-pond" id="fish-pond">
             <!-- Fish will appear here dynamically -->
         </div>
 
-        <button class="cast-button" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
-        
-        <button class="task-button" id="fish-task-button" onclick="startFishOffer()">✅ Earn Fishing Tickets</button>
-        <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
-            <i class="fas fa-check-circle"></i> Verify Completion
-        </button>
-        <p id="fish-task-progress">Complete the task to earn 1 fishing ticket</p>
-        
-        <div id="catch-result"></div>
-        <div id="fish-code-display" class="code-display" style="display: none;"></div>
+        <button class="cast-button" onclick="castLine()" aria-label="Cast a line to catch fish">🎣 Cast Line Now (1 Ticket)</button>
+        <button id="watch-ad-button-fish" class="cast-button" onclick="watchAdForTicketFish()">🎥 Watch Ad for Ticket</button>
+
+        <p>Your Tickets: <span id="tickets-fish">0</span></p>
+        <p id="ad-progress-fish">Watch 5 ads to earn 1 ticket. Progress: <span id="ad-count-fish">0</span>/5</p>
+        <p id="catch-result"></p>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+            <h3>🏅 Leaderboard</h3>
+            <ul id="leaderboard-list">
+                <!-- Leaderboard entries will be dynamically added here -->
+            </ul>
+        </div>
     </div>
 
     <!-- Navigation Bar -->
@@ -324,25 +287,30 @@
     </div>
 
     <script>
-        // Game State
-        let spinTickets = 0;
-        let fishTickets = 0;
-        let spins = 0;
-        let fishCaught = 0;
-        let spinOfferStarted = false;
-        let fishOfferStarted = false;
-        let currentSpinCode = '';
-        let currentFishCode = '';
+        // Initialize Adsgram
+        let AdController;
+        try {
+            AdController = window.Adsgram ? window.Adsgram.init({ blockId: "int-10213" }) : null;
+        } catch (e) {
+            console.error("Failed to initialize Adsgram:", e);
+            AdController = null;
+        }
         
-        // Reward Codes
+        let tickets = 0;
+        let ticketsFish = 0;
+        let spins = 0;
+        let adCount = 0;
+        let adCountFish = 0;
+        let fishCaught = 0;
+        let isFishGameActive = true;
+
         const spinCodes = [
-            "2CKEF8MG", "BOMSXEBS", "RRFHNP7Q", "BPGI76V857", "LUN0SVQT", 
-            "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE"
+            "KC10YNMC", "FQO4S3RS", "NKEU6AEU", "BPGI76V857", "QXHNCQJ5", 
+            "P3AROEB6", "73OTSJXL", "Y87K92F1", "74X1WNWL", "4VJXB3GD"
         ];
 
         const fishCodes = [
-            "BPGI76V857", "EO31DXWS", "FISHCODE3", "FISHCODE4", "FISHCODE5",
-            "FISHCODE6", "FISHCODE7", "FISHCODE8", "FISHCODE9", "FISHCODE10"
+            "BPGI76V857", // Only this code will be shown in the fish game
         ];
 
         const fishTypes = [
@@ -355,154 +323,14 @@
         const segments = 6;
         const segmentDegree = 360 / segments;
 
-        // Generate unique user ID
-        const userId = generateUserId();
-        const postbackUrl = "https://website.com/postback.php";
-        
-        function generateUserId() {
-            return 'user_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        function startSpinOffer() {
-            spinOfferStarted = true;
-            openOffer('spin');
-            
-            // Show verification button after 35 seconds
-            setTimeout(() => {
-                document.getElementById('verify-spin-button').style.display = 'block';
-                document.getElementById('spin-task-progress').innerHTML = 
-                    '<span class="offer-opened">Offer opened! Click "Verify Completion" below when done.</span>';
-            }, 35000);
-            
-            document.getElementById('spin-task-progress').innerHTML = 
-                '<span class="offer-opened">Opening offer... Please complete the survey for ticket.</span>';
-        }
-        
-        function startFishOffer() {
-            if (!fishOfferStarted) {
-                fishOfferStarted = true;
-                openOffer('fish');
-                
-                // Show verification button after 35 seconds
-                setTimeout(() => {
-                    document.getElementById('verify-fish-button').style.display = 'block';
-                    document.getElementById('fish-task-progress').innerHTML = 
-                        'Finished the offer? Click "Verify Completion" below!';
-                }, 35000);
-                
-                document.getElementById('fish-task-progress').innerHTML = 
-                    'Offer opened! Complete the survey for ticket.';
-            } else {
-                alert("Please complete the Survey first and wait for verification.");
-            }
-        }
-
-        function openOffer(offerType) {
-            // Replace with your actual offer URL
-            const url = "https://areyourealhuman.com/sl/0m5zj?user=" + userId + "&type=" + offerType;
-            
-            console.log(`Opening offer: ${url}`);
-            
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(url, {try_instant_view: false});
-            } else {
-                window.open(url, '_blank');
-            }
-        }
-
-        async function verifyCompletion(offerType) {
-            const verifyButton = document.getElementById(`verify-${offerType}-button`);
-            const progressElement = document.getElementById(`${offerType}-task-progress`);
-            
-            verifyButton.innerHTML = '<div class="loading-spinner"></div> Verifying...';
-            verifyButton.disabled = true;
-            
-            try {
-                // Generate offer details
-                const offerId = `${offerType}_offer_${Date.now()}`;
-                const payout = offerType === 'spin' ? 0.50 : 0.75;
-                const ip = await getUserIP();
-                
-                // Make postback request
-                const response = await fetch(`${postbackUrl}?id=${offerId}&payout=${payout}&ip=${ip}&user=${userId}`);
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    // Grant reward to user
-                    if (offerType === 'spin') {
-                        spinTickets++;
-                        document.getElementById("spin-tickets").textContent = spinTickets;
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
-                    } else if (offerType === 'fish') {
-                        fishTickets++;
-                        document.getElementById("fish-tickets").textContent = fishTickets;
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
-                    }
-                    
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
-                    verifyButton.style.backgroundColor = '#4CAF50';
-                    
-                    setTimeout(() => {
-                        verifyButton.style.display = 'none';
-                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                        verifyButton.style.backgroundColor = '#FFA500';
-                        verifyButton.disabled = false;
-                        if (offerType === 'spin') spinOfferStarted = false;
-                        if (offerType === 'fish') fishOfferStarted = false;
-                    }, 2000);
-                } else {
-                    throw new Error('Verification failed');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Try Again';
-                verifyButton.style.backgroundColor = '#f44336';
-                progressElement.innerHTML = 'Verification failed. Please try again.';
-                
-                setTimeout(() => {
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                    verifyButton.style.backgroundColor = '#FFA500';
-                    verifyButton.disabled = false;
-                }, 2000);
-            }
-        }
-
-        // Helper function to get user IP
-        function getUserIP() {
-            return new Promise((resolve) => {
-                // Try using WebRTC to get local IP (for demo purposes)
-                if (window.RTCPeerConnection) {
-                    const pc = new RTCPeerConnection({iceServers:[]});
-                    pc.createDataChannel("");
-                    pc.createOffer().then(o=>pc.setLocalDescription(o)).catch(e=>{});
-                    pc.onicecandidate = (ice) => {
-                        if (ice && ice.candidate && ice.candidate.candidate) {
-                            const myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
-                            resolve(myIP);
-                            pc.onicecandidate = () => {};
-                        }
-                    };
-                } else {
-                    resolve('unknown');
-                }
-            });
-        }
-
         // Spin Game Functions
         function spinWheel() {
-            if (spinTickets < 1) {
-                alert("You need 1 spin ticket! Complete the task to earn tickets.");
+            if (tickets < 1) {
+                alert("You need 1 ticket to spin!");
                 return;
             }
-            spinTickets -= 1;
-            document.getElementById("spin-tickets").textContent = spinTickets;
+            tickets -= 1;
+            document.getElementById("tickets").innerText = tickets;
 
             const wheel = document.getElementById("wheel");
             const degrees = Math.floor(Math.random() * 3600) + 1800;
@@ -511,66 +339,110 @@
             setTimeout(() => {
                 const actualDegrees = degrees % 360;
                 const winningSegment = Math.floor(actualDegrees / segmentDegree);
-                currentSpinCode = spinCodes[spins % spinCodes.length];
-                
-                document.getElementById("spin-result").innerHTML = `You won: <strong>${currentSpinCode}</strong>! 😊`;
-                document.getElementById("spin-code-display").textContent = currentSpinCode;
-                document.getElementById("spin-code-display").style.display = "block";
+                const resultCode = spinCodes[spins % spinCodes.length];
+                document.getElementById("spin-result").innerText = `You won: ${resultCode}! 😊`;
                 document.getElementById("copy-code-button").style.display = "inline-block";
                 spins++;
+
+                if (spins >= 10) {
+                    document.getElementById("code-box").style.display = "block";
+                }
             }, 3000);
         }
 
         function copyResultCode() {
-            if (!currentSpinCode) {
-                alert("No code available to copy");
-                return;
+            const resultText = document.getElementById("spin-result").innerText;
+            const resultCode = resultText.split("You won: ")[1].split("!")[0];
+            navigator.clipboard.writeText(resultCode).then(() => {
+                alert("Code copied to clipboard: " + resultCode);
+            });
+        }
+
+        function watchAdForTicket() {
+            const button = document.getElementById("watch-ad-button");
+            const originalText = button.innerText;
+            
+            // Show loading state
+            button.innerText = "Loading ad...";
+            button.classList.add("ad-loading");
+            button.disabled = true;
+            
+            // First try to show real ad
+            if (AdController) {
+                AdController.showAd()
+                    .then(() => {
+                        // Ad was shown successfully
+                        handleAdSuccess();
+                    })
+                    .catch(error => {
+                        console.error("Ad error:", error);
+                        // Fallback to simulated ad
+                        showSimulatedAd();
+                    })
+                    .finally(() => {
+                        resetButtonState(button, originalText);
+                    });
+            } else {
+                // No ad controller available, use simulated ad
+                showSimulatedAd();
+                resetButtonState(button, originalText);
             }
             
-            // Create a temporary textarea element
-            const textarea = document.createElement('textarea');
-            textarea.value = currentSpinCode;
-            textarea.style.position = 'fixed';  // Prevent scrolling to bottom
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                // Try to copy using modern clipboard API
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    const copyButton = document.getElementById("copy-code-button");
-                    copyButton.innerHTML = '✓ Copied!';
-                    copyButton.style.backgroundColor = '#4CAF50';
-                    setTimeout(() => {
-                        copyButton.innerHTML = '📋 Copy Code';
-                        copyButton.style.backgroundColor = '#ffffff';
-                    }, 2000);
-                } else {
-                    fallbackCopy(currentSpinCode);
+            function handleAdSuccess() {
+                adCount++;
+                document.getElementById("ad-count").innerText = adCount;
+
+                if (adCount >= 5) {
+                    tickets++;
+                    document.getElementById("tickets").innerText = tickets;
+                    adCount = 0;
+                    document.getElementById("ad-count").innerText = adCount;
+                    alert("You watched 5 ads! You earned 1 ticket.");
                 }
-            } catch (err) {
-                fallbackCopy(currentSpinCode);
-            } finally {
-                document.body.removeChild(textarea);
+            }
+            
+            function showSimulatedAd() {
+                // Show a simulated ad for 3 seconds
+                setTimeout(() => {
+                    handleAdSuccess();
+                    alert("Simulated ad completed. In a real implementation, this would be a video ad.");
+                }, 3000);
+            }
+            
+            function resetButtonState(btn, text) {
+                btn.innerText = text;
+                btn.classList.remove("ad-loading");
+                btn.disabled = false;
             }
         }
 
-        // Fish Game Functions
+        function shareOnTelegram() {
+            const inviteLink = "https://t.me/share/url?url=YourInviteLinkHere&text=Join%20this%20awesome%20game%20and%20earn%20crypto!";
+            window.open(inviteLink, "_blank");
+        }
+
+        // Fish Game Functions (modified to always show BPQDCNZZHO)
         function castLine() {
-            if (fishTickets < 1) {
-                alert("You need 1 fishing ticket! Complete the task to earn tickets.");
+            if (!isFishGameActive) {
+                alert("You need to watch 5 ads to play the fish game again!");
                 return;
             }
-            fishTickets -= 1;
-            document.getElementById("fish-tickets").textContent = fishTickets;
+
+            if (ticketsFish < 1) {
+                alert("You need 1 ticket to cast a line! Watch ads to earn tickets.");
+                return;
+            }
+            ticketsFish -= 1;
+            document.getElementById("tickets-fish").innerText = ticketsFish;
 
             const fishPond = document.getElementById("fish-pond");
             fishPond.innerHTML = "";
 
+            // Generate 10 non-winning fish and 1 winning fish
             for (let i = 0; i < 10; i++) {
-                createFish(false);
+                createFish(false); // Non-winning fish
             }
-            createFish(true);
+            createFish(true); // Winning fish
         }
 
         function createFish(isWinningFish) {
@@ -580,13 +452,14 @@
             const randomFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
             fish.innerText = randomFish.emoji;
 
+            // Add gold styling for the winning fish
             if (isWinningFish) {
                 fish.classList.add("winning-fish");
             }
 
-            fish.style.top = `${Math.random() * 70 + 10}%`;
-            fish.style.left = `-50px`;
-            fish.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            fish.style.top = `${Math.random() * 70 + 10}%`; // Random vertical position
+            fish.style.left = `-50px`; // Start fish off-screen
+            fish.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random speed
 
             fish.addEventListener("click", () => catchFish(isWinningFish));
             fishPond.appendChild(fish);
@@ -594,74 +467,108 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                currentFishCode = fishCodes[fishCaught % fishCodes.length];
-                document.getElementById("catch-result").innerHTML = `🎉 You Caught a Winning Fish! Code: <strong>${currentFishCode}</strong>`;
-                document.getElementById("fish-code-display").textContent = currentFishCode;
-                document.getElementById("fish-code-display").style.display = "block";
-                document.getElementById("copy-code-button-fish").style.display = "inline-block";
+                const resultCode = fishCodes[0]; // Always show BPQDCNZZHO
+                document.getElementById("catch-result").innerText = `🎉 You Caught a Winning Fish! Code: ${resultCode}`;
+                document.getElementById("copy-code-button-fish").style.display = "inline-block"; // Show copy button
                 fishCaught++;
+
+                // Reset ad progress after winning
+                adCountFish = 0;
+                document.getElementById("ad-count-fish").innerText = adCountFish;
+                isFishGameActive = false; // Disable fish game until user watches 5 ads
+                alert("You won a code! Watch 5 more ads to play the fish game again.");
             } else {
                 document.getElementById("catch-result").innerText = "🐟 Try again! Find the winning fish 🎣";
-                document.getElementById("fish-code-display").style.display = "none";
-                document.getElementById("copy-code-button-fish").style.display = "none";
+                document.getElementById("copy-code-button-fish").style.display = "none"; // Hide copy button
             }
         }
 
         function copyResultCodeFish() {
-            if (!currentFishCode) {
-                alert("No code available to copy");
-                return;
+            const resultText = document.getElementById("catch-result").innerText;
+            const resultCode = resultText.split("Code: ")[1];
+            navigator.clipboard.writeText(resultCode).then(() => {
+                alert("Code copied to clipboard: " + resultCode);
+            });
+        }
+
+        function watchAdForTicketFish() {
+            const button = document.getElementById("watch-ad-button-fish");
+            const originalText = button.innerText;
+            
+            // Show loading state
+            button.innerText = "Loading ad...";
+            button.classList.add("ad-loading");
+            button.disabled = true;
+            
+            // First try to show real ad
+            if (AdController) {
+                AdController.showAd()
+                    .then(() => {
+                        // Ad was shown successfully
+                        handleAdSuccess();
+                    })
+                    .catch(error => {
+                        console.error("Ad error:", error);
+                        // Fallback to simulated ad
+                        showSimulatedAd();
+                    })
+                    .finally(() => {
+                        resetButtonState(button, originalText);
+                    });
+            } else {
+                // No ad controller available, use simulated ad
+                showSimulatedAd();
+                resetButtonState(button, originalText);
             }
             
-            // Create a temporary textarea element
-            const textarea = document.createElement('textarea');
-            textarea.value = currentFishCode;
-            textarea.style.position = 'fixed';  // Prevent scrolling to bottom
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                // Try to copy using modern clipboard API
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    const copyButton = document.getElementById("copy-code-button-fish");
-                    copyButton.innerHTML = '✓ Copied!';
-                    copyButton.style.backgroundColor = '#4CAF50';
-                    setTimeout(() => {
-                        copyButton.innerHTML = '📋 Copy Code';
-                        copyButton.style.backgroundColor = '#ffffff';
-                    }, 2000);
-                } else {
-                    fallbackCopy(currentFishCode);
+            function handleAdSuccess() {
+                adCountFish++;
+                document.getElementById("ad-count-fish").innerText = adCountFish;
+
+                if (adCountFish >= 5) {
+                    ticketsFish++;
+                    document.getElementById("tickets-fish").innerText = ticketsFish;
+                    adCountFish = 0;
+                    document.getElementById("ad-count-fish").innerText = adCountFish;
+                    isFishGameActive = true; // Re-enable fish game
+                    alert("You watched 5 ads! You earned 1 ticket and can play the fish game again.");
                 }
-            } catch (err) {
-                fallbackCopy(currentFishCode);
-            } finally {
-                document.body.removeChild(textarea);
+            }
+            
+            function showSimulatedAd() {
+                // Show a simulated ad for 3 seconds
+                setTimeout(() => {
+                    handleAdSuccess();
+                    alert("Simulated ad completed. In a real implementation, this would be a video ad.");
+                }, 3000);
+            }
+            
+            function resetButtonState(btn, text) {
+                btn.innerText = text;
+                btn.classList.remove("ad-loading");
+                btn.disabled = false;
             }
         }
 
-        function fallbackCopy(text) {
-            // Fallback method for browsers that don't support clipboard API
-            try {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert("Code copied to clipboard!");
-                }).catch(err => {
-                    prompt("Please copy this code manually:", text);
-                });
-            } catch (err) {
-                prompt("Please copy this code manually:", text);
-            }
+        function updateLeaderboard(userId, score) {
+            const leaderboardList = document.getElementById("leaderboard-list");
+            const entry = document.createElement("li");
+            entry.innerText = `${userId}: ${score} fish caught`;
+            leaderboardList.appendChild(entry);
         }
 
-        // Navigation
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
         }
 
-        // Initialize
+        // Initialize the first page
         showPage('spin-game');
+        
+        // Add some sample leaderboard entries
+        updateLeaderboard("Player1", 15);
+        updateLeaderboard("Player2", 12);
+        updateLeaderboard("Player3", 8);
     </script>
 </body>
 </html>
