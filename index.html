@@ -369,10 +369,12 @@
             
             // First try to show real ad
             if (AdController) {
-                AdController.showAd()
-                    .then(() => {
+                AdController.show() // Changed from showAd() to show()
+                    .then((result) => {
                         // Ad was shown successfully
-                        handleAdSuccess();
+                        if (result.done) {
+                            handleAdSuccess();
+                        }
                     })
                     .catch(error => {
                         console.error("Ad error:", error);
@@ -502,10 +504,12 @@
             
             // First try to show real ad
             if (AdController) {
-                AdController.showAd()
-                    .then(() => {
+                AdController.show() // Changed from showAd() to show()
+                    .then((result) => {
                         // Ad was shown successfully
-                        handleAdSuccess();
+                        if (result.done) {
+                            handleAdSuccess();
+                        }
                     })
                     .catch(error => {
                         console.error("Ad error:", error);
