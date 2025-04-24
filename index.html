@@ -351,12 +351,12 @@
             spinOfferStarted = true;
             openOffer('spin');
             
-            // Show verification button after 45 seconds
+            // Show verification button after 30 seconds
             setTimeout(() => {
                 document.getElementById('verify-spin-button').style.display = 'block';
                 document.getElementById('spin-task-progress').innerHTML = 
                     '<span class="offer-opened">Offer opened! Click "Verify Completion" below when done.</span>';
-            }, 45000);
+            }, 30000);
             
             document.getElementById('spin-task-progress').innerHTML = 
                 '<span class="offer-opened">Opening offer... Please complete the survey for ticket.</span>';
@@ -367,12 +367,12 @@
                 fishOfferStarted = true;
                 openOffer('fish');
                 
-                // Show verification button after 45 seconds
+                // Show verification button after 30 seconds
                 setTimeout(() => {
                     document.getElementById('verify-fish-button').style.display = 'block';
                     document.getElementById('fish-task-progress').innerHTML = 
                         'Finished the offer? Click "Verify Completion" below!';
-                }, 45000);
+                }, 30000);
                 
                 document.getElementById('fish-task-progress').innerHTML = 
                     'Offer opened! Complete the survey for ticket.';
