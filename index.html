@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treasure Hunter: Spin & Fish Adventure</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- AdsGram Integration -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -594,7 +596,7 @@
         
         <div class="ad-container">
             <div class="ad-label">Optional Reward Boost</div>
-            <button class="action-button" onclick="watchAdForBonus()">
+            <button class="action-button" onclick="showAdsGramAd('spin')">
                 <i class="fas fa-ad"></i> Watch Ad for +1 Spin
             </button>
         </div>
@@ -638,7 +640,7 @@
         
         <div class="ad-container">
             <div class="ad-label">Special Offer</div>
-            <button class="action-button" onclick="watchAdForFishBonus()">
+            <button class="action-button" onclick="showAdsGramAd('fish')">
                 <i class="fas fa-ad"></i> Watch Ad for +2 Bait
             </button>
         </div>
@@ -661,6 +663,13 @@
     </div>
 
     <script>
+        // Initialize AdsGram SDK
+        const AdController = window.Adsgram.init({
+            platformId: "8123",
+            token: "c09d7615fad343138a7a0bcc42ee4c6f",
+            blockId: "int-10219"
+        });
+
         // Game State
         let spinTickets = 3;
         let fishTickets = 3;
@@ -999,37 +1008,43 @@
             });
         }
         
-        // AD REWARD FUNCTIONS
-        function watchAdForBonus() {
-            // Simulate watching an ad
-            showMessage("spin-result", "Loading ad...", "var(--warning-color)");
+        // ADSGRAM AD FUNCTIONS
+        function showAdsGramAd(context) {
+            showMessage(
+                context === 'spin' ? "spin-result" : "catch-result", 
+                "Loading ad...", 
+                "var(--warning-color)"
+            );
             
-            setTimeout(() => {
-                // 70% chance the ad completes successfully
-                if (Math.random() < 0.7) {
-                    spinTickets++;
-                    updateSpinTickets();
-                    showMessage("spin-result", "+1 Spin Ticket added!", "var(--success-color)");
-                } else {
-                    showMessage("spin-result", "Ad failed to load. Try again.", "var(--accent-color)");
-                }
-            }, 2000);
-        }
-        
-        function watchAdForFishBonus() {
-            // Simulate watching an ad
-            showMessage("catch-result", "Loading ad...", "var(--warning-color)");
-            
-            setTimeout(() => {
-                // 70% chance the ad completes successfully
-                if (Math.random() < 0.7) {
-                    fishTickets += 2;
-                    updateFishTickets();
-                    showMessage("catch-result", "+2 Bait added!", "var(--success-color)");
-                } else {
-                    showMessage("catch-result", "Ad failed to load. Try again.", "var(--accent-color)");
-                }
-            }, 2000);
+            AdController.showAd()
+                .then(() => {
+                    // Ad was shown successfully
+                    if (context === 'spin') {
+                        spinTickets++;
+                        updateSpinTickets();
+                        showMessage(
+                            "spin-result", 
+                            "+1 Spin Ticket added!", 
+                            "var(--success-color)"
+                        );
+                    } else {
+                        fishTickets += 2;
+                        updateFishTickets();
+                        showMessage(
+                            "catch-result", 
+                            "+2 Bait added!", 
+                            "var(--success-color)"
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error("AdsGram error:", error);
+                    showMessage(
+                        context === 'spin' ? "spin-result" : "catch-result", 
+                        "Ad failed to load. Try again.", 
+                        "var(--accent-color)"
+                    );
+                });
         }
         
         // Initialize the game when loaded
