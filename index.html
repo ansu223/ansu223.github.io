@@ -7,6 +7,8 @@
     <!-- AdsGram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --primary: #6c5ce7;
@@ -532,6 +534,31 @@
             display: none;
         }
 
+        .ad-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .ad-loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #6c5ce7;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
         @keyframes slideDown {
             from { top: -50px; opacity: 0; }
             to { top: 20px; opacity: 1; }
@@ -545,6 +572,11 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Responsive adjustments */
@@ -564,16 +596,20 @@
             }
         }
     </style>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <!-- Initialize AdsGram SDK -->
     <script>
-        const AdController = window.Adsgram.init({ 
-            blockId: "int-10256",
-            token: "c09d7615fad343138a7a0bcc42ee4c6f"
-        });
+        // Initialize AdsGram with error handling
+        let AdController;
+        try {
+            AdController = window.Adsgram.init({ 
+                blockId: "int-10256",
+                token: "c09d7615fad343138a7a0bcc42ee4c6f"
+            });
+        } catch (error) {
+            console.error("Failed to initialize AdsGram:", error);
+        }
     </script>
 
     <div class="notification" id="notification"></div>
@@ -733,7 +769,7 @@
                         <div class="upgrade-description">Increases chance to catch rare fish by 15%</div>
                         <div class="upgrade-level">Level 1/5</div>
                     </div>
-                    <button class="upgrade-button">50 Tokens</button>
+                    <button class="upgrade-button" onclick="buyUpgrade('bait')">50 Tokens</button>
                 </div>
                 
                 <div class="upgrade-item">
@@ -743,7 +779,7 @@
                         <div class="upgrade-description">Reduces time between casts by 20%</div>
                         <div class="upgrade-level">Level 0/5</div>
                     </div>
-                    <button class="upgrade-button">75 Tokens</button>
+                    <button class="upgrade-button" onclick="buyUpgrade('reeling')">75 Tokens</button>
                 </div>
                 
                 <div class="upgrade-item">
@@ -753,7 +789,7 @@
                         <div class="upgrade-description">Earn 10% more tokens from all sources</div>
                         <div class="upgrade-level">Level 0/3</div>
                     </div>
-                    <button class="upgrade-button">100 Tokens</button>
+                    <button class="upgrade-button" onclick="buyUpgrade('multiplier')">100 Tokens</button>
                 </div>
             </div>
         </div>
@@ -783,7 +819,9 @@
             dailySpins: 0,
             fishingXP: 0,
             fishingLevel: 1,
-            inventory: [],
+            inventory: [
+                { name: "Starter Pack", value: 50, icon: "gem" }
+            ],
             upgrades: {
                 bait: { level: 1, max: 5, cost: 50 },
                 reeling: { level: 0, max: 5, cost: 75 },
@@ -824,7 +862,8 @@
             fishingLevelText: document.getElementById('fishing-level-text'),
             fishingProgressBar: document.getElementById('fishing-progress-bar'),
             notification: document.getElementById('notification'),
-            claimBonus: document.getElementById('claim-bonus')
+            claimBonus: document.getElementById('claim-bonus'),
+            inventoryItems: document.getElementById('inventory-items')
         };
 
         // Initialize the game
@@ -832,6 +871,7 @@
             updateTokenDisplay();
             createWheel();
             generateBubbles();
+            renderInventory();
             
             // Check for saved game
             const savedGame = localStorage.getItem('cryptoFortuneSave');
@@ -842,6 +882,7 @@
                     updateTokenDisplay();
                     updateFishingProgress();
                     updateSpinProgress();
+                    renderInventory();
                     showNotification('Game loaded successfully!');
                 } catch (e) {
                     console.error('Failed to load game:', e);
@@ -906,12 +947,14 @@
                 const prize = wheelPrizes[winningIndex];
                 
                 // Award prize
-                gameState.tokens += prize.value;
+                const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+                const tokensWon = Math.floor(prize.value * multiplier);
+                gameState.tokens += tokensWon;
                 updateTokenDisplay();
                 
                 // Show result
                 elements.spinResult.innerHTML = `
-                    You won <span style="color: ${prize.color}; font-weight: bold;">${prize.value} ${prize.name} Tokens</span>!
+                    You won <span style="color: ${prize.color}; font-weight: bold;">${tokensWon} ${prize.name} Tokens</span>!
                     <div class="prize-code">${generatePrizeCode()}</div>
                 `;
                 
@@ -1051,19 +1094,66 @@
 
         // Watch ad for tokens
         function watchAdForTokens() {
-            AdController.showAd().then(() => {
-                // Award tokens
-                const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-                const tokensEarned = Math.floor(15 * multiplier);
-                
-                gameState.tokens += tokensEarned;
-                updateTokenDisplay();
-                showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
-                saveGame();
-            }).catch(error => {
-                console.error('Ad error:', error);
-                showNotification('Ad failed to load. Please try again.');
-            });
+            if (!AdController) {
+                showNotification("Ad service not available. Please try again later.");
+                return;
+            }
+
+            // Show loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'ad-loading';
+            loadingDiv.innerHTML = `
+                <div class="ad-loading-spinner"></div>
+                <p>Loading ad...</p>
+                <button onclick="this.parentNode.remove()" style="
+                    background: #ff4757;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    margin-top: 20px;
+                    cursor: pointer;
+                ">Cancel</button>
+            `;
+            document.body.appendChild(loadingDiv);
+
+            // Set timeout in case ad fails to load
+            const adTimeout = setTimeout(() => {
+                loadingDiv.remove();
+                showNotification("Ad took too long to load. Please try again.");
+            }, 10000);
+
+            // Show the ad
+            AdController.showAd()
+                .then(() => {
+                    // Ad was shown successfully
+                    clearTimeout(adTimeout);
+                    loadingDiv.remove();
+                    
+                    // Award tokens
+                    const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+                    const tokensEarned = Math.floor(15 * multiplier);
+                    
+                    gameState.tokens += tokensEarned;
+                    updateTokenDisplay();
+                    showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
+                    saveGame();
+                })
+                .catch(error => {
+                    // Ad failed to show
+                    clearTimeout(adTimeout);
+                    loadingDiv.remove();
+                    console.error('Ad error:', error);
+                    
+                    // Specific error messages
+                    if (error.message && error.message.includes('no fill')) {
+                        showNotification('No ads available at the moment. Please try later.');
+                    } else if (error.message && error.message.includes('network')) {
+                        showNotification('Network error. Please check your connection.');
+                    } else {
+                        showNotification('Ad failed to load. Please try again.');
+                    }
+                });
         }
 
         // Claim daily bonus
@@ -1082,6 +1172,45 @@
             }
             
             saveGame();
+        }
+
+        // Buy upgrades
+        function buyUpgrade(type) {
+            const upgrade = gameState.upgrades[type];
+            
+            if (upgrade.level >= upgrade.max) {
+                showNotification('This upgrade is already at maximum level!');
+                return;
+            }
+            
+            if (gameState.tokens < upgrade.cost) {
+                showNotification(`You need ${upgrade.cost} tokens for this upgrade!`);
+                return;
+            }
+            
+            gameState.tokens -= upgrade.cost;
+            upgrade.level++;
+            upgrade.cost = Math.floor(upgrade.cost * 1.5); // Increase cost for next level
+            
+            updateTokenDisplay();
+            showNotification(`Upgraded ${type.replace(/\b\w/g, l => l.toUpperCase())} to level ${upgrade.level}!`);
+            saveGame();
+        }
+
+        // Render inventory
+        function renderInventory() {
+            elements.inventoryItems.innerHTML = '';
+            
+            gameState.inventory.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'inventory-item';
+                itemElement.innerHTML = `
+                    <i class="fas fa-${item.icon}" style="color: var(--accent); font-size: 24px;"></i>
+                    <div class="inventory-item-name">${item.name}</div>
+                    <div class="inventory-item-value">${item.value} Tokens</div>
+                `;
+                elements.inventoryItems.appendChild(itemElement);
+            });
         }
 
         // Update UI functions
