@@ -3,1057 +3,1179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treasure Hunter: Spin & Fish Adventure</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- AdsGram Integration -->
+    <title>Crypto Fortune | Spin & Fish</title>
+    <!-- AdsGram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --success-color: #2ecc71;
-            --warning-color: #f39c12;
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #00cec9;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
             text-align: center;
-            background-color: var(--primary-color);
-            color: var(--light-color);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 70px;
-            background-image: radial-gradient(circle at center, #34495e 0%, #2c3e50 100%);
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        .navbar {
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--dark-color);
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .navbar button {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            min-width: 120px;
-            justify-content: center;
-        }
-
-        .navbar button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .navbar button.active {
-            background-color: var(--accent-color);
-        }
-
-        .game-container {
-            margin: 20px auto;
-            padding: 25px;
-            max-width: 450px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-            color: var(--light-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-        }
-
-        h1, h2, h3 {
-            color: var(--light-color);
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-            color: var(--secondary-color);
-        }
-
-        h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-
-        h3 {
-            font-size: 18px;
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             margin-bottom: 10px;
         }
 
-        /* Spin Game Styles */
+        .balance-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .balance small {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .token-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 206, 201, 0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .game-tab {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .game-tab.active {
+            display: block;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--accent);
+        }
+
         .wheel-container {
             position: relative;
-            margin: 25px auto;
             width: 250px;
             height: 250px;
+            margin: 0 auto 25px;
         }
 
         .wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 8px solid var(--light-color);
             position: relative;
-            background: conic-gradient(
-                #e74c3c 0deg 60deg,
-                #2ecc71 60deg 120deg,
-                #f1c40f 120deg 180deg,
-                #3498db 180deg 240deg,
-                #e67e22 240deg 300deg,
-                #9b59b6 300deg 360deg
-            );
-            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            overflow: hidden;
+            border: 8px solid var(--dark);
+            box-shadow: 0 0 0 5px var(--primary), 
+                        0 0 30px rgba(108, 92, 231, 0.6);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
         }
 
-        .wheel span {
-            position: absolute;
-            font-size: 14px;
-            font-weight: bold;
-            transform-origin: center;
-            transform: translate(-50%, -50%) rotate(var(--rotate));
-            top: var(--top);
-            left: var(--left);
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 3px 6px;
-            border-radius: 10px;
+        .wheel-section-content {
+            transform: rotate(45deg);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 600;
         }
 
-        .wheel .gem { --rotate: -30deg; --top: 15%; --left: 75%; }
-        .wheel .coin { --rotate: 30deg; --top: 15%; --left: 25%; }
-        .wheel .key { --rotate: 90deg; --top: 50%; --left: 10%; }
-        .wheel .chest { --rotate: 150deg; --top: 85%; --left: 25%; }
-        .wheel .crown { --rotate: 210deg; --top: 85%; --left: 75%; }
-        .wheel .scroll { --rotate: 270deg; --top: 50%; --left: 90%; }
-
-        .arrow {
+        .wheel-center {
             position: absolute;
-            top: -15px;
+            width: 30px;
+            height: 30px;
+            background: var(--dark);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            border: 4px solid var(--primary);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
-            border-bottom: 25px solid var(--accent-color);
-            z-index: 10;
-            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+            border-bottom: 30px solid var(--primary);
+            z-index: 5;
+            filter: drop-shadow(0 0 5px rgba(108, 92, 231, 0.8));
         }
 
-        /* Fish Game Styles */
-        .fish-pond {
-            width: 100%;
-            height: 220px;
-            background: linear-gradient(to bottom, #1c6e8c, #134d6b);
-            border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-            margin: 20px 0;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
-            border: 3px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .fish {
-            position: absolute;
-            font-size: 32px;
-            cursor: pointer;
-            animation: swim var(--duration) linear infinite;
-            top: var(--top);
-            transform: translateY(-50%);
-            transition: transform 0.2s;
-            z-index: 1;
-        }
-
-        .fish:hover {
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .fish.winning-fish {
-            animation: swim var(--duration) linear infinite, glow 1.5s ease-in-out infinite alternate;
-        }
-
-        .bubble {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: float-up var(--bubble-duration) linear infinite;
-        }
-
-        @keyframes swim {
-            0% { left: -50px; }
-            100% { left: 100%; }
-        }
-
-        @keyframes float-up {
-            0% { 
-                transform: translateY(0);
-                opacity: 0.8;
-            }
-            100% { 
-                transform: translateY(-100px); 
-                opacity: 0;
-            }
-        }
-
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px gold); }
-            to { filter: drop-shadow(0 0 15px gold); }
-        }
-
-        /* Common Button Styles */
-        .spin-button, .cast-button, .action-button {
-            background: linear-gradient(to bottom, var(--secondary-color), #2980b9);
+        .action-button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
             border: none;
             padding: 12px 25px;
             font-size: 16px;
-            cursor: pointer;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            margin: 10px 5px;
             font-weight: 600;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            min-width: 180px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            width: 80%;
+            max-width: 250px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .spin-button:hover, .cast-button:hover, .action-button:hover {
-            background: linear-gradient(to bottom, #2980b9, var(--secondary-color));
+        .action-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
         }
 
-        .spin-button:active, .cast-button:active, .action-button:active {
+        .action-button:active {
             transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .spin-button:disabled, .cast-button:disabled {
-            background: #95a5a6;
+        .action-button:disabled {
+            background: #636e72;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        #spin-result, #catch-result {
-            margin-top: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--light-color);
-            min-height: 24px;
+        .action-button.premium {
+            background: linear-gradient(45deg, #fdcb6e, #e17055);
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.4);
         }
 
-        .code-display {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            word-break: break-all;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            display: none;
+        .action-button.premium:hover {
+            box-shadow: 0 6px 20px rgba(253, 203, 110, 0.6);
         }
 
-        .task-button {
-            background: linear-gradient(to bottom, var(--warning-color), #e67e22);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 10px 0;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .task-button:hover {
-            background: linear-gradient(to bottom, #e67e22, var(--warning-color));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        .task-completed {
-            color: var(--success-color);
-            font-weight: bold;
-        }
-        
-        .ticket-count {
-            font-size: 20px;
-            margin: 15px 0;
-            color: var(--warning-color);
-            font-weight: bold;
-        }
-        
-        .spin-notice {
-            color: var(--warning-color);
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: rgba(255, 165, 0, 0.1);
+        .result-display {
+            background: rgba(0, 206, 201, 0.1);
             border-radius: 10px;
-            border-left: 4px solid var(--warning-color);
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 18px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
 
-        .verify-completion-button {
-            background: linear-gradient(to bottom, var(--warning-color), #e67e22);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 15px 0;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            display: none;
-            width: 100%;
-            transition: all 0.3s;
-            font-weight: 600;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .verify-completion-button:hover {
-            background: linear-gradient(to bottom, #e67e22, var(--warning-color));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        .verify-completion-button i {
-            margin-right: 8px;
-        }
-        
-        .offer-opened {
-            color: var(--warning-color);
-            font-weight: bold;
+        .prize-code {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--warning);
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px dashed var(--warning);
         }
 
         .progress-container {
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            margin: 15px 0;
-            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
 
         .progress-bar {
             height: 10px;
-            background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .inventory {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin: 15px 0;
-            gap: 10px;
-        }
-
-        .inventory-item {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 8px;
-            min-width: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .inventory-item i {
-            font-size: 24px;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .skill-meter {
-            position: relative;
-            height: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             overflow: hidden;
         }
 
-        .skill-level {
-            position: absolute;
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(to right, #2ecc71, #f1c40f);
-            width: 50%;
-            border-radius: 10px;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 5px;
+            transition: width 0.5s ease;
         }
 
-        .skill-label {
-            position: absolute;
+        .fish-pond {
             width: 100%;
+            height: 200px;
+            background: linear-gradient(180deg, #1e88e5, #0d47a1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .fish {
+            position: absolute;
+            font-size: 30px;
+            cursor: pointer;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .fish.caught {
+            animation: caught 0.5s forwards;
+        }
+
+        @keyframes caught {
+            0% { transform: translateY(-50%) scale(1); }
+            100% { transform: translateY(-50%) scale(0); opacity: 0; }
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: bubbleUp linear infinite;
+        }
+
+        @keyframes bubbleUp {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(45, 52, 54, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-button {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button.active {
+            background: rgba(108, 92, 231, 0.2);
+            color: var(--primary);
+        }
+
+        .nav-button i {
+            font-size: 20px;
+        }
+
+        .inventory {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .inventory-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
             text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            line-height: 20px;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
         }
 
-        .ad-container {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
+        .inventory-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
         }
 
-        .ad-label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
+        .inventory-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
             margin-bottom: 5px;
         }
 
-        .ad-placeholder {
-            background-color: rgba(0, 0, 0, 0.2);
-            height: 50px;
+        .inventory-item-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .inventory-item-value {
+            font-size: 11px;
+            color: var(--warning);
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .leaderboard-position {
+            font-weight: 700;
+            margin-right: 10px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .leaderboard-position.top {
+            color: var(--warning);
+        }
+
+        .leaderboard-user {
+            flex: 1;
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .daily-bonus {
+            background: rgba(253, 203, 110, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px dashed var(--warning);
+        }
+
+        .daily-bonus-title {
+            color: var(--warning);
+            margin-bottom: 10px;
+        }
+
+        .streak-count {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .streak-day {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 5px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
         }
 
-        .reward-animation {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1001;
-            display: none;
-            animation: popIn 0.5s ease-out;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            max-width: 80%;
-        }
-
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            80% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        .reward-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: gold;
-            animation: bounce 1s infinite alternate;
-        }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-10px); }
-        }
-
-        .close-reward {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
+        .streak-day.active {
+            background: var(--success);
             color: white;
-            font-size: 20px;
+        }
+
+        .streak-day.current {
+            border: 2px solid var(--warning);
+        }
+
+        .upgrade-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .upgrade-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: var(--accent);
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .upgrade-description {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-level {
+            font-size: 11px;
+            color: var(--warning);
+        }
+
+        .upgrade-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             cursor: pointer;
         }
 
-        .tooltip {
-            position: relative;
-            display: inline-block;
+        .upgrade-button:disabled {
+            background: #636e72;
+            cursor: not-allowed;
         }
 
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
+        .notification {
+            position: fixed;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-            font-weight: normal;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideDown 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+            display: none;
         }
 
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        @keyframes slideDown {
+            from { top: -50px; opacity: 0; }
+            to { top: 20px; opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .game-container {
+        @media (max-width: 400px) {
+            .container {
                 padding: 15px;
-                margin: 10px;
             }
             
             .wheel-container {
-                width: 200px;
-                height: 200px;
+                width: 220px;
+                height: 220px;
             }
             
-            .navbar button {
-                padding: 10px 15px;
-                font-size: 14px;
-                min-width: 100px;
+            .action-button {
+                width: 90%;
+                padding: 10px;
             }
         }
     </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Spin Game -->
-    <div id="spin-game" class="game-container">
-        <h1>Treasure Wheel</h1>
-        <h3>Test your timing to win prizes!</h3>
-        
-        <div class="ticket-count">
-            <i class="fas fa-ticket-alt"></i> Spins: <span id="spin-tickets">3</span>
-        </div>
-        
-        <div class="skill-meter">
-            <div class="skill-level" id="spin-skill-meter" style="width: 50%;"></div>
-            <div class="skill-label">Skill Level: <span id="spin-skill-value">50</span>%</div>
-        </div>
-        
-        <div class="spin-notice">
-            <i class="fas fa-lightbulb"></i> Press STOP at the right moment to win better prizes!
+    <!-- Initialize AdsGram SDK -->
+    <script>
+        const AdController = window.Adsgram.init({ 
+            blockId: "int-10256",
+            token: "c09d7615fad343138a7a0bcc42ee4c6f"
+        });
+    </script>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">Crypto Fortune</div>
+            <div class="balance-container">
+                <div>
+                    <div class="balance">0 <small>TOKENS</small></div>
+                </div>
+                <div class="token-count">
+                    <i class="fas fa-coins" style="color: var(--warning);"></i>
+                    <span id="token-count">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Spin Game Tab -->
+        <div id="spin-tab" class="game-tab active">
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-sync-alt"></i> Fortune Wheel</h2>
+                
+                <div class="wheel-container">
+                    <div class="pointer"></div>
+                    <div class="wheel" id="wheel">
+                        <!-- Wheel sections will be added dynamically -->
+                        <div class="wheel-center"></div>
+                    </div>
+                </div>
+                
+                <div class="result-display" id="spin-result">
+                    Spin the wheel to win crypto prizes!
+                </div>
+                
+                <button class="action-button" id="spin-button" onclick="spinWheel()">
+                    <i class="fas fa-sync-alt"></i> SPIN (10 TOKENS)
+                </button>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Progress</span>
+                        <span id="spin-progress-text">0/5 spins</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="spin-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <button class="action-button" onclick="watchAdForTokens()">
+                    <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
+                </button>
+            </div>
+            
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-gift"></i> Daily Bonus</h2>
+                
+                <div class="daily-bonus">
+                    <div class="daily-bonus-title">DAILY REWARD</div>
+                    <p>Spin 5 times today to earn a bonus!</p>
+                    
+                    <div class="streak-count">
+                        <div class="streak-day active">M</div>
+                        <div class="streak-day">T</div>
+                        <div class="streak-day">W</div>
+                        <div class="streak-day">T</div>
+                        <div class="streak-day current">F</div>
+                        <div class="streak-day">S</div>
+                        <div class="streak-day">S</div>
+                    </div>
+                    
+                    <button class="action-button premium" id="claim-bonus" disabled>
+                        <i class="fas fa-gift"></i> CLAIM BONUS
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="wheel-container">
-            <div class="arrow"></div>
-            <div class="wheel" id="wheel">
-                <span class="gem"><i class="fas fa-gem"></i> Gems</span>
-                <span class="coin"><i class="fas fa-coins"></i> Coins</span>
-                <span class="key"><i class="fas fa-key"></i> Keys</span>
-                <span class="chest"><i class="fas fa-chess-queen"></i> Crown</span>
-                <span class="crown"><i class="fas fa-chess-queen"></i> Crown</span>
-                <span class="scroll"><i class="fas fa-scroll"></i> Scroll</span>
+        <!-- Fishing Game Tab -->
+        <div id="fishing-tab" class="game-tab">
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-fish"></i> Crypto Fishing</h2>
+                
+                <div class="fish-pond" id="fish-pond">
+                    <!-- Fish and bubbles will be added dynamically -->
+                </div>
+                
+                <div class="result-display" id="fishing-result">
+                    Catch fish to earn tokens and prizes!
+                </div>
+                
+                <button class="action-button" id="cast-button" onclick="castLine()">
+                    <i class="fas fa-water"></i> CAST LINE (5 TOKENS)
+                </button>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Fishing Skill</span>
+                        <span id="fishing-level-text">Level 1 (0/100 XP)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="fishing-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <button class="action-button" onclick="watchAdForTokens()">
+                    <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
+                </button>
+            </div>
+            
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-trophy"></i> Leaderboard</h2>
+                
+                <div class="leaderboard">
+                    <div class="leaderboard-entry">
+                        <div class="leaderboard-position top">1</div>
+                        <div class="leaderboard-user">ProFisher92</div>
+                        <div class="leaderboard-score">1,240 XP</div>
+                    </div>
+                    <div class="leaderboard-entry">
+                        <div class="leaderboard-position top">2</div>
+                        <div class="leaderboard-user">CryptoAngler</div>
+                        <div class="leaderboard-score">980 XP</div>
+                    </div>
+                    <div class="leaderboard-entry">
+                        <div class="leaderboard-position top">3</div>
+                        <div class="leaderboard-user">BitcoinReeler</div>
+                        <div class="leaderboard-score">850 XP</div>
+                    </div>
+                    <!-- More entries would be loaded dynamically -->
+                </div>
             </div>
         </div>
-        
-        <button class="spin-button" id="spin-button" onclick="startSpin()">🎰 SPIN (1 Spin)</button>
-        <button class="spin-button" id="stop-button" onclick="stopSpin()" style="display: none; background: linear-gradient(to bottom, var(--accent-color), #c0392b);">🛑 STOP!</button>
-        
-        <div id="spin-result"></div>
-        <div id="spin-code-display" class="code-display"></div>
-        <button id="copy-code-button" class="spin-button" onclick="copyResultCode()" style="display: none;">📋 Copy Reward Code</button>
-        
-        <div class="inventory">
-            <div class="inventory-item">
-                <i class="fas fa-gem"></i>
-                <span id="gem-count">0</span>
+
+        <!-- Inventory Tab -->
+        <div id="inventory-tab" class="game-tab">
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-archive"></i> Your Inventory</h2>
+                
+                <div class="inventory" id="inventory-items">
+                    <!-- Inventory items will be added dynamically -->
+                    <div class="inventory-item">
+                        <i class="fas fa-gem" style="color: var(--accent); font-size: 24px;"></i>
+                        <div class="inventory-item-name">Starter Pack</div>
+                        <div class="inventory-item-value">50 Tokens</div>
+                    </div>
+                </div>
             </div>
-            <div class="inventory-item">
-                <i class="fas fa-coins"></i>
-                <span id="coin-count">0</span>
+            
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-level-up-alt"></i> Upgrades</h2>
+                
+                <div class="upgrade-item">
+                    <div class="upgrade-icon"><i class="fas fa-fish"></i></div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Better Bait</div>
+                        <div class="upgrade-description">Increases chance to catch rare fish by 15%</div>
+                        <div class="upgrade-level">Level 1/5</div>
+                    </div>
+                    <button class="upgrade-button">50 Tokens</button>
+                </div>
+                
+                <div class="upgrade-item">
+                    <div class="upgrade-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Faster Reeling</div>
+                        <div class="upgrade-description">Reduces time between casts by 20%</div>
+                        <div class="upgrade-level">Level 0/5</div>
+                    </div>
+                    <button class="upgrade-button">75 Tokens</button>
+                </div>
+                
+                <div class="upgrade-item">
+                    <div class="upgrade-icon"><i class="fas fa-coins"></i></div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Token Multiplier</div>
+                        <div class="upgrade-description">Earn 10% more tokens from all sources</div>
+                        <div class="upgrade-level">Level 0/3</div>
+                    </div>
+                    <button class="upgrade-button">100 Tokens</button>
+                </div>
             </div>
-            <div class="inventory-item">
-                <i class="fas fa-key"></i>
-                <span id="key-count">0</span>
-            </div>
-        </div>
-        
-        <div class="ad-container">
-            <div class="ad-label">Optional Reward Boost</div>
-            <button class="action-button" onclick="showAdsGramAd('spin')">
-                <i class="fas fa-ad"></i> Watch Ad for +1 Spin
-            </button>
         </div>
     </div>
 
-    <!-- Fish Game -->
-    <div id="fishing-game" class="game-container" style="display: none;">
-        <h1>Deep Sea Fishing</h1>
-        <h3>Catch rare fish to earn rewards!</h3>
-        
-        <div class="ticket-count">
-            <i class="fas fa-fish"></i> Bait: <span id="fish-tickets">3</span>
-        </div>
-        
-        <div class="skill-meter">
-            <div class="skill-level" id="fish-skill-meter" style="width: 30%;"></div>
-            <div class="skill-label">Fishing Skill: <span id="fish-skill-value">30</span>%</div>
-        </div>
-        
-        <div class="fish-pond" id="fish-pond">
-            <!-- Fish will appear here dynamically -->
-        </div>
-        
-        <button class="cast-button" id="cast-button" onclick="castLine()">🎣 CAST LINE (1 Bait)</button>
-        <div id="catch-result"></div>
-        
-        <div class="inventory">
-            <div class="inventory-item">
-                <i class="fas fa-fish"></i>
-                <span id="common-fish">0</span>
-            </div>
-            <div class="inventory-item">
-                <i class="fas fa-fish"></i>
-                <span id="rare-fish">0</span>
-            </div>
-            <div class="inventory-item">
-                <i class="fas fa-crown"></i>
-                <span id="legendary-fish">0</span>
-            </div>
-        </div>
-        
-        <div class="ad-container">
-            <div class="ad-label">Special Offer</div>
-            <button class="action-button" onclick="showAdsGramAd('fish')">
-                <i class="fas fa-ad"></i> Watch Ad for +2 Bait
-            </button>
-        </div>
-    </div>
-
-    <!-- Navigation Bar -->
+    <!-- Bottom Navigation -->
     <div class="navbar">
-        <button onclick="showPage('spin-game')" id="spin-nav-button" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
-        <button onclick="showPage('fishing-game')" id="fish-nav-button"><i class="fas fa-fish"></i> Fish</button>
-    </div>
-    
-    <!-- Reward Popup -->
-    <div class="reward-animation" id="reward-popup">
-        <button class="close-reward" onclick="closeReward()">&times;</button>
-        <div class="reward-icon" id="reward-icon"></div>
-        <h2 id="reward-title">You Won!</h2>
-        <p id="reward-description"></p>
-        <div id="reward-code-display" class="code-display" style="margin: 15px auto;"></div>
-        <button class="action-button" onclick="copyRewardCode()" style="margin-top: 10px;">📋 Copy Code</button>
+        <button class="nav-button active" onclick="showTab('spin-tab')">
+            <i class="fas fa-sync-alt"></i>
+            <span>Spin</span>
+        </button>
+        <button class="nav-button" onclick="showTab('fishing-tab')">
+            <i class="fas fa-fish"></i>
+            <span>Fish</span>
+        </button>
+        <button class="nav-button" onclick="showTab('inventory-tab')">
+            <i class="fas fa-archive"></i>
+            <span>Inventory</span>
+        </button>
     </div>
 
     <script>
-        // Initialize AdsGram SDK
-        const AdController = window.Adsgram.init({
-            platformId: "8123",
-            token: "c09d7615fad343138a7a0bcc42ee4c6f",
-            blockId: "int-10219"
-        });
-
         // Game State
-        let spinTickets = 3;
-        let fishTickets = 3;
-        let isSpinning = false;
-        let spinTimeout;
-        let currentSpinDegrees = 0;
-        let spinStartTime;
-        let currentFishCode = '';
-        let currentSpinCode = '';
-        
-        // Player stats
-        let playerStats = {
-            spinSkill: 50,
-            fishSkill: 30,
-            gems: 0,
-            coins: 0,
-            keys: 0,
-            commonFish: 0,
-            rareFish: 0,
-            legendaryFish: 0
+        const gameState = {
+            tokens: 100, // Starting tokens
+            spinCount: 0,
+            dailySpins: 0,
+            fishingXP: 0,
+            fishingLevel: 1,
+            inventory: [],
+            upgrades: {
+                bait: { level: 1, max: 5, cost: 50 },
+                reeling: { level: 0, max: 5, cost: 75 },
+                multiplier: { level: 0, max: 3, cost: 100 }
+            },
+            lastBonusClaim: null,
+            streak: 0
         };
-        
-        // Fish types with different rarities
+
+        // Prize Configuration
+        const wheelPrizes = [
+            { name: "USDT", value: 10, color: "#ff7675", icon: "fa-coins" },
+            { name: "BTC", value: 25, color: "#fdcb6e", icon: "fa-bitcoin" },
+            { name: "ETH", value: 20, color: "#74b9ff", icon: "fa-ethereum" },
+            { name: "BNB", value: 15, color: "#f3a683", icon: "fa-chart-line" },
+            { name: "XRP", value: 5, color: "#a29bfe", icon: "fa-money-bill-wave" },
+            { name: "JACKPOT", value: 100, color: "#00b894", icon: "fa-gem" }
+        ];
+
         const fishTypes = [
-            { emoji: "🐟", class: "common", rarity: 60, value: 1 }, // Common
-            { emoji: "🐠", class: "common", rarity: 60, value: 1 }, // Common
-            { emoji: "🐡", class: "rare", rarity: 30, value: 3 },   // Rare
-            { emoji: "🦈", class: "rare", rarity: 30, value: 3 },   // Rare
-            { emoji: "🐋", class: "legendary", rarity: 10, value: 5 } // Legendary
+            { emoji: "🐟", name: "Common Fish", value: 5, rarity: 60 },
+            { emoji: "🐠", name: "Tropical Fish", value: 10, rarity: 30 },
+            { emoji: "🐡", name: "Pufferfish", value: 20, rarity: 8 },
+            { emoji: "🦈", name: "Shark", value: 50, rarity: 2 }
         ];
-        
-        // Reward Codes
-        const rewardCodes = [
-            "7T9NRP2X", "5R3VOVBI", "8WYOFARY", "DTB83HFX", "BPGI76V857",
-            "KOGXS5U0", "7T9NRP2X", "5R3VOVBI", "DTB83HFX", "BPGI76V857"
-        ];
-        
+
+        // DOM Elements
+        const elements = {
+            tokenCount: document.getElementById('token-count'),
+            spinButton: document.getElementById('spin-button'),
+            castButton: document.getElementById('cast-button'),
+            spinResult: document.getElementById('spin-result'),
+            fishingResult: document.getElementById('fishing-result'),
+            fishPond: document.getElementById('fish-pond'),
+            wheel: document.getElementById('wheel'),
+            spinProgressText: document.getElementById('spin-progress-text'),
+            spinProgressBar: document.getElementById('spin-progress-bar'),
+            fishingLevelText: document.getElementById('fishing-level-text'),
+            fishingProgressBar: document.getElementById('fishing-progress-bar'),
+            notification: document.getElementById('notification'),
+            claimBonus: document.getElementById('claim-bonus')
+        };
+
         // Initialize the game
         function initGame() {
-            updateInventory();
-            updateSkillMeters();
-        }
-        
-        // Show specific game page
-        function showPage(pageId) {
-            document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
-            document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
+            updateTokenDisplay();
+            createWheel();
+            generateBubbles();
             
-            // Update active nav button
-            document.getElementById('spin-nav-button').classList.toggle('active', pageId === 'spin-game');
-            document.getElementById('fish-nav-button').classList.toggle('active', pageId === 'fishing-game');
-        }
-        
-        // SPIN GAME FUNCTIONS
-        function startSpin() {
-            if (spinTickets < 1) {
-                showMessage("spin-result", "You need more spins! Try watching an ad for bonus spins.", "var(--accent-color)");
-                return;
-            }
-            
-            if (isSpinning) return;
-            
-            spinTickets--;
-            updateSpinTickets();
-            
-            const wheel = document.getElementById("wheel");
-            const degrees = Math.floor(Math.random() * 3600) + 1800; // 5-10 full rotations
-            currentSpinDegrees = degrees;
-            
-            wheel.style.transform = `rotate(${degrees}deg)`;
-            isSpinning = true;
-            spinStartTime = Date.now();
-            
-            document.getElementById("spin-button").style.display = "none";
-            document.getElementById("stop-button").style.display = "inline-block";
-            document.getElementById("spin-result").innerHTML = "";
-            
-            // Reset code display
-            document.getElementById("spin-code-display").style.display = "none";
-            document.getElementById("copy-code-button").style.display = "none";
-        }
-        
-        function stopSpin() {
-            if (!isSpinning) return;
-            
-            const wheel = document.getElementById("wheel");
-            const spinDuration = Date.now() - spinStartTime;
-            const stopPosition = (currentSpinDegrees + (spinDuration / 10)) % 360;
-            
-            // Calculate skill-based outcome
-            const segmentSize = 360 / 6;
-            const targetSegment = Math.floor(Math.random() * 6);
-            const targetCenter = (targetSegment * segmentSize) + (segmentSize / 2);
-            const distanceToTarget = Math.abs(stopPosition - targetCenter);
-            
-            // Determine reward based on skill and timing
-            let rewardLevel = 0;
-            let rewardType = "";
-            let rewardAmount = 0;
-            
-            if (distanceToTarget < 15) {
-                // Perfect stop
-                rewardLevel = 3;
-                rewardType = "key";
-                rewardAmount = 1;
-                playerStats.spinSkill = Math.min(100, playerStats.spinSkill + 2);
-                showMessage("spin-result", "Perfect! You won a <strong>Golden Key</strong>!", "var(--success-color)");
-            } else if (distanceToTarget < 30) {
-                // Good stop
-                rewardLevel = 2;
-                rewardType = "gem";
-                rewardAmount = 3;
-                playerStats.spinSkill = Math.min(100, playerStats.spinSkill + 1);
-                showMessage("spin-result", "Great! You won <strong>3 Gems</strong>!", "var(--success-color)");
-            } else if (distanceToTarget < 45) {
-                // OK stop
-                rewardLevel = 1;
-                rewardType = "coin";
-                rewardAmount = 5;
-                showMessage("spin-result", "Nice! You won <strong>5 Coins</strong>!", "gold");
-            } else {
-                // Miss
-                rewardLevel = 0;
-                showMessage("spin-result", "Try again! You were <strong>too early/late</strong>.", "var(--accent-color)");
-            }
-            
-            // Update player stats
-            if (rewardLevel > 0) {
-                playerStats[rewardType + "s"] += rewardAmount;
-                updateInventory();
-                
-                // Show reward code for level 2+ rewards
-                if (rewardLevel >= 2) {
-                    currentSpinCode = rewardCodes[Math.floor(Math.random() * rewardCodes.length)];
-                    document.getElementById("spin-code-display").textContent = currentSpinCode;
-                    document.getElementById("spin-code-display").style.display = "block";
-                    document.getElementById("copy-code-button").style.display = "inline-block";
+            // Check for saved game
+            const savedGame = localStorage.getItem('cryptoFortuneSave');
+            if (savedGame) {
+                try {
+                    const parsed = JSON.parse(savedGame);
+                    Object.assign(gameState, parsed);
+                    updateTokenDisplay();
+                    updateFishingProgress();
+                    updateSpinProgress();
+                    showNotification('Game loaded successfully!');
+                } catch (e) {
+                    console.error('Failed to load game:', e);
                 }
             }
-            
-            // Update skill meter
-            updateSkillMeters();
-            
-            isSpinning = false;
-            document.getElementById("spin-button").style.display = "inline-block";
-            document.getElementById("stop-button").style.display = "none";
         }
-        
-        // FISHING GAME FUNCTIONS
-        function castLine() {
-            if (fishTickets < 1) {
-                showMessage("catch-result", "You need more bait! Try watching an ad for bonus bait.", "var(--accent-color)");
+
+        // Create the wheel segments
+        function createWheel() {
+            elements.wheel.innerHTML = '';
+            
+            const segmentAngle = 360 / wheelPrizes.length;
+            
+            wheelPrizes.forEach((prize, index) => {
+                const section = document.createElement('div');
+                section.className = 'wheel-section';
+                section.style.transform = `rotate(${segmentAngle * index}deg)`;
+                section.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%)';
+                
+                const content = document.createElement('div');
+                content.className = 'wheel-section-content';
+                content.style.backgroundColor = prize.color;
+                content.innerHTML = `
+                    <i class="fas ${prize.icon}"></i>
+                    <div style="font-size: 12px; margin-top: 5px;">${prize.name}</div>
+                `;
+                
+                section.appendChild(content);
+                elements.wheel.appendChild(section);
+            });
+            
+            // Add center after all sections
+            const center = document.createElement('div');
+            center.className = 'wheel-center';
+            elements.wheel.appendChild(center);
+        }
+
+        // Spin the wheel
+        function spinWheel() {
+            if (gameState.tokens < 10) {
+                showNotification('Not enough tokens! Watch an ad to earn more.');
                 return;
             }
             
-            fishTickets--;
-            updateFishTickets();
+            gameState.tokens -= 10;
+            gameState.spinCount++;
+            gameState.dailySpins++;
+            updateTokenDisplay();
+            updateSpinProgress();
             
-            const fishPond = document.getElementById("fish-pond");
-            fishPond.innerHTML = "";
+            elements.spinButton.disabled = true;
+            elements.spinResult.textContent = 'Spinning...';
             
-            // Create bubbles for effect
-            createBubbles(10);
+            // Random spin with momentum
+            const spinDegrees = 3600 + Math.floor(Math.random() * 3600);
+            elements.wheel.style.transform = `rotate(${spinDegrees}deg)`;
             
-            // Create regular fish
-            const fishCount = 5 + Math.floor(playerStats.fishSkill / 20);
-            for (let i = 0; i < fishCount; i++) {
-                createFish(false);
-            }
-            
-            // Create special fish based on skill
-            const specialFishChance = playerStats.fishSkill / 100;
-            if (Math.random() < specialFishChance) {
-                createFish(true);
-            }
-            
-            document.getElementById("catch-result").innerHTML = "Click on fish to catch them!";
-            document.getElementById("fish-code-display").style.display = "none";
-            document.getElementById("copy-code-button-fish").style.display = "none";
-        }
-        
-        function createBubbles(count) {
-            const pond = document.getElementById("fish-pond");
-            
-            for (let i = 0; i < count; i++) {
-                const bubble = document.createElement("div");
-                bubble.className = "bubble";
+            setTimeout(() => {
+                const normalizedDegrees = spinDegrees % 360;
+                const segmentAngle = 360 / wheelPrizes.length;
+                const winningIndex = Math.floor(normalizedDegrees / segmentAngle);
+                const prize = wheelPrizes[winningIndex];
                 
-                const size = Math.random() * 10 + 5;
+                // Award prize
+                gameState.tokens += prize.value;
+                updateTokenDisplay();
+                
+                // Show result
+                elements.spinResult.innerHTML = `
+                    You won <span style="color: ${prize.color}; font-weight: bold;">${prize.value} ${prize.name} Tokens</span>!
+                    <div class="prize-code">${generatePrizeCode()}</div>
+                `;
+                
+                // Check for daily bonus
+                if (gameState.dailySpins >= 5) {
+                    elements.claimBonus.disabled = false;
+                    elements.claimBonus.innerHTML = '<i class="fas fa-gift"></i> CLAIM 50 TOKEN BONUS';
+                }
+                
+                elements.spinButton.disabled = false;
+                saveGame();
+            }, 4000);
+        }
+
+        // Generate a random prize code
+        function generatePrizeCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Fishing game functions
+        function castLine() {
+            if (gameState.tokens < 5) {
+                showNotification('Not enough tokens! Watch an ad to earn more.');
+                return;
+            }
+            
+            gameState.tokens -= 5;
+            updateTokenDisplay();
+            elements.castButton.disabled = true;
+            elements.fishingResult.textContent = 'Casting line...';
+            elements.fishPond.innerHTML = '';
+            
+            // Create bubbles
+            generateBubbles();
+            
+            // Show fishing animation
+            setTimeout(() => {
+                elements.fishingResult.textContent = 'Fish are biting! Click to catch.';
+                spawnFish();
+            }, 2000);
+        }
+
+        function spawnFish() {
+            // Clear existing fish
+            elements.fishPond.innerHTML = '';
+            
+            // Determine fish rarity based on upgrades
+            const baitBonus = gameState.upgrades.bait.level * 0.15;
+            const totalRarity = fishTypes.reduce((sum, fish) => sum + fish.rarity, 0);
+            let random = Math.random() * (totalRarity - baitBonus * 10);
+            
+            let selectedFish;
+            for (const fish of fishTypes) {
+                let rarity = fish.rarity;
+                if (fish.value > 5) rarity += baitBonus * 10;
+                
+                if (random < rarity) {
+                    selectedFish = fish;
+                    break;
+                }
+                random -= rarity;
+            }
+            
+            if (!selectedFish) selectedFish = fishTypes[0];
+            
+            // Create fish element
+            const fish = document.createElement('div');
+            fish.className = 'fish';
+            fish.innerHTML = selectedFish.emoji;
+            fish.title = selectedFish.name;
+            
+            // Random position
+            const pondHeight = elements.fishPond.clientHeight;
+            const pondWidth = elements.fishPond.clientWidth;
+            const fishSize = 30;
+            
+            fish.style.top = `${Math.random() * (pondHeight - fishSize)}px`;
+            fish.style.left = `-${fishSize}px`;
+            
+            // Animation based on fish type
+            const duration = 3000 - (gameState.upgrades.reeling.level * 400);
+            fish.style.transition = `left ${duration}ms linear`;
+            
+            // Add click handler
+            fish.addEventListener('click', () => catchFish(fish, selectedFish));
+            
+            elements.fishPond.appendChild(fish);
+            
+            // Start swimming
+            setTimeout(() => {
+                fish.style.left = `${pondWidth}px`;
+            }, 50);
+            
+            // If fish escapes
+            setTimeout(() => {
+                if (fish.parentNode) {
+                    fish.remove();
+                    elements.fishingResult.textContent = 'The fish got away! Try again.';
+                    elements.castButton.disabled = false;
+                }
+            }, duration + 100);
+        }
+
+        function catchFish(fishElement, fishType) {
+            // Add caught animation
+            fishElement.classList.add('caught');
+            
+            // Award tokens and XP
+            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+            const tokensEarned = Math.floor(fishType.value * multiplier);
+            
+            gameState.tokens += tokensEarned;
+            gameState.fishingXP += fishType.value;
+            updateTokenDisplay();
+            updateFishingProgress();
+            
+            // Show result
+            elements.fishingResult.innerHTML = `
+                You caught a <span style="font-weight: bold;">${fishType.name}</span>!
+                <div>+${tokensEarned} Tokens</div>
+                <div>+${fishType.value} Fishing XP</div>
+            `;
+            
+            // Remove fish after animation
+            setTimeout(() => {
+                fishElement.remove();
+                elements.castButton.disabled = false;
+            }, 500);
+            
+            saveGame();
+        }
+
+        // Watch ad for tokens
+        function watchAdForTokens() {
+            AdController.showAd().then(() => {
+                // Award tokens
+                const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+                const tokensEarned = Math.floor(15 * multiplier);
+                
+                gameState.tokens += tokensEarned;
+                updateTokenDisplay();
+                showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
+                saveGame();
+            }).catch(error => {
+                console.error('Ad error:', error);
+                showNotification('Ad failed to load. Please try again.');
+            });
+        }
+
+        // Claim daily bonus
+        function claimDailyBonus() {
+            gameState.tokens += 50;
+            updateTokenDisplay();
+            elements.claimBonus.disabled = true;
+            elements.claimBonus.innerHTML = '<i class="fas fa-check"></i> BONUS CLAIMED';
+            showNotification('Daily bonus claimed! +50 Tokens');
+            
+            // Update streak
+            const today = new Date().toDateString();
+            if (gameState.lastBonusClaim !== today) {
+                gameState.streak++;
+                gameState.lastBonusClaim = today;
+            }
+            
+            saveGame();
+        }
+
+        // Update UI functions
+        function updateTokenDisplay() {
+            elements.tokenCount.textContent = gameState.tokens;
+            
+            // Update button states
+            elements.spinButton.disabled = gameState.tokens < 10;
+            elements.castButton.disabled = gameState.tokens < 5;
+        }
+
+        function updateSpinProgress() {
+            const progress = Math.min(gameState.dailySpins, 5);
+            elements.spinProgressText.textContent = `${progress}/5 spins`;
+            elements.spinProgressBar.style.width = `${(progress / 5) * 100}%`;
+        }
+
+        function updateFishingProgress() {
+            const xpNeeded = gameState.fishingLevel * 100;
+            const progress = Math.min(gameState.fishingXP, xpNeeded);
+            
+            // Check for level up
+            if (gameState.fishingXP >= xpNeeded) {
+                gameState.fishingLevel++;
+                gameState.fishingXP = 0;
+                showNotification(`Level Up! Now level ${gameState.fishingLevel}`);
+            }
+            
+            elements.fishingLevelText.textContent = `Level ${gameState.fishingLevel} (${gameState.fishingXP}/${gameState.fishingLevel * 100} XP)`;
+            elements.fishingProgressBar.style.width = `${(gameState.fishingXP / (gameState.fishingLevel * 100)) * 100}%`;
+        }
+
+        // Tab navigation
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.game-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+        }
+
+        // Helper functions
+        function showNotification(message) {
+            elements.notification.textContent = message;
+            elements.notification.style.display = 'block';
+            
+            setTimeout(() => {
+                elements.notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function generateBubbles() {
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Random size and position
+                const size = Math.random() * 15 + 5;
                 bubble.style.width = `${size}px`;
                 bubble.style.height = `${size}px`;
                 bubble.style.left = `${Math.random() * 100}%`;
-                bubble.style.bottom = "0";
-                bubble.style.setProperty('--bubble-duration', `${Math.random() * 3 + 2}s`);
+                bubble.style.bottom = `-${size}px`;
                 
-                pond.appendChild(bubble);
-            }
-        }
-        
-        function createFish(isSpecial) {
-            const fishPond = document.getElementById("fish-pond");
-            const fish = document.createElement("div");
-            fish.className = "fish";
-            
-            // Choose fish type based on rarity
-            let fishType;
-            if (isSpecial) {
-                // For special fish, choose from rare or legendary
-                const rareTypes = fishTypes.filter(f => f.class === "rare" || f.class === "legendary");
-                fishType = rareTypes[Math.floor(Math.random() * rareTypes.length)];
-            } else {
-                // Weighted random selection based on rarity
-                const totalRarity = fishTypes.reduce((sum, f) => sum + f.rarity, 0);
-                let random = Math.random() * totalRarity;
-                let cumulative = 0;
+                // Random animation duration
+                const duration = Math.random() * 5 + 3;
+                bubble.style.animationDuration = `${duration}s`;
                 
-                for (const f of fishTypes) {
-                    cumulative += f.rarity;
-                    if (random <= cumulative) {
-                        fishType = f;
-                        break;
-                    }
-                }
-            }
-            
-            fish.innerText = fishType.emoji;
-            fish.style.top = `${Math.random() * 70 + 10}%`;
-            fish.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            
-            if (fishType.class === "legendary") {
-                fish.classList.add("winning-fish");
-            }
-            
-            fish.addEventListener("click", () => catchFish(fishType));
-            fishPond.appendChild(fish);
-        }
-        
-        function catchFish(fishType) {
-            // Update player stats
-            if (fishType.class === "common") {
-                playerStats.commonFish++;
-                showMessage("catch-result", `Caught a Common ${fishType.emoji}!`, "#3498db");
-            } else if (fishType.class === "rare") {
-                playerStats.rareFish++;
-                showMessage("catch-result", `Caught a Rare ${fishType.emoji}!`, "#9b59b6");
-            } else if (fishType.class === "legendary") {
-                playerStats.legendaryFish++;
-                currentFishCode = rewardCodes[Math.floor(Math.random() * rewardCodes.length)];
+                elements.fishPond.appendChild(bubble);
                 
-                showRewardPopup(
-                    "Legendary Catch!",
-                    `You caught a Legendary ${fishType.emoji}!`,
-                    "fa-crown",
-                    currentFishCode
-                );
-                
-                showMessage("catch-result", `Incredible! Legendary ${fishType.emoji} caught!`, "gold");
+                // Remove after animation
+                setTimeout(() => {
+                    bubble.remove();
+                }, duration * 1000);
             }
-            
-            // Increase fishing skill
-            playerStats.fishSkill = Math.min(100, playerStats.fishSkill + fishType.value);
-            updateSkillMeters();
-            updateInventory();
         }
-        
-        // REWARD SYSTEM
-        function showRewardPopup(title, description, icon, code) {
-            document.getElementById("reward-title").textContent = title;
-            document.getElementById("reward-description").textContent = description;
-            document.getElementById("reward-icon").className = `reward-icon fas ${icon}`;
-            document.getElementById("reward-code-display").textContent = code;
-            document.getElementById("reward-popup").style.display = "block";
+
+        function saveGame() {
+            localStorage.setItem('cryptoFortuneSave', JSON.stringify(gameState));
         }
-        
-        function closeReward() {
-            document.getElementById("reward-popup").style.display = "none";
-        }
-        
-        function copyRewardCode() {
-            const code = document.getElementById("reward-code-display").textContent;
-            copyToClipboard(code, "Reward code copied!");
-        }
-        
-        // UTILITY FUNCTIONS
-        function updateSpinTickets() {
-            document.getElementById("spin-tickets").textContent = spinTickets;
-        }
-        
-        function updateFishTickets() {
-            document.getElementById("fish-tickets").textContent = fishTickets;
-        }
-        
-        function updateInventory() {
-            document.getElementById("gem-count").textContent = playerStats.gems;
-            document.getElementById("coin-count").textContent = playerStats.coins;
-            document.getElementById("key-count").textContent = playerStats.keys;
-            document.getElementById("common-fish").textContent = playerStats.commonFish;
-            document.getElementById("rare-fish").textContent = playerStats.rareFish;
-            document.getElementById("legendary-fish").textContent = playerStats.legendaryFish;
-        }
-        
-        function updateSkillMeters() {
-            document.getElementById("spin-skill-meter").style.width = `${playerStats.spinSkill}%`;
-            document.getElementById("spin-skill-value").textContent = playerStats.spinSkill;
-            document.getElementById("fish-skill-meter").style.width = `${playerStats.fishSkill}%`;
-            document.getElementById("fish-skill-value").textContent = playerStats.fishSkill;
-        }
-        
-        function showMessage(elementId, message, color) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = message;
-            element.style.color = color;
-        }
-        
-        function copyResultCode() {
-            if (!currentSpinCode) {
-                alert("No code available to copy");
-                return;
-            }
-            copyToClipboard(currentSpinCode, "Spin code copied!");
-        }
-        
-        function copyResultCodeFish() {
-            if (!currentFishCode) {
-                alert("No code available to copy");
-                return;
-            }
-            copyToClipboard(currentFishCode, "Fish code copied!");
-        }
-        
-        function copyToClipboard(text, successMessage) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert(successMessage);
-            }).catch(err => {
-                prompt("Please copy this code manually:", text);
-            });
-        }
-        
-        // ADSGRAM AD FUNCTIONS
-        function showAdsGramAd(context) {
-            showMessage(
-                context === 'spin' ? "spin-result" : "catch-result", 
-                "Loading ad...", 
-                "var(--warning-color)"
-            );
-            
-            AdController.showAd()
-                .then(() => {
-                    // Ad was shown successfully
-                    if (context === 'spin') {
-                        spinTickets++;
-                        updateSpinTickets();
-                        showMessage(
-                            "spin-result", 
-                            "+1 Spin Ticket added!", 
-                            "var(--success-color)"
-                        );
-                    } else {
-                        fishTickets += 2;
-                        updateFishTickets();
-                        showMessage(
-                            "catch-result", 
-                            "+2 Bait added!", 
-                            "var(--success-color)"
-                        );
-                    }
-                })
-                .catch(error => {
-                    console.error("AdsGram error:", error);
-                    showMessage(
-                        context === 'spin' ? "spin-result" : "catch-result", 
-                        "Ad failed to load. Try again.", 
-                        "var(--accent-color)"
-                    );
-                });
-        }
-        
+
+        // Event listeners
+        elements.claimBonus.addEventListener('click', claimDailyBonus);
+
         // Initialize the game when loaded
-        window.onload = function() {
-            initGame();
-            
-            // Add some initial bubbles to the fishing pond
-            createBubbles(15);
-        };
+        window.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
