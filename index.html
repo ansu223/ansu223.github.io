@@ -574,32 +574,6 @@
             margin-bottom: 10px;
         }
 
-        .ad-status {
-            text-align: center;
-            margin: 10px 0;
-            font-size: 14px;
-            color: var(--warning);
-        }
-        
-        .ad-debug {
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 12px;
-            display: none;
-        }
-        
-        .debug-toggle {
-            background: transparent;
-            border: none;
-            color: var(--accent);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 5px 0;
-        }
-
         @keyframes slideDown {
             from { top: -50px; opacity: 0; }
             to { top: 20px; opacity: 1; }
@@ -689,9 +663,6 @@
                 <button class="action-button" onclick="watchAdForTokens()">
                     <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
                 </button>
-                <div class="ad-status" id="ad-status">Ad service: Checking availability...</div>
-                <div class="ad-debug" id="ad-debug"></div>
-                <button class="debug-toggle" onclick="toggleDebug()">Toggle Debug Info</button>
                 <div id="ad-fallback" class="ad-placeholder" style="display: none;">
                     <i class="fas fa-ad"></i>
                     <p>Ad service not available</p>
@@ -900,170 +871,41 @@
             notification: document.getElementById('notification'),
             claimBonus: document.getElementById('claim-bonus'),
             inventoryItems: document.getElementById('inventory-items'),
-            adStatus: document.getElementById('ad-status'),
-            adDebug: document.getElementById('ad-debug'),
             adFallback: document.getElementById('ad-fallback')
-        };
-
-        // Ad Debugging Variables
-        let adDebugInfo = {
-            lastError: null,
-            lastAttempt: null,
-            adReady: false,
-            adAttempts: 0,
-            lastMessage: null
         };
 
         // Ad Controller
         let AdController;
 
-        // Enhanced Ad Initialization
+        // Initialize Ads
         function initializeAds() {
-            updateAdStatus("Initializing ad service...");
-            logDebug("Starting ad service initialization");
-            
             try {
                 if (typeof window.Adsgram === 'undefined') {
-                    throw new Error("AdsGram SDK not loaded - check network tab");
+                    elements.adFallback.style.display = 'block';
+                    return;
                 }
                 
-                logDebug("AdsGram SDK found, initializing...");
                 AdController = window.Adsgram.init({ 
-                    blockId: "int-10219",  // Updated block ID
+                    blockId: "int-10219",
                     token: "c09d7615fad343138a7a0bcc42ee4c6f",
                     onReady: function() {
-                        adDebugInfo.adReady = true;
-                        updateAdStatus("Ad service ready");
+                        console.log("AdsGram SDK ready");
                         elements.adFallback.style.display = 'none';
-                        logDebug("Ad service initialized successfully");
                     },
                     onError: function(error) {
-                        adDebugInfo.lastError = error;
-                        updateAdStatus("Ad service error - using fallback");
+                        console.error("AdsGram error:", error);
                         elements.adFallback.style.display = 'block';
-                        logDebug("Ad initialization failed: " + error.message);
                     }
                 });
             } catch (error) {
-                adDebugInfo.lastError = error;
-                updateAdStatus("Ad service failed to load");
+                console.error("Failed to initialize AdsGram:", error);
                 elements.adFallback.style.display = 'block';
-                logDebug("Ad initialization error: " + error.message);
             }
-        }
-
-        // Enhanced Ad Watching Function
-        function watchAdForTokens() {
-            adDebugInfo.adAttempts++;
-            adDebugInfo.lastAttempt = new Date().toISOString();
-            logDebug(`Starting ad attempt #${adDebugInfo.adAttempts}`);
-            
-            // Show loading indicator
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'ad-loading';
-            loadingDiv.innerHTML = `
-                <div class="ad-loading-spinner"></div>
-                <p>Loading ad...</p>
-                <div id="ad-loading-debug" style="margin: 10px; font-size: 12px;"></div>
-                <button onclick="this.parentNode.remove()" class="action-button" style="margin-top: 20px;">
-                    Cancel
-                </button>
-            `;
-            document.body.appendChild(loadingDiv);
-            
-            const debugElement = loadingDiv.querySelector('#ad-loading-debug');
-            
-            // Set timeout
-            const adTimeout = setTimeout(() => {
-                loadingDiv.remove();
-                updateAdStatus("Ad timed out");
-                logDebug("Ad request timed out after 15 seconds");
-                giveFallbackTokens();
-            }, 15000);
-
-            // Check ad availability first
-            debugElement.textContent = "Checking ad availability...";
-            
-            if (!AdController) {
-                loadingDiv.remove();
-                updateAdStatus("Ad service not initialized");
-                logDebug("AdController not initialized - check initialization");
-                giveFallbackTokens();
-                return;
-            }
-
-            AdController.isAdAvailable()
-                .then(available => {
-                    debugElement.textContent += "\nAd available: " + available;
-                    if (!available) {
-                        throw new Error("No ads available (fill)");
-                    }
-                    debugElement.textContent += "\nShowing ad...";
-                    return AdController.showAd();
-                })
-                .then(() => {
-                    clearTimeout(adTimeout);
-                    loadingDiv.remove();
-                    
-                    // Award tokens
-                    const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-                    const tokensEarned = Math.floor(15 * multiplier);
-                    gameState.tokens += tokensEarned;
-                    updateTokenDisplay();
-                    
-                    updateAdStatus("Ad completed successfully");
-                    logDebug(`Ad completed - awarded ${tokensEarned} tokens`);
-                    showNotification(`+${tokensEarned} Tokens earned!`);
-                    saveGame();
-                })
-                .catch(error => {
-                    clearTimeout(adTimeout);
-                    loadingDiv.remove();
-                    adDebugInfo.lastError = error;
-                    
-                    let errorMsg = "Ad error";
-                    if (error.message.includes("no fill")) {
-                        errorMsg = "No ads available";
-                    } else if (error.message.includes("network")) {
-                        errorMsg = "Network error";
-                    } else if (error.message.includes("block")) {
-                        errorMsg = "Ad blocked by browser";
-                    }
-                    
-                    updateAdStatus(errorMsg);
-                    logDebug(`Ad failed: ${error.message}`);
-                    debugElement.textContent += `\nError: ${error.message}`;
-                    giveFallbackTokens();
-                });
-        }
-
-        // Helper Functions
-        function updateAdStatus(message) {
-            elements.adStatus.textContent = `Ad service: ${message}`;
-        }
-
-        function logDebug(message) {
-            adDebugInfo.lastMessage = message;
-            const debugElement = elements.adDebug;
-            debugElement.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${message}</div>`;
-            debugElement.scrollTop = debugElement.scrollHeight;
-        }
-
-        function toggleDebug() {
-            elements.adDebug.style.display = elements.adDebug.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function giveFallbackTokens() {
-            const tokens = 10;
-            gameState.tokens += tokens;
-            updateTokenDisplay();
-            showNotification(`+${tokens} Tokens (ad fallback)`);
-            saveGame();
-            logDebug(`Fallback tokens awarded: ${tokens}`);
         }
 
         // Initialize the game
         function initGame() {
+            initializeAds();
             updateTokenDisplay();
             createWheel();
             generateBubbles();
@@ -1083,14 +925,6 @@
                 } catch (e) {
                     console.error('Failed to load game:', e);
                 }
-            }
-            
-            // Initialize ads last
-            initializeAds();
-            
-            // Show debug info if URL has debug parameter
-            if (window.location.search.includes('debug=1')) {
-                toggleDebug();
             }
         }
 
@@ -1293,6 +1127,95 @@
                 elements.castButton.disabled = false;
             }, 500);
             
+            saveGame();
+        }
+
+        // Watch ad for tokens
+        function watchAdForTokens() {
+            // Check if ads are supported at all
+            if (typeof window.Adsgram === 'undefined') {
+                showNotification("Ad service not supported in this environment");
+                giveFallbackTokens();
+                return;
+            }
+
+            // Show loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'ad-loading';
+            loadingDiv.innerHTML = `
+                <div class="ad-loading-spinner"></div>
+                <p>Loading ad...</p>
+                <button onclick="this.parentNode.remove()" style="
+                    background: #ff4757;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    margin-top: 20px;
+                    cursor: pointer;
+                ">Cancel</button>
+            `;
+            document.body.appendChild(loadingDiv);
+
+            // Set timeout in case ad fails to load
+            const adTimeout = setTimeout(() => {
+                loadingDiv.remove();
+                showNotification("Ad loading timed out. Please try again.");
+                giveFallbackTokens();
+            }, 15000);
+
+            // First check if ads are available
+            AdController.isAdAvailable()
+                .then((available) => {
+                    if (!available) {
+                        throw new Error('No ads available');
+                    }
+                    
+                    // Show the ad
+                    return AdController.showAd();
+                })
+                .then(() => {
+                    // Ad was shown successfully
+                    clearTimeout(adTimeout);
+                    loadingDiv.remove();
+                    
+                    // Award tokens
+                    const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+                    const tokensEarned = Math.floor(15 * multiplier);
+                    
+                    gameState.tokens += tokensEarned;
+                    updateTokenDisplay();
+                    showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
+                    saveGame();
+                })
+                .catch(error => {
+                    // Ad failed to show
+                    clearTimeout(adTimeout);
+                    loadingDiv.remove();
+                    console.error('Ad error:', error);
+                    
+                    // Specific error messages
+                    if (error.message && (error.message.includes('no fill') || 
+                        error.message.includes('No ads available'))) {
+                        showNotification('No ads available right now. Please try later.');
+                    } else if (error.message && error.message.includes('network')) {
+                        showNotification('Network error. Please check your connection.');
+                    } else if (error.message && error.message.includes('Ad blocked')) {
+                        showNotification('Ad was blocked. Please disable ad blockers.');
+                    } else {
+                        showNotification('Ad failed to load. Please try again.');
+                    }
+                    
+                    // Give fallback tokens
+                    giveFallbackTokens();
+                });
+        }
+
+        // Fallback token reward
+        function giveFallbackTokens() {
+            gameState.tokens += 10;
+            updateTokenDisplay();
+            showNotification("+10 Tokens for your patience!");
             saveGame();
         }
 
