@@ -559,6 +559,16 @@
             margin-bottom: 20px;
         }
 
+        .cancel-ad-button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
         .ad-placeholder {
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
@@ -614,6 +624,13 @@
 </head>
 <body>
     <div class="notification" id="notification"></div>
+    <div id="ad-loading" class="ad-loading" style="display: none;">
+        <div class="ad-loading-spinner"></div>
+        <p>Loading ad...</p>
+        <button onclick="cancelAdLoad()" class="cancel-ad-button">
+            Cancel
+        </button>
+    </div>
 
     <div class="container">
         <header>
@@ -660,7 +677,7 @@
                     </div>
                 </div>
                 
-                <button class="action-button" onclick="watchAdForTokens()">
+                <button class="action-button" onclick="showRewardedAd()">
                     <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
                 </button>
                 <div id="ad-fallback" class="ad-placeholder" style="display: none;">
@@ -723,7 +740,7 @@
                     </div>
                 </div>
                 
-                <button class="action-button" onclick="watchAdForTokens()">
+                <button class="action-button" onclick="showRewardedAd()">
                     <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
                 </button>
             </div>
@@ -835,7 +852,8 @@
                 multiplier: { level: 0, max: 3, cost: 100 }
             },
             lastBonusClaim: null,
-            streak: 0
+            streak: 0,
+            lastAdShown: 0
         };
 
         // Prize Configuration
@@ -871,48 +889,14 @@
             notification: document.getElementById('notification'),
             claimBonus: document.getElementById('claim-bonus'),
             inventoryItems: document.getElementById('inventory-items'),
-            adFallback: document.getElementById('ad-fallback')
+            adFallback: document.getElementById('ad-fallback'),
+            adLoading: document.getElementById('ad-loading')
         };
 
         // Ad Controller
         let AdController;
-
-        // Initialize Ads
-        function initializeAds() {
-    if (!window.Adsgram || typeof window.Adsgram.init !== 'function') {
-        console.warn("AdsGram script not loaded.");
-        elements.adFallback.style.display = 'block';
-        return;
-    }
-
-    try {
-        AdController = window.Adsgram.init({
-            blockId: "int-10256"
-        });
-
-        console.log("AdsGram initialized successfully");
-        elements.adFallback.style.display = 'none';
-    } catch (error) {
-        console.error("AdsGram init error:", error);
-        elements.adFallback.style.display = 'block';
-    }
-}AdController = window.Adsgram.init({ 
-                    blockId: "int-10256",
-                    token: "bf42d66053de490ebe3335c8c331496b",
-                    onReady: function() {
-                        console.log("AdsGram SDK ready");
-                        elements.adFallback.style.display = 'none';
-                    },
-                    onError: function(error) {
-                        console.error("AdsGram error:", error);
-                        elements.adFallback.style.display = 'block';
-                    }
-                });
-            } catch (error) {
-                console.error("Failed to initialize AdsGram:", error);
-                elements.adFallback.style.display = 'block';
-            }
-        }
+        let adTimeout;
+        const AD_COOLDOWN = 30000; // 30 seconds between ads
 
         // Initialize the game
         function initGame() {
@@ -921,22 +905,156 @@
             createWheel();
             generateBubbles();
             renderInventory();
+            loadGame();
+        }
+
+        // Initialize Ads with enhanced error handling
+        function initializeAds() {
+            try {
+                if (typeof window.Adsgram === 'undefined') {
+                    console.error("AdsGram SDK not loaded");
+                    showFallbackAdOption();
+                    return;
+                }
+                
+                AdController = window.Adsgram.init({ 
+                    blockId: "int-10256",
+                    token: "bf42d66053de490ebe3335c8c331496b",
+                    onReady: function() {
+                        console.log("AdsGram SDK ready");
+                        hideFallbackAdOption();
+                        tryShowInterstitial(); // Try to show ad immediately if ready
+                    },
+                    onError: function(error) {
+                        console.error("AdsGram initialization error:", error);
+                        showFallbackAdOption();
+                    }
+                });
+            } catch (error) {
+                console.error("Failed to initialize AdsGram:", error);
+                showFallbackAdOption();
+            }
+        }
+
+        // Try to show interstitial ad with cooldown
+        function tryShowInterstitial() {
+            const now = Date.now();
+            if (now - gameState.lastAdShown < AD_COOLDOWN) {
+                console.log("Ad cooldown active");
+                return;
+            }
             
-            // Check for saved game
-            const savedGame = localStorage.getItem('cryptoFortuneSave');
-            if (savedGame) {
-                try {
-                    const parsed = JSON.parse(savedGame);
-                    Object.assign(gameState, parsed);
-                    updateTokenDisplay();
-                    updateFishingProgress();
-                    updateSpinProgress();
-                    renderInventory();
-                    showNotification('Game loaded successfully!');
-                } catch (e) {
-                    console.error('Failed to load game:', e);
+            if (!AdController) {
+                console.log("AdController not initialized");
+                return;
+            }
+
+            showAdLoading(true);
+            gameState.lastAdShown = now;
+            
+            adTimeout = setTimeout(() => {
+                handleAdError(new Error("Ad loading timeout"));
+            }, 10000);
+
+            AdController.isAdAvailable()
+                .then(available => {
+                    if (!available) throw new Error("No ads available");
+                    return AdController.showAd();
+                })
+                .then(() => {
+                    clearTimeout(adTimeout);
+                    showAdLoading(false);
+                    console.log("Interstitial ad shown successfully");
+                    // Optional: Reward player for watching ad
+                    grantAdReward(5); // Small reward for interstitial
+                })
+                .catch(error => {
+                    clearTimeout(adTimeout);
+                    showAdLoading(false);
+                    handleAdError(error);
+                });
+        }
+
+        // Show rewarded ad for token rewards
+        function showRewardedAd() {
+            showAdLoading(true);
+            
+            adTimeout = setTimeout(() => {
+                handleAdError(new Error("Ad loading timeout"));
+            }, 15000);
+
+            AdController.isAdAvailable()
+                .then(available => {
+                    if (!available) throw new Error("No ads available");
+                    return AdController.showRewardedAd();
+                })
+                .then(() => {
+                    clearTimeout(adTimeout);
+                    showAdLoading(false);
+                    grantAdReward(15); // Standard reward for watching ad
+                })
+                .catch(error => {
+                    clearTimeout(adTimeout);
+                    showAdLoading(false);
+                    handleAdError(error);
+                });
+        }
+
+        function cancelAdLoad() {
+            clearTimeout(adTimeout);
+            showAdLoading(false);
+            showNotification("Ad loading cancelled");
+        }
+
+        function grantAdReward(baseAmount) {
+            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+            const tokensEarned = Math.floor(baseAmount * multiplier);
+            
+            gameState.tokens += tokensEarned;
+            updateTokenDisplay();
+            showNotification(`+${tokensEarned} Tokens earned!`);
+            saveGame();
+        }
+
+        function handleAdError(error) {
+            let errorMessage = "Ad failed to load. Please try again.";
+            
+            if (error.message) {
+                if (error.message.includes('no fill')) {
+                    errorMessage = "No ads available right now";
+                } else if (error.message.includes('network')) {
+                    errorMessage = "Network error. Check your connection";
+                } else if (error.message.includes('Ad blocked')) {
+                    errorMessage = "Please disable ad blockers";
+                } else if (error.message.includes('timeout')) {
+                    errorMessage = "Ad loading took too long";
                 }
             }
+            
+            showNotification(errorMessage);
+            showFallbackAdOption();
+        }
+
+        function showFallbackAdOption() {
+            elements.adFallback.style.display = 'block';
+        }
+
+        function hideFallbackAdOption() {
+            elements.adFallback.style.display = 'none';
+        }
+
+        function giveFallbackTokens() {
+            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+            const tokens = Math.floor(10 * multiplier);
+            
+            gameState.tokens += tokens;
+            updateTokenDisplay();
+            showNotification(`+${tokens} Tokens (ad not available)`);
+            saveGame();
+        }
+
+        function showAdLoading(show) {
+            elements.adLoading.style.display = show ? 'flex' : 'none';
         }
 
         // Create the wheel segments
@@ -985,6 +1103,11 @@
             elements.spinButton.disabled = true;
             elements.spinResult.textContent = 'Spinning...';
             
+            // Try to show interstitial every 2 spins
+            if (gameState.spinCount % 2 === 0) {
+                tryShowInterstitial();
+            }
+
             // Random spin with momentum
             const spinDegrees = 3600 + Math.floor(Math.random() * 3600);
             elements.wheel.style.transform = `rotate(${spinDegrees}deg)`;
@@ -995,7 +1118,7 @@
                 const winningIndex = Math.floor(normalizedDegrees / segmentAngle);
                 const prize = wheelPrizes[winningIndex];
                 
-                // Award prize
+                // Award prize with multiplier
                 const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
                 const tokensWon = Math.floor(prize.value * multiplier);
                 gameState.tokens += tokensWon;
@@ -1088,8 +1211,10 @@
             fish.style.top = `${Math.random() * (pondHeight - fishSize)}px`;
             fish.style.left = `-${fishSize}px`;
             
-            // Animation based on fish type
-            const duration = 3000 - (gameState.upgrades.reeling.level * 400);
+            // Animation based on fish type and upgrades
+            const baseDuration = 3000;
+            const reelingBonus = gameState.upgrades.reeling.level * 400;
+            const duration = Math.max(1000, baseDuration - reelingBonus);
             fish.style.transition = `left ${duration}ms linear`;
             
             // Add click handler
@@ -1116,7 +1241,7 @@
             // Add caught animation
             fishElement.classList.add('caught');
             
-            // Award tokens and XP
+            // Award tokens and XP with multiplier
             const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
             const tokensEarned = Math.floor(fishType.value * multiplier);
             
@@ -1141,102 +1266,16 @@
             saveGame();
         }
 
-        // Watch ad for tokens
-        function watchAdForTokens() {
-            // Check if ads are supported at all
-            if (typeof window.Adsgram === 'undefined') {
-                showNotification("Ad service not supported in this environment");
-                giveFallbackTokens();
-                return;
-            }
-
-            // Show loading indicator
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'ad-loading';
-            loadingDiv.innerHTML = `
-                <div class="ad-loading-spinner"></div>
-                <p>Loading ad...</p>
-                <button onclick="this.parentNode.remove()" style="
-                    background: #ff4757;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    margin-top: 20px;
-                    cursor: pointer;
-                ">Cancel</button>
-            `;
-            document.body.appendChild(loadingDiv);
-
-            // Set timeout in case ad fails to load
-            const adTimeout = setTimeout(() => {
-                loadingDiv.remove();
-                showNotification("Ad loading timed out. Please try again.");
-                giveFallbackTokens();
-            }, 15000);
-
-            // First check if ads are available
-            AdController.isAdAvailable()
-                .then((available) => {
-                    if (!available) {
-                        throw new Error('No ads available');
-                    }
-                    
-                    // Show the ad
-                    return AdController.showAd();
-                })
-                .then(() => {
-                    // Ad was shown successfully
-                    clearTimeout(adTimeout);
-                    loadingDiv.remove();
-                    
-                    // Award tokens
-                    const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-                    const tokensEarned = Math.floor(15 * multiplier);
-                    
-                    gameState.tokens += tokensEarned;
-                    updateTokenDisplay();
-                    showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
-                    saveGame();
-                })
-                .catch(error => {
-                    // Ad failed to show
-                    clearTimeout(adTimeout);
-                    loadingDiv.remove();
-                    console.error('Ad error:', error);
-                    
-                    // Specific error messages
-                    if (error.message && (error.message.includes('no fill') || 
-                        error.message.includes('No ads available'))) {
-                        showNotification('No ads available right now. Please try later.');
-                    } else if (error.message && error.message.includes('network')) {
-                        showNotification('Network error. Please check your connection.');
-                    } else if (error.message && error.message.includes('Ad blocked')) {
-                        showNotification('Ad was blocked. Please disable ad blockers.');
-                    } else {
-                        showNotification('Ad failed to load. Please try again.');
-                    }
-                    
-                    // Give fallback tokens
-                    giveFallbackTokens();
-                });
-        }
-
-        // Fallback token reward
-        function giveFallbackTokens() {
-            gameState.tokens += 10;
-            updateTokenDisplay();
-            showNotification("+10 Tokens for your patience!");
-            saveGame();
-        }
-
         // Claim daily bonus
         function claimDailyBonus() {
-            gameState.tokens += 50;
+            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+            const bonusAmount = Math.floor(50 * multiplier);
+            
+            gameState.tokens += bonusAmount;
             updateTokenDisplay();
             elements.claimBonus.disabled = true;
             elements.claimBonus.innerHTML = '<i class="fas fa-check"></i> BONUS CLAIMED';
-            showNotification('Daily bonus claimed! +50 Tokens');
+            showNotification(`Daily bonus claimed! +${bonusAmount} Tokens`);
             
             // Update streak
             const today = new Date().toDateString();
@@ -1365,13 +1404,36 @@
                 
                 // Remove after animation
                 setTimeout(() => {
-                    bubble.remove();
+                    if (bubble.parentNode) {
+                        bubble.remove();
+                    }
                 }, duration * 1000);
             }
         }
 
         function saveGame() {
-            localStorage.setItem('cryptoFortuneSave', JSON.stringify(gameState));
+            try {
+                localStorage.setItem('cryptoFortuneSave', JSON.stringify(gameState));
+            } catch (e) {
+                console.error('Failed to save game:', e);
+            }
+        }
+
+        function loadGame() {
+            const savedGame = localStorage.getItem('cryptoFortuneSave');
+            if (savedGame) {
+                try {
+                    const parsed = JSON.parse(savedGame);
+                    Object.assign(gameState, parsed);
+                    updateTokenDisplay();
+                    updateFishingProgress();
+                    updateSpinProgress();
+                    renderInventory();
+                    showNotification('Game loaded successfully!');
+                } catch (e) {
+                    console.error('Failed to load game:', e);
+                }
+            }
         }
 
         // Event listeners
