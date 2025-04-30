@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Fortune | Spin & Fish</title>
     <!-- AdsGram SDK -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <script src="https://sdk.adsgram.io/adsgram.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -962,7 +962,7 @@
                     return;
                 }
                 
-                AdController = window.Adsgram.init({
+                AdController = new Adsgram({
                     blockId: AD_CONFIG.blockId,
                     token: AD_CONFIG.token,
                     onReady: function() {
@@ -1027,18 +1027,18 @@
                         throw new Error("No ads available after retries");
                     }
                     
-                    return AdController.showRewardedAd({
-                        onAdDismissed: () => {
+                    return AdController.showRewarded().then(() => {
+                        // onAdDismissed not used in new SDK
                             clearTimeout(adTimeout);
                             showAdLoading(false);
                             showNotification("Ad dismissed - no reward given");
                         },
-                        onAdFailed: (error) => {
+                        // onAdFailed not used in new SDK
                             clearTimeout(adTimeout);
                             showAdLoading(false);
                             handleAdError(error);
                         },
-                        onAdRewarded: () => {
+                        
                             clearTimeout(adTimeout);
                             showAdLoading(false);
                             grantAdReward(AD_CONFIG.rewardedAdReward);
