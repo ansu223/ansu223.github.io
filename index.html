@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Fortune | Spin & Fish</title>
     <!-- AdsGram SDK -->
-    <script src="https://sdk.adsgram.io/adsgram.min.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Telegram WebApp script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --primary: #6c5ce7;
@@ -540,49 +542,23 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10000;
+            z-index: 1000;
             flex-direction: column;
             color: white;
         }
         
-        .ad-loading-content {
-            text-align: center;
-            max-width: 80%;
-        }
-        
         .ad-loading-spinner {
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-top-color: var(--primary);
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #6c5ce7;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        .ad-loading-message {
             margin-bottom: 20px;
-            font-size: 18px;
-        }
-        
-        .ad-loading-tip {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 20px;
-        }
-
-        .cancel-ad-button {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            margin-top: 20px;
-            cursor: pointer;
         }
 
         .ad-placeholder {
@@ -598,6 +574,11 @@
             font-size: 40px;
             color: #6c5ce7;
             margin-bottom: 10px;
+        }
+
+        .telegram-button {
+            background: #0088cc;
+            color: white;
         }
 
         @keyframes slideDown {
@@ -640,16 +621,6 @@
 </head>
 <body>
     <div class="notification" id="notification"></div>
-    <div id="ad-loading" class="ad-loading" style="display: none;">
-        <div class="ad-loading-content">
-            <div class="ad-loading-spinner"></div>
-            <div class="ad-loading-message" id="ad-loading-message">Loading ad...</div>
-            <div class="ad-loading-tip">Please wait while we load your reward</div>
-            <button onclick="cancelAdLoad()" class="cancel-ad-button">
-                <i class="fas fa-times"></i> Cancel
-            </button>
-        </div>
-    </div>
 
     <div class="container">
         <header>
@@ -696,18 +667,15 @@
                     </div>
                 </div>
                 
-                <button class="action-button" onclick="showRewardedAd()">
-                    <i class="fas fa-ad"></i> WATCH AD FOR 25 TOKENS
+                <button class="action-button" id="watch-ad-button" onclick="watchAdForTokens()">
+                    <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
                 </button>
                 <div id="ad-fallback" class="ad-placeholder" style="display: none;">
                     <i class="fas fa-ad"></i>
                     <p>Ad service not available</p>
                     <button onclick="giveFallbackTokens()" class="action-button">
-                        <i class="fas fa-coins"></i> Get 12 Tokens
+                        Click for free tokens
                     </button>
-                    <p style="font-size: 12px; margin-top: 10px;">
-                        Try again later for video ads with bigger rewards!
-                    </p>
                 </div>
             </div>
             
@@ -762,8 +730,8 @@
                     </div>
                 </div>
                 
-                <button class="action-button" onclick="showRewardedAd()">
-                    <i class="fas fa-ad"></i> WATCH AD FOR 25 TOKENS
+                <button class="action-button" onclick="watchAdForTokens()">
+                    <i class="fas fa-ad"></i> WATCH AD FOR TOKENS
                 </button>
             </div>
             
@@ -874,8 +842,7 @@
                 multiplier: { level: 0, max: 3, cost: 100 }
             },
             lastBonusClaim: null,
-            streak: 0,
-            lastAdShown: 0
+            streak: 0
         };
 
         // Prize Configuration
@@ -895,17 +862,6 @@
             { emoji: "🦈", name: "Shark", value: 50, rarity: 2 }
         ];
 
-        // Ad Configuration
-        const AD_CONFIG = {
-            blockId: "int-10256",
-            token: "bf42d66053de490ebe3335c8c331496b",
-            rewardedAdReward: 25, // Tokens for completing a rewarded ad
-            fallbackReward: 12, // Tokens when ads aren't available
-            interstitialCooldown: 30000, // 30 seconds
-            adLoadTimeout: 15000, // 15 seconds
-            maxRetries: 2
-        };
-
         // DOM Elements
         const elements = {
             tokenCount: document.getElementById('token-count'),
@@ -923,248 +879,86 @@
             claimBonus: document.getElementById('claim-bonus'),
             inventoryItems: document.getElementById('inventory-items'),
             adFallback: document.getElementById('ad-fallback'),
-            adLoading: document.getElementById('ad-loading'),
-            adLoadingMessage: document.getElementById('ad-loading-message')
+            watchAdButton: document.getElementById('watch-ad-button')
         };
 
         // Ad Controller
         let AdController;
-        let adRetryCount = 0;
-        let isAdInitialized = false;
-        let adTimeout;
+        let isTelegram = false;
 
         // Initialize the game
         function initGame() {
+            // Check if we're in Telegram Mini App
+            isTelegram = window.Telegram && window.Telegram.WebApp;
+            
+            if (isTelegram) {
+                // Expand the Mini App to full view
+                Telegram.WebApp.expand();
+                
+                // Update UI for Telegram
+                elements.watchAdButton.classList.add('telegram-button');
+                elements.watchAdButton.innerHTML = '<i class="fab fa-telegram"></i> WATCH AD FOR TOKENS';
+                
+                // Initialize Telegram WebApp
+                Telegram.WebApp.ready();
+                console.log("Telegram WebApp initialized");
+            }
+            
             initializeAds();
             updateTokenDisplay();
             createWheel();
             generateBubbles();
             renderInventory();
-            loadGame();
             
-            // Add event listener for when app becomes visible again
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    // Try to preload an ad when user returns to app
-                    setTimeout(preloadAd, 1000);
+            // Check for saved game
+            const savedGame = localStorage.getItem('cryptoFortuneSave');
+            if (savedGame) {
+                try {
+                    const parsed = JSON.parse(savedGame);
+                    Object.assign(gameState, parsed);
+                    updateTokenDisplay();
+                    updateFishingProgress();
+                    updateSpinProgress();
+                    renderInventory();
+                    showNotification('Game loaded successfully!');
+                } catch (e) {
+                    console.error('Failed to load game:', e);
                 }
-            });
+            }
         }
 
-        // Initialize the Ads with better error handling
+        // Initialize Ads with Telegram support
         function initializeAds() {
-            if (isAdInitialized) return;
-            
             try {
                 if (typeof window.Adsgram === 'undefined') {
-                    console.error("AdsGram SDK not loaded");
-                    showFallbackAdOption();
+                    elements.adFallback.style.display = 'block';
                     return;
                 }
                 
-                AdController = new Adsgram({
-                    blockId: AD_CONFIG.blockId,
-                    token: AD_CONFIG.token,
+                const config = {
+                    blockId: "int-10256",
+                    token: "bf42d66053de490ebe3335c8c331496b",
                     onReady: function() {
                         console.log("AdsGram SDK ready");
-                        isAdInitialized = true;
-                        hideFallbackAdOption();
-                        // Preload an ad for better user experience
-                        preloadAd();
+                        elements.adFallback.style.display = 'none';
                     },
                     onError: function(error) {
-                        console.error("AdsGram initialization error:", error);
-                        handleAdError(error);
+                        console.error("AdsGram error:", error);
+                        elements.adFallback.style.display = 'block';
                     }
-                });
+                };
+                
+                // Add Telegram-specific configuration if needed
+                if (isTelegram) {
+                    config.platform = 'telegram';
+                    config.adFormat = 'native';
+                }
+                
+                AdController = window.Adsgram.init(config);
+                
             } catch (error) {
                 console.error("Failed to initialize AdsGram:", error);
-                handleAdError(error);
-            }
-        }
-
-        // Preload an ad for faster display later
-        function preloadAd() {
-            if (!AdController || !isAdInitialized) return;
-            
-            AdController.preloadAd()
-                .then(() => console.log("Ad preloaded successfully"))
-                .catch(error => console.log("Ad preload failed:", error));
-        }
-
-        // Show rewarded ad with enhanced flow
-        function showRewardedAd() {
-            if (!isAdInitialized) {
-                showNotification("Ads are still initializing. Please try again shortly.");
-                initializeAds(); // Attempt to initialize again
-                return;
-            }
-
-            // Check if user has recently watched an ad
-            const now = Date.now();
-            if (now - gameState.lastAdShown < AD_CONFIG.interstitialCooldown) {
-                const secondsLeft = Math.ceil((AD_CONFIG.interstitialCooldown - (now - gameState.lastAdShown)) / 1000);
-                showNotification(`Please wait ${secondsLeft} seconds before watching another ad`);
-                return;
-            }
-
-            showAdLoading(true);
-            elements.adLoadingMessage.textContent = "Loading ad...";
-            
-            adTimeout = setTimeout(() => {
-                handleAdError(new Error("Ad loading timeout"));
-            }, AD_CONFIG.adLoadTimeout);
-
-            AdController.isAdAvailable()
-                .then(available => {
-                    if (!available) {
-                        if (adRetryCount < AD_CONFIG.maxRetries) {
-                            adRetryCount++;
-                            console.log(`Retrying ad load (attempt ${adRetryCount})`);
-                            elements.adLoadingMessage.textContent = `Loading ad... (Attempt ${adRetryCount + 1})`;
-                            return showRewardedAd(); // Recursive retry
-                        }
-                        throw new Error("No ads available after retries");
-                    }
-                    
-                    return AdController.showRewarded().then(() => {
-                        // onAdDismissed not used in new SDK
-                            clearTimeout(adTimeout);
-                            showAdLoading(false);
-                            showNotification("Ad dismissed - no reward given");
-                        },
-                        // onAdFailed not used in new SDK
-                            clearTimeout(adTimeout);
-                            showAdLoading(false);
-                            handleAdError(error);
-                        },
-                        
-                            clearTimeout(adTimeout);
-                            showAdLoading(false);
-                            grantAdReward(AD_CONFIG.rewardedAdReward);
-                            gameState.lastAdShown = Date.now();
-                            adRetryCount = 0; // Reset retry counter on success
-                            
-                            // Preload next ad for better UX
-                            setTimeout(preloadAd, 1000);
-                        }
-                    });
-                })
-                .catch(error => {
-                    clearTimeout(adTimeout);
-                    showAdLoading(false);
-                    handleAdError(error);
-                });
-        }
-
-        function cancelAdLoad() {
-            clearTimeout(adTimeout);
-            showAdLoading(false);
-            showNotification("Ad loading cancelled");
-            adRetryCount = 0;
-        }
-
-        // Improved ad reward handling
-        function grantAdReward(baseAmount) {
-            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-            const tokensEarned = Math.floor(baseAmount * multiplier);
-            
-            gameState.tokens += tokensEarned;
-            updateTokenDisplay();
-            
-            // Show a more engaging reward notification
-            const rewardMsg = document.createElement('div');
-            rewardMsg.innerHTML = `
-                <div style="font-size: 18px; margin-bottom: 5px;">🎉 Ad Reward! 🎉</div>
-                <div style="font-weight: bold; color: var(--warning); font-size: 20px;">
-                    +${tokensEarned} Tokens
-                </div>
-                ${gameState.upgrades.multiplier.level > 0 ? 
-                  `<div style="font-size: 12px; margin-top: 5px;">
-                    (Includes ${Math.floor((multiplier-1)*100)}% multiplier bonus)
-                   </div>` : ''}
-            `;
-            
-            showNotificationElement(rewardMsg, 4000);
-            saveGame();
-        }
-
-        // Enhanced error handling
-        function handleAdError(error) {
-            let errorMessage = "Ad failed to load. Please try again.";
-            let showFallback = true;
-            
-            if (error.message) {
-                if (error.message.includes('no fill')) {
-                    errorMessage = "No ads available right now";
-                } else if (error.message.includes('network')) {
-                    errorMessage = "Network error. Check your connection";
-                } else if (error.message.includes('Ad blocked')) {
-                    errorMessage = "Please disable ad blockers";
-                    showFallback = false;
-                } else if (error.message.includes('timeout')) {
-                    errorMessage = "Ad loading took too long";
-                } else if (error.message.includes('not initialized')) {
-                    errorMessage = "Ads system initializing...";
-                    initializeAds(); // Try to initialize again
-                    showFallback = false;
-                }
-            }
-            
-            showNotification(errorMessage);
-            if (showFallback) showFallbackAdOption();
-        }
-
-        // Improved notification system
-        function showNotificationElement(element, duration = 3000) {
-            elements.notification.innerHTML = '';
-            elements.notification.appendChild(element);
-            elements.notification.style.display = 'block';
-            
-            setTimeout(() => {
-                elements.notification.style.display = 'none';
-            }, duration);
-        }
-
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            showNotificationElement(notification);
-        }
-
-        // Fallback ad option
-        function showFallbackAdOption() {
-            elements.adFallback.style.display = 'block';
-        }
-
-        function hideFallbackAdOption() {
-            elements.adFallback.style.display = 'none';
-        }
-
-        function giveFallbackTokens() {
-            const baseAmount = AD_CONFIG.fallbackReward;
-            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-            const tokens = Math.floor(baseAmount * multiplier);
-            
-            gameState.tokens += tokens;
-            updateTokenDisplay();
-            
-            const rewardMsg = document.createElement('div');
-            rewardMsg.innerHTML = `
-                <div style="margin-bottom: 5px;">Alternative Reward:</div>
-                <div style="font-weight: bold; color: var(--warning);">
-                    +${tokens} Tokens
-                </div>
-            `;
-            
-            showNotificationElement(rewardMsg);
-            saveGame();
-        }
-
-        function showAdLoading(show) {
-            elements.adLoading.style.display = show ? 'flex' : 'none';
-            if (!show) {
-                adRetryCount = 0; // Reset retry counter when hiding
+                elements.adFallback.style.display = 'block';
             }
         }
 
@@ -1214,22 +1008,6 @@
             elements.spinButton.disabled = true;
             elements.spinResult.textContent = 'Spinning...';
             
-            // Try to show interstitial every 2 spins
-            if (gameState.spinCount % 2 === 0) {
-                setTimeout(() => {
-                    if (isAdInitialized) {
-                        AdController.isAdAvailable()
-                            .then(available => {
-                                if (available) {
-                                    AdController.showAd()
-                                        .then(() => console.log("Interstitial ad shown"))
-                                        .catch(e => console.log("Interstitial failed:", e));
-                                }
-                            });
-                    }
-                }, 1000);
-            }
-
             // Random spin with momentum
             const spinDegrees = 3600 + Math.floor(Math.random() * 3600);
             elements.wheel.style.transform = `rotate(${spinDegrees}deg)`;
@@ -1240,7 +1018,7 @@
                 const winningIndex = Math.floor(normalizedDegrees / segmentAngle);
                 const prize = wheelPrizes[winningIndex];
                 
-                // Award prize with multiplier
+                // Award prize
                 const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
                 const tokensWon = Math.floor(prize.value * multiplier);
                 gameState.tokens += tokensWon;
@@ -1333,10 +1111,8 @@
             fish.style.top = `${Math.random() * (pondHeight - fishSize)}px`;
             fish.style.left = `-${fishSize}px`;
             
-            // Animation based on fish type and upgrades
-            const baseDuration = 3000;
-            const reelingBonus = gameState.upgrades.reeling.level * 400;
-            const duration = Math.max(1000, baseDuration - reelingBonus);
+            // Animation based on fish type
+            const duration = 3000 - (gameState.upgrades.reeling.level * 400);
             fish.style.transition = `left ${duration}ms linear`;
             
             // Add click handler
@@ -1363,7 +1139,7 @@
             // Add caught animation
             fishElement.classList.add('caught');
             
-            // Award tokens and XP with multiplier
+            // Award tokens and XP
             const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
             const tokensEarned = Math.floor(fishType.value * multiplier);
             
@@ -1388,16 +1164,123 @@
             saveGame();
         }
 
+        // Watch ad for tokens - now with Telegram support
+        async function watchAdForTokens() {
+            // Create loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'ad-loading';
+            loadingDiv.innerHTML = `
+                <div class="ad-loading-spinner"></div>
+                <p>Loading ad...</p>
+                <button onclick="this.parentNode.remove()" style="
+                    background: #ff4757;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    margin-top: 20px;
+                    cursor: pointer;
+                ">Cancel</button>
+            `;
+            document.body.appendChild(loadingDiv);
+            
+            // Set timeout for ad loading
+            const adTimeout = setTimeout(() => {
+                loadingDiv.remove();
+                showNotification("Ad loading timed out. Please try again.");
+                giveFallbackTokens();
+            }, 15000);
+
+            try {
+                // Check if we're in Telegram Mini App
+                if (isTelegram) {
+                    // Telegram-specific ad handling
+                    const result = await showTelegramAd();
+                    
+                    if (result.success) {
+                        const tokensEarned = calculateTokensEarned();
+                        gameState.tokens += tokensEarned;
+                        updateTokenDisplay();
+                        showNotification(`+${tokensEarned} Tokens earned!`);
+                        saveGame();
+                    } else {
+                        showNotification('Ad not available. Please try later.');
+                        giveFallbackTokens();
+                    }
+                } else {
+                    // Standard web ad handling
+                    if (typeof window.Adsgram === 'undefined') {
+                        throw new Error('Ad service not supported');
+                    }
+                    
+                    const available = await AdController.isAdAvailable();
+                    if (!available) {
+                        throw new Error('No ads available');
+                    }
+                    
+                    await AdController.showAd();
+                    
+                    const tokensEarned = calculateTokensEarned();
+                    gameState.tokens += tokensEarned;
+                    updateTokenDisplay();
+                    showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
+                    saveGame();
+                }
+            } catch (error) {
+                console.error('Ad error:', error);
+                
+                // Specific error messages
+                if (error.message && (error.message.includes('no fill') || 
+                    error.message.includes('No ads available'))) {
+                    showNotification('No ads available right now. Please try later.');
+                } else if (error.message && error.message.includes('network')) {
+                    showNotification('Network error. Please check your connection.');
+                } else if (error.message && error.message.includes('Ad blocked')) {
+                    showNotification('Ad was blocked. Please disable ad blockers.');
+                } else {
+                    showNotification('Ad failed to load. Please try again.');
+                }
+                
+                giveFallbackTokens();
+            } finally {
+                clearTimeout(adTimeout);
+                loadingDiv.remove();
+            }
+        }
+
+        // Telegram-specific ad function
+        async function showTelegramAd() {
+            // This is a placeholder - replace with actual Telegram ad implementation
+            // In a real implementation, you would use Telegram's ad platform or a compatible SDK
+            
+            // Simulate ad success (remove in production)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return { success: true };
+        }
+
+        // Calculate tokens earned from ads
+        function calculateTokensEarned() {
+            const baseTokens = isTelegram ? 20 : 15; // More tokens for Telegram users
+            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
+            return Math.floor(baseTokens * multiplier);
+        }
+
+        // Fallback token reward
+        function giveFallbackTokens() {
+            const tokens = isTelegram ? 15 : 10; // More tokens for Telegram users
+            gameState.tokens += tokens;
+            updateTokenDisplay();
+            showNotification(`+${tokens} Tokens for your patience!`);
+            saveGame();
+        }
+
         // Claim daily bonus
         function claimDailyBonus() {
-            const multiplier = 1 + (gameState.upgrades.multiplier.level * 0.1);
-            const bonusAmount = Math.floor(50 * multiplier);
-            
-            gameState.tokens += bonusAmount;
+            gameState.tokens += 50;
             updateTokenDisplay();
             elements.claimBonus.disabled = true;
             elements.claimBonus.innerHTML = '<i class="fas fa-check"></i> BONUS CLAIMED';
-            showNotification(`Daily bonus claimed! +${bonusAmount} Tokens`);
+            showNotification('Daily bonus claimed! +50 Tokens');
             
             // Update streak
             const today = new Date().toDateString();
@@ -1497,6 +1380,15 @@
         }
 
         // Helper functions
+        function showNotification(message) {
+            elements.notification.textContent = message;
+            elements.notification.style.display = 'block';
+            
+            setTimeout(() => {
+                elements.notification.style.display = 'none';
+            }, 3000);
+        }
+
         function generateBubbles() {
             for (let i = 0; i < 20; i++) {
                 const bubble = document.createElement('div');
@@ -1517,35 +1409,17 @@
                 
                 // Remove after animation
                 setTimeout(() => {
-                    if (bubble.parentNode) {
-                        bubble.remove();
-                    }
+                    bubble.remove();
                 }, duration * 1000);
             }
         }
 
         function saveGame() {
-            try {
-                localStorage.setItem('cryptoFortuneSave', JSON.stringify(gameState));
-            } catch (e) {
-                console.error('Failed to save game:', e);
-            }
-        }
-
-        function loadGame() {
-            const savedGame = localStorage.getItem('cryptoFortuneSave');
-            if (savedGame) {
-                try {
-                    const parsed = JSON.parse(savedGame);
-                    Object.assign(gameState, parsed);
-                    updateTokenDisplay();
-                    updateFishingProgress();
-                    updateSpinProgress();
-                    renderInventory();
-                    showNotification('Game loaded successfully!');
-                } catch (e) {
-                    console.error('Failed to load game:', e);
-                }
+            localStorage.setItem('cryptoFortuneSave', JSON.stringify(gameState));
+            
+            // If in Telegram, you might want to save to cloud storage here
+            if (isTelegram) {
+                // Telegram.WebApp.CloudStorage.setItem('gameState', JSON.stringify(gameState));
             }
         }
 
