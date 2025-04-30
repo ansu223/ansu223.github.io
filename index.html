@@ -6,11 +6,10 @@
     <title>Crypto Fortune | Spin & Fish</title>
     <!-- AdsGram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Telegram WebApp script -->
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --primary: #6c5ce7;
@@ -226,6 +225,14 @@
 
         .action-button.premium:hover {
             box-shadow: 0 6px 20px rgba(253, 203, 110, 0.6);
+        }
+
+        .action-button.telegram {
+            background: #0088cc;
+        }
+
+        .action-button.telegram:hover {
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
         }
 
         .result-display {
@@ -561,6 +568,21 @@
             margin-bottom: 20px;
         }
 
+        .cancel-ad-button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .cancel-ad-button:hover {
+            background: #ff6b81;
+        }
+
         .ad-placeholder {
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
@@ -574,11 +596,6 @@
             font-size: 40px;
             color: #6c5ce7;
             margin-bottom: 10px;
-        }
-
-        .telegram-button {
-            background: #0088cc;
-            color: white;
         }
 
         @keyframes slideDown {
@@ -896,7 +913,7 @@
                 Telegram.WebApp.expand();
                 
                 // Update UI for Telegram
-                elements.watchAdButton.classList.add('telegram-button');
+                elements.watchAdButton.classList.add('telegram');
                 elements.watchAdButton.innerHTML = '<i class="fab fa-telegram"></i> WATCH AD FOR TOKENS';
                 
                 // Initialize Telegram WebApp
@@ -1164,7 +1181,7 @@
             saveGame();
         }
 
-        // Watch ad for tokens - now with Telegram support
+        // Watch ad for tokens - improved version with Telegram support
         async function watchAdForTokens() {
             // Create loading indicator
             const loadingDiv = document.createElement('div');
@@ -1172,39 +1189,20 @@
             loadingDiv.innerHTML = `
                 <div class="ad-loading-spinner"></div>
                 <p>Loading ad...</p>
-                <button onclick="this.parentNode.remove()" style="
-                    background: #ff4757;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    margin-top: 20px;
-                    cursor: pointer;
-                ">Cancel</button>
+                <button onclick="this.parentNode.remove()" class="cancel-ad-button">
+                    Cancel
+                </button>
             `;
             document.body.appendChild(loadingDiv);
             
-            // Set timeout for ad loading
-            const adTimeout = setTimeout(() => {
-                loadingDiv.remove();
-                showNotification("Ad loading timed out. Please try again.");
-                giveFallbackTokens();
-            }, 15000);
-
             try {
-                // Check if we're in Telegram Mini App
                 if (isTelegram) {
                     // Telegram-specific ad handling
-                    const result = await showTelegramAd();
-                    
-                    if (result.success) {
-                        const tokensEarned = calculateTokensEarned();
-                        gameState.tokens += tokensEarned;
-                        updateTokenDisplay();
-                        showNotification(`+${tokensEarned} Tokens earned!`);
-                        saveGame();
+                    const success = await handleTelegramAd();
+                    if (success) {
+                        awardAdTokens();
                     } else {
-                        showNotification('Ad not available. Please try later.');
+                        showNotification("Ad not available. Try again later.");
                         giveFallbackTokens();
                     }
                 } else {
@@ -1213,49 +1211,84 @@
                         throw new Error('Ad service not supported');
                     }
                     
-                    const available = await AdController.isAdAvailable();
-                    if (!available) {
-                        throw new Error('No ads available');
+                    // First try video ads
+                    let adShown = false;
+                    try {
+                        if (await AdController.isVideoAdAvailable()) {
+                            await AdController.showVideoAd();
+                            adShown = true;
+                            awardAdTokens();
+                        }
+                    } catch (videoError) {
+                        console.log("Video ad failed, trying image ad", videoError);
                     }
                     
-                    await AdController.showAd();
-                    
-                    const tokensEarned = calculateTokensEarned();
-                    gameState.tokens += tokensEarned;
-                    updateTokenDisplay();
-                    showNotification(`+${tokensEarned} Tokens earned for watching ad!`);
-                    saveGame();
+                    // Fallback to image ads if video failed
+                    if (!adShown) {
+                        if (await AdController.isImageAdAvailable()) {
+                            await AdController.showImageAd();
+                            awardAdTokens();
+                        } else {
+                            throw new Error('No ads available');
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Ad error:', error);
-                
-                // Specific error messages
-                if (error.message && (error.message.includes('no fill') || 
-                    error.message.includes('No ads available'))) {
-                    showNotification('No ads available right now. Please try later.');
-                } else if (error.message && error.message.includes('network')) {
-                    showNotification('Network error. Please check your connection.');
-                } else if (error.message && error.message.includes('Ad blocked')) {
-                    showNotification('Ad was blocked. Please disable ad blockers.');
-                } else {
-                    showNotification('Ad failed to load. Please try again.');
-                }
-                
+                handleAdError(error);
                 giveFallbackTokens();
             } finally {
-                clearTimeout(adTimeout);
                 loadingDiv.remove();
             }
         }
 
-        // Telegram-specific ad function
-        async function showTelegramAd() {
-            // This is a placeholder - replace with actual Telegram ad implementation
-            // In a real implementation, you would use Telegram's ad platform or a compatible SDK
-            
-            // Simulate ad success (remove in production)
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            return { success: true };
+        // Telegram-specific ad handling
+        async function handleTelegramAd() {
+            try {
+                // Try native Telegram ad format first
+                if (typeof Telegram.WebApp.showAd !== 'undefined') {
+                    await new Promise((resolve, reject) => {
+                        Telegram.WebApp.showAd({
+                            onAdClosed: () => resolve(true),
+                            onAdFailed: () => reject(new Error('Ad failed'))
+                        });
+                    });
+                    return true;
+                }
+                
+                // Fallback to AdsGram with Telegram compatibility
+                if (typeof window.Adsgram !== 'undefined') {
+                    await AdController.showTelegramCompatibleAd();
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('Telegram ad error:', error);
+                return false;
+            }
+        }
+
+        // Award tokens for watching ads
+        function awardAdTokens() {
+            const tokensEarned = calculateTokensEarned();
+            gameState.tokens += tokensEarned;
+            updateTokenDisplay();
+            showNotification(`+${tokensEarned} Tokens earned!`);
+            saveGame();
+        }
+
+        // Handle ad errors
+        function handleAdError(error) {
+            if (error.message.includes('no fill') || error.message.includes('No ads available')) {
+                showNotification('No ads available right now. Please try later.');
+            } else if (error.message.includes('network')) {
+                showNotification('Network error. Please check your connection.');
+            } else if (error.message.includes('Ad blocked')) {
+                showNotification('Ad was blocked. Please disable ad blockers.');
+            } else {
+                showNotification('Ad failed to load. Please try again.');
+            }
         }
 
         // Calculate tokens earned from ads
