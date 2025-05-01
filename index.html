@@ -410,18 +410,6 @@
                 font-size: 15px;
             }
         }
-
-        .share-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-
-        .share-title {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
@@ -469,13 +457,6 @@
             <i class="fas fa-check-circle"></i> Verify Completion
         </button>
         <p id="spin-task-progress">Complete the survey to earn 1 Spin Ticket</p>
-
-        <div class="share-section">
-            <h3 class="share-title">Share with Friends</h3>
-            <button class="task-button telegram-button" onclick="shareOnTelegram()">
-                <i class="fab fa-telegram"></i> Share on Telegram
-            </button>
-        </div>
     </div>
 
     <!-- Fish Game -->
@@ -515,12 +496,26 @@
         <div id="catch-result"></div>
         <div id="fish-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
+    </div>
 
-        <div class="share-section">
-            <h3 class="share-title">Share with Friends</h3>
-            <button class="task-button telegram-button" onclick="shareOnTelegram()">
-                <i class="fab fa-telegram"></i> Share on Telegram
-            </button>
+    <!-- Invite Friends Section -->
+    <div id="invite-friends" class="game-container" style="display: none;">
+        <h2>👫 Invite Friends & Earn Tickets 👫</h2>
+        <p>Share with friends and earn rewards!</p>
+        
+        <button class="task-button telegram-button" id="telegram-share-btn" onclick="shareOnTelegram()">
+            <i class="fab fa-telegram"></i> Share on Telegram
+        </button>
+        
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="referrals-count">0</div>
+                <div class="stat-label">Friends Joined</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="referral-tickets">0</div>
+                <div class="stat-label">Tickets Earned</div>
+            </div>
         </div>
     </div>
 
@@ -528,6 +523,7 @@
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
         <button id="fish-nav" onclick="showPage('fishing-game')"><i class="fas fa-fish"></i> Fish</button>
+        <button id="invite-nav" onclick="showPage('invite-friends')"><i class="fas fa-user-plus"></i> Invite</button>
     </div>
 
     <script>
@@ -540,7 +536,7 @@
                 offerStarted: false,
                 currentCode: '',
                 codes: [
-                    "BP027W01TN", "BP027W01TN", "BP027W01TN", "BP027W01TN", "LUN0SVQT", 
+                    "BP027W01TN", "BOMSXEBS", "RRFHNP7Q", "BPGI76V857", "LUN0SVQT", 
                     "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE",
                     "SPIN1234", "WHEEL567", "LUCK8901", "WIN2345", "PRIZE678"
                 ]
@@ -562,6 +558,10 @@
                     { emoji: "🐡", value: 3 },
                     { emoji: "🦈", value: 5 },
                 ]
+            },
+            referral: {
+                count: 0,
+                ticketsEarned: 0
             },
             userId: 'user_' + Math.random().toString(36).substr(2, 9),
             postbackUrl: "http://localhost:8000/verify-offer",
@@ -599,7 +599,8 @@
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
-                fish: document.getElementById("fish-nav")
+                fish: document.getElementById("fish-nav"),
+                invite: document.getElementById("invite-nav")
             }
         };
 
@@ -607,6 +608,7 @@
         function initUI() {
             updateSpinUI();
             updateFishUI();
+            updateReferralUI();
         }
 
         function updateSpinUI() {
@@ -623,18 +625,9 @@
             elements.fish.castBtn.disabled = gameState.fish.tickets < 1;
         }
 
-        // Share Functions
-        function shareOnTelegram() {
-            const message = `🎉 Check out this awesome crypto rewards app! Play games and earn free crypto! 🚀`;
-            const url = window.location.href;
-            
-            if (window.Telegram && Telegram.WebApp) {
-                // Use Telegram WebApp sharing if available
-                Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`);
-            } else {
-                // Fallback for regular browsers
-                window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`, '_blank');
-            }
+        function updateReferralUI() {
+            document.getElementById("referrals-count").textContent = gameState.referral.count;
+            document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
         }
 
         // Offer Functions
@@ -925,10 +918,12 @@
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
+            document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
             
             // Update active nav button
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
             elements.nav.fish.classList.toggle('active', pageId === 'fishing-game');
+            elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
         }
 
         function showAlert(message) {
@@ -987,12 +982,26 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
+        // Telegram Share Function
+        function shareOnTelegram() {
+            const message = `🎉 Join this awesome crypto rewards app and earn free crypto!`;
+            
+            if (window.Telegram && Telegram.WebApp) {
+                // Use Telegram WebApp sharing if available
+                Telegram.WebApp.openTelegramLink(`https://t.me/share/url?text=${encodeURIComponent(message)}`);
+            } else {
+                // Fallback for regular browsers
+                window.open(`https://t.me/share/url?text=${encodeURIComponent(message)}`, '_blank');
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
             showPage('spin-game');
             updateSpinUI();
             updateFishUI();
+            updateReferralUI();
         });
     </script>
 </body>
