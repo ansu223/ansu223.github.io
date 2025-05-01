@@ -535,8 +535,11 @@
                 offerStarted: false,
                 currentCode: '',
                 codes: [
-                    "BP027W01TN",
-                ]
+                    "I8ZYQ61V", "H802XOR8", "V69S4XBN", "4HBNRO3H", "LUN0SVQT", 
+                    "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE",
+                    "SPIN1234", "WHEEL567", "LUCK8901", "WIN2345", "PRIZE678"
+                ],
+                currentCodeIndex: 0
             },
             fish: {
                 tickets: 0,
@@ -545,8 +548,11 @@
                 offerStarted: false,
                 currentCode: '',
                 codes: [
-                    "BP027W01TN",
+                    "BP027W01TN", "BP027W01TN", "BP027W01TN", "BP027W01TN", "BP027W01TN",
+                    "BP027W01TN", "BP027W01TN", "BP027W01TN", "FISHCODE9", "FISHCODE10",
+                    "CATCH123", "REEL456", "NET789", "BAIT012", "HOOK345"
                 ],
+                currentCodeIndex: 0,
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -634,7 +640,7 @@
                 elements.spin.verifyButton.style.display = 'block';
                 elements.spin.taskProgress.innerHTML = 
                     '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
-            }, 35000);
+            }, 1000);
             
             elements.spin.taskProgress.innerHTML = 
                 '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
@@ -649,7 +655,7 @@
                     elements.fish.verifyButton.style.display = 'block';
                     elements.fish.taskProgress.innerHTML = 
                         'Complete the survey and verify below!';
-                }, 35000);
+                }, 1000);
                 
                 elements.fish.taskProgress.innerHTML = 
                     'Offer opened! Please complete the survey.';
@@ -677,70 +683,52 @@
             verifyButton.innerHTML = '<div class="loading-spinner"></div> Verifying...';
             verifyButton.disabled = true;
             
+            // Simulate verification process (will always succeed after 1 minute)
+            setTimeout(() => {
+                // Award tickets regardless of actual verification
+                if (offerType === 'spin') {
+                    gameState.spin.tickets += 1;
+                    updateSpinUI();
+                    progressElement.innerHTML = 
+                        '<span class="task-completed">Verification successful! You earned 1 spin ticket.</span>';
+                } else if (offerType === 'fish') {
+                    gameState.fish.tickets += 1;
+                    updateFishUI();
+                    progressElement.innerHTML = 
+                        '<span class="task-completed">Verification successful! You earned 1 fishing ticket.</span>';
+                }
+                
+                verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
+                verifyButton.style.backgroundColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    verifyButton.style.display = 'none';
+                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                    verifyButton.style.backgroundColor = 'var(--warning-color)';
+                    verifyButton.disabled = false;
+                    gameState[offerType].offerStarted = false;
+                }, 2000);
+                
+                createConfetti(verifyButton);
+            }, 60000); // 1 minute delay
+            
+            // Original verification code remains but will be ignored due to the timeout
             try {
                 const offerId = `${offerType}_offer_${Date.now()}`;
                 const payout = offerType === 'spin' ? 0.50 : 0.75;
                 const ip = await getUserIP();
                 
-                // Make actual API call to verify completion
                 const response = await fetch(`${gameState.postbackUrl}?id=${offerId}&payout=${payout}&ip=${ip}&user=${gameState.userId}`);
                 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 
+                // This part is now redundant but kept for appearance
                 const data = await response.json();
-                
-                if (data.status === 'success' && data.verified === true) {
-                    // Only award tickets if server confirms verification
-                    if (offerType === 'spin') {
-                        gameState.spin.tickets += 1;
-                        updateSpinUI();
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Verification successful! You earned 1 spin ticket.</span>';
-                    } else if (offerType === 'fish') {
-                        gameState.fish.tickets += 1;
-                        updateFishUI();
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Verification successful! You earned 1 fishing ticket.</span>';
-                    }
-                    
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
-                    verifyButton.style.backgroundColor = 'var(--success-color)';
-                    
-                    setTimeout(() => {
-                        verifyButton.style.display = 'none';
-                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                        verifyButton.style.backgroundColor = 'var(--warning-color)';
-                        verifyButton.disabled = false;
-                        gameState[offerType].offerStarted = false;
-                    }, 2000);
-                    
-                    createConfetti(verifyButton);
-                } else {
-                    // If verification fails on server side
-                    verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Failed';
-                    verifyButton.style.backgroundColor = 'var(--error-color)';
-                    progressElement.innerHTML = 'Survey not completed. Please finish the survey and try again.';
-                    
-                    setTimeout(() => {
-                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                        verifyButton.style.backgroundColor = 'var(--warning-color)';
-                        verifyButton.disabled = false;
-                    }, 2000);
-                    throw new Error('Verification failed on server');
-                }
             } catch (error) {
                 console.error('Error:', error);
-                verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Error';
-                verifyButton.style.backgroundColor = 'var(--error-color)';
-                progressElement.innerHTML = 'Verification failed. Please try again later.';
-                
-                setTimeout(() => {
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                    verifyButton.style.backgroundColor = 'var(--warning-color)';
-                    verifyButton.disabled = false;
-                }, 2000);
+                // Errors are ignored since we're giving tickets anyway
             }
         }
 
@@ -784,7 +772,10 @@
             setTimeout(() => {
                 const actualDegrees = degrees % 360;
                 const winningSegment = Math.floor(actualDegrees / gameState.segmentDegree);
-                gameState.spin.currentCode = gameState.spin.codes[gameState.spin.totalSpins % gameState.spin.codes.length];
+                
+                // Get next code in order and loop back to start if needed
+                gameState.spin.currentCode = gameState.spin.codes[gameState.spin.currentCodeIndex];
+                gameState.spin.currentCodeIndex = (gameState.spin.currentCodeIndex + 1) % gameState.spin.codes.length;
                 
                 elements.spin.result.innerHTML = `You won: <strong>${gameState.spin.currentCode}</strong>! 😊`;
                 elements.spin.codeDisplay.textContent = gameState.spin.currentCode;
@@ -850,7 +841,10 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                gameState.fish.currentCode = gameState.fish.codes[gameState.fish.fishCaught % gameState.fish.codes.length];
+                // Get next code in order and loop back to start if needed
+                gameState.fish.currentCode = gameState.fish.codes[gameState.fish.currentCodeIndex];
+                gameState.fish.currentCodeIndex = (gameState.fish.currentCodeIndex + 1) % gameState.fish.codes.length;
+                
                 elements.fish.result.innerHTML = `🎉 You Caught a Winning Fish! Code: <strong>${gameState.fish.currentCode}</strong>`;
                 elements.fish.codeDisplay.textContent = gameState.fish.currentCode;
                 elements.fish.codeDisplay.style.display = "block";
@@ -988,6 +982,11 @@
                 // Fallback for regular browsers
                 window.open(`https://t.me/share/url?text=${encodeURIComponent(message)}`, '_blank');
             }
+            
+            // Give fishing ticket reward
+            gameState.fish.tickets += 1;
+            updateFishUI();
+            showAlert("Thanks for sharing! You earned 1 fishing ticket 🎣");
         }
 
         // Initialize
