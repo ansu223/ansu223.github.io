@@ -21,6 +21,7 @@
             --navbar-bg: #333333;
             --button-bg: #444444;
             --button-hover: #555555;
+            --telegram-color: #0088cc;
         }
 
         body {
@@ -378,6 +379,15 @@
             margin-top: 4px;
         }
 
+        /* Telegram Button */
+        .telegram-button {
+            background-color: var(--telegram-color);
+        }
+
+        .telegram-button:hover {
+            background-color: #0077b5;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .game-container {
@@ -488,10 +498,40 @@
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
     </div>
 
+    <!-- Invite Friends Section -->
+    <div id="invite-friends" class="game-container" style="display: none;">
+        <h2>👫 Invite Friends & Earn Tickets 👫</h2>
+        <p>Share your referral link and earn 1 ticket for each friend who joins!</p>
+        
+        <div class="code-display" id="referral-link">
+            Loading your referral link...
+        </div>
+        
+        <button class="task-button" onclick="copyReferralLink()">
+            <i class="fas fa-copy"></i> Copy Referral Link
+        </button>
+        
+        <button class="task-button telegram-button" id="telegram-share-btn" onclick="shareOnTelegram()">
+            <i class="fab fa-telegram"></i> Share on Telegram
+        </button>
+        
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="referrals-count">0</div>
+                <div class="stat-label">Friends Joined</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="referral-tickets">0</div>
+                <div class="stat-label">Tickets Earned</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
         <button id="fish-nav" onclick="showPage('fishing-game')"><i class="fas fa-fish"></i> Fish</button>
+        <button id="invite-nav" onclick="showPage('invite-friends')"><i class="fas fa-user-plus"></i> Invite</button>
     </div>
 
     <script>
@@ -527,8 +567,13 @@
                     { emoji: "🦈", value: 5 },
                 ]
             },
+            referral: {
+                link: '',
+                count: 0,
+                ticketsEarned: 0
+            },
             userId: 'user_' + Math.random().toString(36).substr(2, 9),
-            postbackUrl: "http://localhost:8000/verify-offer", // Update with your actual endpoint
+            postbackUrl: "http://localhost:8000/verify-offer",
             segments: 6,
             segmentDegree: 360 / 6
         };
@@ -563,7 +608,8 @@
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
-                fish: document.getElementById("fish-nav")
+                fish: document.getElementById("fish-nav"),
+                invite: document.getElementById("invite-nav")
             }
         };
 
@@ -571,6 +617,8 @@
         function initUI() {
             updateSpinUI();
             updateFishUI();
+            generateReferralLink();
+            updateReferralUI();
         }
 
         function updateSpinUI() {
@@ -585,6 +633,67 @@
             elements.fish.totalCasts.textContent = gameState.fish.totalCasts;
             elements.fish.fishCaught.textContent = gameState.fish.fishCaught;
             elements.fish.castBtn.disabled = gameState.fish.tickets < 1;
+        }
+
+        function updateReferralUI() {
+            document.getElementById("referrals-count").textContent = gameState.referral.count;
+            document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
+        }
+
+        // Referral Functions
+        function generateReferralLink() {
+            const baseUrl = window.location.href.split('?')[0];
+            gameState.referral.link = `${baseUrl}?ref=${gameState.userId}`;
+            document.getElementById("referral-link").textContent = gameState.referral.link;
+            
+            // Check if we came from a referral
+            checkReferral();
+        }
+        
+        function checkReferral() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refId = urlParams.get('ref');
+            
+            if (refId && refId !== gameState.userId) {
+                // This is a referral - in a real app you'd send this to your server
+                showAlert("Welcome! You joined via a friend's referral.");
+                // For demo purposes, we'll just add a ticket
+                gameState.spin.tickets += 1;
+                gameState.fish.tickets += 1;
+                updateSpinUI();
+                updateFishUI();
+                
+                // Update the referrer's stats (in a real app this would be server-side)
+                gameState.referral.count += 1;
+                gameState.referral.ticketsEarned += 1;
+                updateReferralUI();
+            }
+        }
+        
+        function copyReferralLink() {
+            if (!gameState.referral.link) {
+                showAlert("Referral link not ready yet. Please wait a moment.");
+                return;
+            }
+            
+            copyToClipboard(gameState.referral.link, document.querySelector("#invite-friends .task-button"));
+        }
+        
+        function shareOnTelegram() {
+            if (!gameState.referral.link) {
+                showAlert("Referral link not ready yet. Please wait a moment.");
+                return;
+            }
+            
+            const message = `🎉 Join this awesome crypto rewards app and earn free crypto! Use my referral link to get started: ${gameState.referral.link}`;
+            
+            if (window.Telegram && Telegram.WebApp) {
+                // Use Telegram WebApp sharing if available
+                Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(gameState.referral.link)}&text=${encodeURIComponent(message)}`);
+            } else {
+                // Fallback for regular browsers
+                window.open(`https://t.me/share/url?url=${encodeURIComponent(gameState.referral.link)}&text=${encodeURIComponent(message)}`, '_blank');
+            }
         }
 
         // Offer Functions
@@ -875,10 +984,16 @@
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
+            document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
             
             // Update active nav button
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
             elements.nav.fish.classList.toggle('active', pageId === 'fishing-game');
+            elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
+            
+            if (pageId === 'invite-friends' && !gameState.referral.link) {
+                generateReferralLink();
+            }
         }
 
         function showAlert(message) {
@@ -943,6 +1058,7 @@
             showPage('spin-game');
             updateSpinUI();
             updateFishUI();
+            updateReferralUI();
         });
     </script>
 </body>
