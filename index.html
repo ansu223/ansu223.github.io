@@ -665,14 +665,8 @@
 
         function openOffer(offerType) {
             const url = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=${offerType}`;
-            
-            console.log(`Opening offer: ${url}`);
-            
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(url, {try_instant_view: false});
-            } else {
-                window.open(url, '_blank');
-            }
+            console.log(`Opening offer in external browser: ${url}`);
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         async function verifyCompletion(offerType) {
@@ -958,14 +952,8 @@
         // Telegram Share Function
         function shareOnTelegram() {
             const message = `🎉 Join this awesome crypto rewards app and earn free crypto!`;
-            
-            if (window.Telegram && Telegram.WebApp) {
-                // Use Telegram WebApp sharing if available
-                Telegram.WebApp.openTelegramLink(`https://t.me/share/url?text=${encodeURIComponent(message)}`);
-            } else {
-                // Fallback for regular browsers
-                window.open(`https://t.me/share/url?text=${encodeURIComponent(message)}`, '_blank');
-            }
+            const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+            window.open(shareUrl, '_blank', 'noopener,noreferrer');
         }
 
         // Initialize
