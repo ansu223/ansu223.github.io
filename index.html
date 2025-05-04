@@ -92,7 +92,6 @@
             margin-top: 0;
         }
 
-        /* Spin Game Styles */
         .wheel-container {
             position: relative;
             margin: 25px auto;
@@ -156,7 +155,6 @@
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
-        /* Fish Game Styles */
         .fish-pond {
             width: 100%;
             height: 220px;
@@ -198,7 +196,6 @@
             to { filter: drop-shadow(0 0 15px gold); }
         }
 
-        /* Common Button Styles */
         .spin-button, .cast-button {
             background-color: var(--primary-color);
             color: #000;
@@ -320,6 +317,9 @@
             border: 1px dashed var(--primary-color);
             color: var(--primary-color);
             font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .offer-opened {
@@ -379,7 +379,6 @@
             margin-top: 4px;
         }
 
-        /* Telegram Button */
         .telegram-button {
             background-color: var(--telegram-color);
         }
@@ -388,7 +387,6 @@
             background-color: #0077b5;
         }
 
-        /* Hidden Ticket Notification */
         .hidden-ticket-notification {
             position: fixed;
             top: 50%;
@@ -410,7 +408,21 @@
             100% { opacity: 0; }
         }
 
-        /* Responsive adjustments */
+        /* Code Image Styles */
+        .code-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 1px solid gold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .hidden-canvas {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -553,28 +565,25 @@
     </div>
 
     <script>
-        // Enhanced Game State
+        // Enhanced Game State with Image Codes
         const gameState = {
             spin: {
-                tickets: 0,
+                tickets: 0, // No free tickets
                 totalSpins: 0,
                 codesWon: 0,
                 offerStarted: false,
                 currentCode: '',
-                codes: [
-                    "72JKDZPE",
-                   
-                ]
+                codeParts: ["BP0", "27W", "01TN"],
+                validCodes: ["LY19SHKM"]
             },
             fish: {
-                tickets: 0,
+                tickets: 0, // No free tickets
                 totalCasts: 0,
                 fishCaught: 0,
                 offerStarted: false,
                 currentCode: '',
-                codes: [
-                    "BP027W01TN",
-                ],
+                codeParts: ["Z8U", "FN6", "5V"],
+                validCodes: ["BP027W01TN"],
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -587,9 +596,12 @@
                 ticketsEarned: 0
             },
             userId: 'user_' + Math.random().toString(36).substr(2, 9),
-            postbackUrl: "http://localhost:8000/verify-offer",
-            segments: 6,
-            segmentDegree: 360 / 6
+            userActions: {
+                lastSpin: 0,
+                lastFish: 0,
+                spinCount: 0,
+                fishCount: 0
+            }
         };
 
         // DOM Elements
@@ -632,6 +644,14 @@
             updateSpinUI();
             updateFishUI();
             updateReferralUI();
+            
+            // Add bot trap
+            const botTrap = document.createElement('input');
+            botTrap.type = 'text';
+            botTrap.id = 'bot-trap';
+            botTrap.name = 'bot-trap';
+            botTrap.style.display = 'none';
+            document.body.appendChild(botTrap);
         }
 
         function updateSpinUI() {
@@ -653,10 +673,275 @@
             document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
         }
 
-        // Offer Functions
+        // ======================
+        // IMAGE-BASED CODE SYSTEM
+        // ======================
+
+        function createCodeImage(code, containerElement) {
+            // Create hidden canvas
+            const canvas = document.createElement('canvas');
+            canvas.className = 'hidden-canvas';
+            canvas.width = 300;
+            canvas.height = 80;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2dd60c');
+            gradient.addColorStop(1, '#1a73e8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add noise pattern
+            for (let i = 0; i < 200; i++) {
+                ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.1})`;
+                ctx.fillRect(
+                    Math.random()*canvas.width, 
+                    Math.random()*canvas.height, 
+                    Math.random()*3, 
+                    Math.random()*3
+                );
+            }
+            
+            // Draw the code with effects
+            ctx.font = 'bold 28px Courier New';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Text shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            for (let i = 0; i < 3; i++) {
+                ctx.fillText(code, canvas.width/2 + i, canvas.height/2 + i);
+            }
+            
+            // Main text with gradient
+            const textGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            textGradient.addColorStop(0, 'gold');
+            textGradient.addColorStop(0.5, 'white');
+            textGradient.addColorStop(1, 'gold');
+            ctx.fillStyle = textGradient;
+            ctx.fillText(code, canvas.width/2, canvas.height/2);
+            
+            // Create image from canvas
+            const dataURL = canvas.toDataURL('image/png');
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.className = 'code-image';
+            img.alt = 'Your reward code';
+            
+            // Clear container and add image
+            containerElement.innerHTML = '';
+            containerElement.appendChild(img);
+            
+            // Add canvas to body temporarily
+            document.body.appendChild(canvas);
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(canvas);
+            }, 1000);
+            
+            return dataURL;
+        }
+
+        // ======================
+        // TELEGRAM EXTERNAL BROWSER HANDLING
+        // ======================
+
+        function isTelegramWebView() {
+            return navigator.userAgent.includes('Telegram') || 
+                   navigator.userAgent.includes('WebView');
+        }
+
+        function openExternalBrowser(url) {
+            if (isTelegramWebView()) {
+                // Create a hidden link with target="_blank"
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                }, 100);
+            } else {
+                // Regular browser behavior
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        }
+
+        // ======================
+        // GAME FUNCTIONS
+        // ======================
+
+        function spinWheel() {
+            if (gameState.spin.tickets < 1) {
+                alert("You need 1 spin ticket! Complete a survey to earn tickets.");
+                return;
+            }
+            
+            // Rate limiting
+            const now = Date.now();
+            if (now - gameState.userActions.lastSpin < 30000) {
+                alert("Please wait 30 seconds between spins");
+                return;
+            }
+            
+            gameState.spin.tickets--;
+            gameState.spin.totalSpins++;
+            gameState.userActions.lastSpin = now;
+            updateSpinUI();
+            
+            // Disable spin button during animation
+            elements.spin.spinBtn.disabled = true;
+            
+            const degrees = Math.floor(Math.random() * 3600) + 1800;
+            elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
+
+            setTimeout(() => {
+                // Get valid code
+                const validCode = gameState.spin.validCodes[0]; // Using first valid code
+                gameState.spin.currentCode = validCode;
+                
+                // Create and display code as image
+                createCodeImage(validCode, elements.spin.codeDisplay);
+                
+                elements.spin.result.innerHTML = `You won a crypto code!`;
+                elements.spin.codeDisplay.style.display = "block";
+                elements.spin.copyButton.style.display = "inline-block";
+                
+                gameState.spin.codesWon++;
+                updateSpinUI();
+                elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+                
+                createConfetti(elements.spin.wheel);
+            }, 3000);
+        }
+
+        function castLine() {
+            if (gameState.fish.tickets < 1) {
+                alert("You need 1 fishing ticket! Complete a survey to earn tickets.");
+                return;
+            }
+            
+            // Rate limiting
+            const now = Date.now();
+            if (now - gameState.userActions.lastFish < 30000) {
+                alert("Please wait 30 seconds between casts");
+                return;
+            }
+            
+            gameState.fish.tickets--;
+            gameState.fish.totalCasts++;
+            gameState.userActions.lastFish = now;
+            updateFishUI();
+            
+            // Disable cast button during fishing
+            elements.fish.castBtn.disabled = true;
+            
+            elements.fish.pond.innerHTML = "";
+            elements.fish.result.textContent = "";
+            elements.fish.codeDisplay.style.display = "none";
+            elements.fish.copyButton.style.display = "none";
+
+            // Create regular fish
+            for (let i = 0; i < 10; i++) {
+                createFish(false);
+            }
+            
+            // Create winning fish with delay
+            setTimeout(() => {
+                createFish(true);
+                elements.fish.castBtn.disabled = gameState.fish.tickets < 1;
+            }, 500);
+        }
+
+        function createFish(isWinningFish) {
+            const fish = document.createElement("div");
+            fish.className = "fish";
+            const randomFish = gameState.fish.types[Math.floor(Math.random() * gameState.fish.types.length)];
+            fish.innerText = randomFish.emoji;
+
+            if (isWinningFish) {
+                fish.classList.add("winning-fish");
+            }
+
+            fish.style.top = `${Math.random() * 70 + 10}%`;
+            fish.style.left = `-50px`;
+            fish.style.animationDuration = `${Math.random() * 3 + 2}s`;
+
+            fish.addEventListener("click", () => catchFish(isWinningFish));
+            elements.fish.pond.appendChild(fish);
+        }
+
+        function catchFish(isWinningFish) {
+            if (isWinningFish) {
+                // Get valid code
+                const validCode = gameState.fish.validCodes[0]; // Using first valid code
+                gameState.fish.currentCode = validCode;
+                
+                // Create and display code as image
+                createCodeImage(validCode, elements.fish.codeDisplay);
+                
+                elements.fish.result.innerHTML = `🎉 You Caught a Winning Fish!`;
+                elements.fish.codeDisplay.style.display = "block";
+                elements.fish.copyButton.style.display = "inline-block";
+                
+                gameState.fish.fishCaught++;
+                updateFishUI();
+                
+                createConfetti(elements.fish.pond);
+            } else {
+                elements.fish.result.innerText = "🐟 Try again! Find the winning fish 🎣";
+            }
+        }
+
+        // Copy Functions
+        function copyResultCode() {
+            if (gameState.spin.currentCode) {
+                copyToClipboard(gameState.spin.currentCode, elements.spin.copyButton);
+            }
+        }
+
+        function copyResultCodeFish() {
+            if (gameState.fish.currentCode) {
+                copyToClipboard(gameState.fish.currentCode, elements.fish.copyButton);
+            }
+        }
+
+        function copyToClipboard(text, buttonElement) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                buttonElement.innerHTML = '✓ Copied!';
+                buttonElement.style.backgroundColor = 'var(--success-color)';
+                setTimeout(() => {
+                    buttonElement.innerHTML = '📋 Copy Code';
+                    buttonElement.style.backgroundColor = 'var(--primary-color)';
+                }, 2000);
+            } catch (err) {
+                alert("Could not copy code. Please copy manually.");
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // ======================
+        // OFFER FUNCTIONS WITH EXTERNAL BROWSER
+        // ======================
+
         function startSpinOffer() {
             gameState.spin.offerStarted = true;
-            openOffer('spin');
+            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=spin`;
+            openExternalBrowser(offerUrl);
             
             setTimeout(() => {
                 elements.spin.verifyButton.style.display = 'block';
@@ -671,7 +956,8 @@
         function startFishOffer() {
             if (!gameState.fish.offerStarted) {
                 gameState.fish.offerStarted = true;
-                openOffer('fish');
+                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=fish`;
+                openExternalBrowser(offerUrl);
                 
                 setTimeout(() => {
                     elements.fish.verifyButton.style.display = 'block';
@@ -682,14 +968,8 @@
                 elements.fish.taskProgress.innerHTML = 
                     'Offer opened! Please complete the survey.';
             } else {
-                showAlert("Please complete the current survey first.");
+                alert("Please complete the current survey first.");
             }
-        }
-
-        function openOffer(offerType) {
-            const url = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=${offerType}`;
-            console.log(`Opening offer in external browser: ${url}`);
-            window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         async function verifyCompletion(offerType) {
@@ -759,152 +1039,31 @@
             }
         }
 
-        // Spin Game Functions
-        function spinWheel() {
-            if (gameState.spin.tickets < 1) {
-                showAlert("You need 1 spin ticket! Complete a survey to earn tickets.");
-                return;
-            }
+        function shareOnTelegram() {
+            const message = `🎉 Join this awesome crypto rewards app and earn free crypto https://t.me/redpacket_box!`;
+            const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
             
-            gameState.spin.tickets--;
-            gameState.spin.totalSpins++;
-            updateSpinUI();
+            // Open Telegram share dialog
+            window.open(shareUrl, '_blank', 'noopener,noreferrer');
             
-            // Disable spin button during animation
-            elements.spin.spinBtn.disabled = true;
-            
-            const degrees = Math.floor(Math.random() * 3600) + 1800;
-            elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
-
+            // Show temporary notification after 10 seconds
             setTimeout(() => {
-                const actualDegrees = degrees % 360;
-                const winningSegment = Math.floor(actualDegrees / gameState.segmentDegree);
-                gameState.spin.currentCode = gameState.spin.codes[gameState.spin.totalSpins % gameState.spin.codes.length];
-                
-                elements.spin.result.innerHTML = `You won: <strong>${gameState.spin.currentCode}</strong>! 😊`;
-                elements.spin.codeDisplay.textContent = gameState.spin.currentCode;
-                elements.spin.codeDisplay.style.display = "block";
-                elements.spin.copyButton.style.display = "inline-block";
-                
-                gameState.spin.codesWon++;
-                updateSpinUI();
-                elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
-                
-                createConfetti(elements.spin.wheel);
-            }, 3000);
-        }
-
-        // Fish Game Functions
-        function castLine() {
-            if (gameState.fish.tickets < 1) {
-                showAlert("You need 1 fishing ticket! Complete a survey to earn tickets.");
-                return;
-            }
-            
-            gameState.fish.tickets--;
-            gameState.fish.totalCasts++;
-            updateFishUI();
-            
-            // Disable cast button during fishing
-            elements.fish.castBtn.disabled = true;
-            
-            elements.fish.pond.innerHTML = "";
-            elements.fish.result.textContent = "";
-            elements.fish.codeDisplay.style.display = "none";
-            elements.fish.copyButton.style.display = "none";
-
-            // Create regular fish
-            for (let i = 0; i < 10; i++) {
-                createFish(false);
-            }
-            
-            // Create winning fish with delay
-            setTimeout(() => {
-                createFish(true);
-                elements.fish.castBtn.disabled = gameState.fish.tickets < 1;
-            }, 500);
-        }
-
-        function createFish(isWinningFish) {
-            const fish = document.createElement("div");
-            fish.className = "fish";
-            const randomFish = gameState.fish.types[Math.floor(Math.random() * gameState.fish.types.length)];
-            fish.innerText = randomFish.emoji;
-
-            if (isWinningFish) {
-                fish.classList.add("winning-fish");
-            }
-
-            fish.style.top = `${Math.random() * 70 + 10}%`;
-            fish.style.left = `-50px`;
-            fish.style.animationDuration = `${Math.random() * 3 + 2}s`;
-
-            fish.addEventListener("click", () => catchFish(isWinningFish));
-            elements.fish.pond.appendChild(fish);
-        }
-
-        function catchFish(isWinningFish) {
-            if (isWinningFish) {
-                gameState.fish.currentCode = gameState.fish.codes[gameState.fish.fishCaught % gameState.fish.codes.length];
-                elements.fish.result.innerHTML = `🎉 You Caught a Winning Fish! Code: <strong>${gameState.fish.currentCode}</strong>`;
-                elements.fish.codeDisplay.textContent = gameState.fish.currentCode;
-                elements.fish.codeDisplay.style.display = "block";
-                elements.fish.copyButton.style.display = "inline-block";
-                
-                gameState.fish.fishCaught++;
+                // Add ticket to fish game
+                gameState.fish.tickets += 1;
                 updateFishUI();
                 
-                createConfetti(elements.fish.pond);
-            } else {
-                elements.fish.result.innerText = "🐟 Try again! Find the winning fish 🎣";
-            }
-        }
-
-        // Copy Functions
-        function copyResultCode() {
-            copyToClipboard(gameState.spin.currentCode, elements.spin.copyButton);
-        }
-
-        function copyResultCodeFish() {
-            copyToClipboard(gameState.fish.currentCode, elements.fish.copyButton);
-        }
-
-        function copyToClipboard(text, buttonElement) {
-            if (!text) {
-                showAlert("No code available to copy");
-                return;
-            }
-            
-            navigator.clipboard.writeText(text).then(() => {
-                buttonElement.innerHTML = '✓ Copied!';
-                buttonElement.style.backgroundColor = 'var(--success-color)';
+                // Show hidden notification
+                const notification = document.getElementById('hidden-ticket-notification');
+                notification.style.display = 'block';
+                
+                // Hide after animation completes
                 setTimeout(() => {
-                    buttonElement.innerHTML = '📋 Copy Code';
-                    buttonElement.style.backgroundColor = 'var(--primary-color)';
+                    notification.style.display = 'none';
                 }, 2000);
-            }).catch(err => {
-                fallbackCopy(text);
-            });
+                
+            }, 10000); // 10 second delay
         }
 
-        function fallbackCopy(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                document.execCommand('copy');
-                showAlert("Code copied to clipboard!");
-            } catch (err) {
-                showAlert("Could not copy code. Please copy manually: " + text);
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        }
-
-        // UI Functions
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
@@ -914,10 +1073,6 @@
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
             elements.nav.fish.classList.toggle('active', pageId === 'fishing-game');
             elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
-        }
-
-        function showAlert(message) {
-            alert(message);
         }
 
         function createConfetti(element) {
@@ -972,38 +1127,10 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Telegram Share Function with Ticket Reward
-        function shareOnTelegram() {
-            const message = `🎉 Join this awesome crypto rewards app and earn free crypto https://t.me/redpacket_box!`;
-            const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
-            
-            // Open Telegram share dialog
-            window.open(shareUrl, '_blank', 'noopener,noreferrer');
-            
-            // Show temporary notification after 10 seconds
-            setTimeout(() => {
-                // Add ticket to fish game (silently)
-                gameState.fish.tickets += 1;
-                
-                // Show hidden notification
-                const notification = document.getElementById('hidden-ticket-notification');
-                notification.style.display = 'block';
-                
-                // Hide after animation completes
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 2000);
-                
-            }, 10000); // 10 second delay
-        }
-
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
             showPage('spin-game');
-            updateSpinUI();
-            updateFishUI();
-            updateReferralUI();
         });
     </script>
 </body>
