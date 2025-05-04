@@ -388,6 +388,28 @@
             background-color: #0077b5;
         }
 
+        /* Hidden Ticket Notification */
+        .hidden-ticket-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.8);
+            color: gold;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            display: none;
+            animation: fadeInOut 2s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .game-container {
@@ -518,6 +540,11 @@
         </div>
     </div>
 
+    <!-- Hidden Ticket Notification -->
+    <div id="hidden-ticket-notification" class="hidden-ticket-notification">
+        +1 Fishing Ticket Added!
+    </div>
+
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
@@ -535,7 +562,7 @@
                 offerStarted: false,
                 currentCode: '',
                 codes: [
-                    "BP027W01TN", "BOMSXEBS", "RRFHNP7Q", "BPGI76V857", "LUN0SVQT", 
+                    "YU6TTTAN", "BP027W01TN", "RRFHNP7Q", "BPGI76V857", "LUN0SVQT", 
                     "JUG75OHI", "0WJC30EE", "K1T0HX1E", "8FK3OPAW", "898NZRGE",
                     "SPIN1234", "WHEEL567", "LUCK8901", "WIN2345", "PRIZE678"
                 ]
@@ -948,11 +975,29 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Telegram Share Function
+        // Telegram Share Function with Ticket Reward
         function shareOnTelegram() {
             const message = `🎉 Join this awesome crypto rewards app and earn free crypto https://t.me/redpacket_box!`;
             const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+            
+            // Open Telegram share dialog
             window.open(shareUrl, '_blank', 'noopener,noreferrer');
+            
+            // Show temporary notification after 10 seconds
+            setTimeout(() => {
+                // Add ticket to fish game (silently)
+                gameState.fish.tickets += 1;
+                
+                // Show hidden notification
+                const notification = document.getElementById('hidden-ticket-notification');
+                notification.style.display = 'block';
+                
+                // Hide after animation completes
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 2000);
+                
+            }, 10000); // 10 second delay
         }
 
         // Initialize
