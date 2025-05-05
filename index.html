@@ -624,7 +624,19 @@
                 offerStarted: false,
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
-                validCodes: ["LY19SHKM"]
+                validCodes: [
+                    "1. LY19SHKM",
+                    "2. C08F7OYA",
+                    "3. QGSEJF63",
+                    "4. LRU7ZXVD",
+                    "5. 3D4PXVJE",
+                    "6. NMW22IMK",
+                    "7. XADSAHAG",
+                    "8. 54DFG3HJ",
+                    "9. KL98MN7B",
+                    "10. 2WSX3EDC"
+                ],
+                currentCodeIndex: 0 // Track which code to give next
             },
             fish: {
                 tickets: 0, // No free tickets
@@ -633,7 +645,19 @@
                 offerStarted: false,
                 currentCode: '',
                 codeParts: ["Z8U", "FN6", "5V"],
-                validCodes: ["BP027W01TN"],
+                validCodes: [
+                    "1. BP027W01TN",
+                    "2. XADSAHAG",
+                    "3. 9M3K7LP2",
+                    "4. 4DFG67HJ",
+                    "5. QAZ2WSX3",
+                    "6. ED5CVFR4",
+                    "7. 7UJM8IK9",
+                    "8. OL0P9IK8",
+                    "9. 2WSXCDE4",
+                    "10. RFV5TGB6"
+                ],
+                currentCodeIndex: 0, // Track which code to give next
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -1053,14 +1077,18 @@
             elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
 
             setTimeout(() => {
-                // Get valid code
-                const validCode = gameState.spin.validCodes[0]; // Using first valid code
+                // Get the next code in order
+                const validCode = gameState.spin.validCodes[gameState.spin.currentCodeIndex];
                 gameState.spin.currentCode = validCode;
+                
+                // Move to next code for next time (loop back to start if at end)
+                gameState.spin.currentCodeIndex = 
+                    (gameState.spin.currentCodeIndex + 1) % gameState.spin.validCodes.length;
                 
                 // Create and display code as image
                 createCodeImage(validCode, elements.spin.codeDisplay);
                 
-                elements.spin.result.innerHTML = `You won a crypto code!`;
+                elements.spin.result.innerHTML = `You won crypto code ${gameState.spin.currentCodeIndex}/${gameState.spin.validCodes.length}!`;
                 elements.spin.codeDisplay.style.display = "block";
                 elements.spin.copyButton.style.display = "inline-block";
                 
@@ -1130,14 +1158,18 @@
 
         function catchFish(isWinningFish) {
             if (isWinningFish) {
-                // Get valid code
-                const validCode = gameState.fish.validCodes[0]; // Using first valid code
+                // Get the next code in order
+                const validCode = gameState.fish.validCodes[gameState.fish.currentCodeIndex];
                 gameState.fish.currentCode = validCode;
+                
+                // Move to next code for next time (loop back to start if at end)
+                gameState.fish.currentCodeIndex = 
+                    (gameState.fish.currentCodeIndex + 1) % gameState.fish.validCodes.length;
                 
                 // Create and display code as image
                 createCodeImage(validCode, elements.fish.codeDisplay);
                 
-                elements.fish.result.innerHTML = `🎉 You Caught a Winning Fish!`;
+                elements.fish.result.innerHTML = `🎉 You Caught Fish Code ${gameState.fish.currentCodeIndex}/${gameState.fish.validCodes.length}!`;
                 elements.fish.codeDisplay.style.display = "block";
                 elements.fish.copyButton.style.display = "inline-block";
                 
