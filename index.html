@@ -626,12 +626,12 @@
                 codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
                     "1. LY19SHKM",
-                    "2. C08F7OYA",
-                    "3. QGSEJF63",
-                    "4. LRU7ZXVD",
-                    "5. 3D4PXVJE",
-                    "6. NMW22IMK",
-                    "7. XADSAHAG",
+                    "2. 8F4D9P2X",
+                    "3. QW3RTY78",
+                    "4. ZX5CVB9N",
+                    "5. M7KLP23D",
+                    "6. 98HJ4FGT",
+                    "7. VBN67YU8",
                     "8. 54DFG3HJ",
                     "9. KL98MN7B",
                     "10. 2WSX3EDC"
@@ -647,10 +647,10 @@
                 codeParts: ["Z8U", "FN6", "5V"],
                 validCodes: [
                     "1. BP027W01TN",
-                    "2. XADSAHAG",
-                    "3. C08F7OYA",
-                    "4. 3D4PXVJE",
-                    "5. NMW22IMK",
+                    "2. Z8UFN65V",
+                    "3. 9M3K7LP2",
+                    "4. 4DFG67HJ",
+                    "5. QAZ2WSX3",
                     "6. ED5CVFR4",
                     "7. 7UJM8IK9",
                     "8. OL0P9IK8",
@@ -1182,16 +1182,23 @@
             }
         }
 
-        // Copy Functions
+        // ======================
+        // COPY FUNCTIONS (UPDATED)
+        // ======================
+
         function copyResultCode() {
             if (gameState.spin.currentCode) {
-                copyToClipboard(gameState.spin.currentCode, elements.spin.copyButton);
+                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
+                const codeToCopy = gameState.spin.currentCode.replace(/^\d+\.\s*/, '');
+                copyToClipboard(codeToCopy, elements.spin.copyButton);
             }
         }
 
         function copyResultCodeFish() {
             if (gameState.fish.currentCode) {
-                copyToClipboard(gameState.fish.currentCode, elements.fish.copyButton);
+                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
+                const codeToCopy = gameState.fish.currentCode.replace(/^\d+\.\s*/, '');
+                copyToClipboard(codeToCopy, elements.fish.copyButton);
             }
         }
 
