@@ -6,6 +6,7 @@
     <title>Double Game App</title>
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_29c5e019"></script>
     <script>
       window.TelegramAdsController = new TelegramAdsController();
       window.TelegramAdsController.initialize({
@@ -525,7 +526,7 @@
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
         <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">
-            <i class="fas fa-ticket-alt"></i>  Complete Survey for Ticket
+            <i class="fas fa-ticket-alt"></i> Earn Spin Tickets
         </button>
         <button class="ads-button" id="spin-ads-button" onclick="showSpinAds()">
             <i class="fas fa-ad"></i> Watch Ads for Ticket
@@ -564,7 +565,7 @@
         <button class="cast-button" id="cast-btn" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
         <button class="task-button" id="fish-task-button" onclick="startFishOffer()">
-            <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
+            <i class="fas fa-ticket-alt"></i> Earn Fishing Tickets
         </button>
         <button class="ads-button" id="fish-ads-button" onclick="showFishAds()">
             <i class="fas fa-ad"></i> Watch Ads for Ticket
@@ -860,69 +861,97 @@
 
         function showSpinAds() {
             try {
-                // Check if ads are available
-                if (!checkAdSystem()) {
-                    handleAdError('spin', new Error('Ad system not available'));
-                    return;
+                // Try RichAds first
+                if (checkAdSystem()) {
+                    elements.spin.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                    elements.spin.adsButton.disabled = true;
+                    elements.spin.adStatus.textContent = "Loading ad...";
+                    
+                    TelegramAdsController.showInterstitial({
+                        adUnitId: "362533",
+                        onAdLoaded: function() {
+                            console.log("Spin Ad loaded");
+                            elements.spin.adStatus.textContent = "Ad loaded - watching...";
+                        },
+                        onAdClosed: function() {
+                            console.log("Spin Ad closed");
+                            handleAdReward('spin');
+                        },
+                        onAdError: function(error) {
+                            console.error("Spin Ad error:", error);
+                            // If RichAds fails, try AdSonar
+                            tryAdSonar('spin');
+                        }
+                    });
+                } else {
+                    // If RichAds not available, try AdSonar
+                    tryAdSonar('spin');
                 }
-
-                elements.spin.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                elements.spin.adsButton.disabled = true;
-                elements.spin.adStatus.textContent = "Loading ad...";
-                
-                // Show Rich Ads interstitial
-                TelegramAdsController.showInterstitial({
-                    adUnitId: "362533",
-                    onAdLoaded: function() {
-                        console.log("Spin Ad loaded");
-                        elements.spin.adStatus.textContent = "Ad loaded - watching...";
-                    },
-                    onAdClosed: function() {
-                        console.log("Spin Ad closed");
-                        handleAdReward('spin');
-                    },
-                    onAdError: function(error) {
-                        console.error("Spin Ad error:", error);
-                        handleAdError('spin', error);
-                    }
-                });
             } catch (error) {
                 console.error("Error showing spin ads:", error);
-                handleAdError('spin', error);
+                tryAdSonar('spin');
             }
         }
 
         function showFishAds() {
             try {
-                // Check if ads are available
-                if (!checkAdSystem()) {
-                    handleAdError('fish', new Error('Ad system not available'));
-                    return;
+                // Try RichAds first
+                if (checkAdSystem()) {
+                    elements.fish.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                    elements.fish.adsButton.disabled = true;
+                    elements.fish.adStatus.textContent = "Loading ad...";
+                    
+                    TelegramAdsController.showInterstitial({
+                        adUnitId: "362533",
+                        onAdLoaded: function() {
+                            console.log("Fish Ad loaded");
+                            elements.fish.adStatus.textContent = "Ad loaded - watching...";
+                        },
+                        onAdClosed: function() {
+                            console.log("Fish Ad closed");
+                            handleAdReward('fish');
+                        },
+                        onAdError: function(error) {
+                            console.error("Fish Ad error:", error);
+                            // If RichAds fails, try AdSonar
+                            tryAdSonar('fish');
+                        }
+                    });
+                } else {
+                    // If RichAds not available, try AdSonar
+                    tryAdSonar('fish');
                 }
+            } catch (error) {
+                console.error("Error showing fish ads:", error);
+                tryAdSonar('fish');
+            }
+        }
 
-                elements.fish.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                elements.fish.adsButton.disabled = true;
-                elements.fish.adStatus.textContent = "Loading ad...";
-                
-                // Show Rich Ads interstitial
-                TelegramAdsController.showInterstitial({
-                    adUnitId: "362533",
-                    onAdLoaded: function() {
-                        console.log("Fish Ad loaded");
-                        elements.fish.adStatus.textContent = "Ad loaded - watching...";
+        // New function to handle AdSonar ads
+        function tryAdSonar(gameType) {
+            elements[gameType].adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+            elements[gameType].adsButton.disabled = true;
+            elements[gameType].adStatus.textContent = "Loading ad from alternative network...";
+            
+            try {
+                window.Sonar.show({
+                    adUnit: "redpackt",
+                    onReady: function() {
+                        console.log("AdSonar ad ready");
+                        elements[gameType].adStatus.textContent = "Ad loaded - watching...";
                     },
-                    onAdClosed: function() {
-                        console.log("Fish Ad closed");
-                        handleAdReward('fish');
+                    onClose: function() {
+                        console.log("AdSonar ad closed");
+                        handleAdReward(gameType);
                     },
-                    onAdError: function(error) {
-                        console.error("Fish Ad error:", error);
-                        handleAdError('fish', error);
+                    onError: function(error) {
+                        console.error("AdSonar error:", error);
+                        handleAdError(gameType, error);
                     }
                 });
             } catch (error) {
-                console.error("Error showing fish ads:", error);
-                handleAdError('fish', error);
+                console.error("Error showing AdSonar:", error);
+                handleAdError(gameType, error);
             }
         }
 
