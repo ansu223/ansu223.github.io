@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Game App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+      window.TelegramAdsController = new TelegramAdsController();
+      window.TelegramAdsController.initialize({
+        pubId: "969333",
+        appId: "2246",
+      });
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -22,6 +31,7 @@
             --button-bg: #444444;
             --button-hover: #555555;
             --telegram-color: #0088cc;
+            --ads-color: #FF5722;
         }
 
         body {
@@ -258,6 +268,31 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
         
+        .ads-button {
+            background-color: var(--ads-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ads-button:hover {
+            background-color: #e64a19;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ads-button:disabled {
+            background-color: #8d6e63;
+            cursor: not-allowed;
+        }
+        
         .task-completed {
             color: var(--success-color);
             font-weight: bold;
@@ -423,6 +458,12 @@
             top: -9999px;
         }
 
+        .ad-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -439,7 +480,7 @@
                 font-size: 14px;
             }
             
-            .spin-button, .cast-button, .task-button {
+            .spin-button, .cast-button, .task-button, .ads-button {
                 padding: 10px 20px;
                 font-size: 15px;
             }
@@ -466,7 +507,7 @@
             </div>
         </div>
 
-        <div class="spin-notice">🔥 Complete a survey to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Complete a survey or watch ads to earn spin tickets! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -486,6 +527,10 @@
         <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">
             <i class="fas fa-ticket-alt"></i> Earn Spin Tickets
         </button>
+        <button class="ads-button" id="spin-ads-button" onclick="showSpinAds()">
+            <i class="fas fa-ad"></i> Watch Ads for Ticket
+        </button>
+        <div class="ad-status" id="spin-ad-status"></div>
         <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
             <i class="fas fa-check-circle"></i> Verify Completion
         </button>
@@ -521,6 +566,10 @@
         <button class="task-button" id="fish-task-button" onclick="startFishOffer()">
             <i class="fas fa-ticket-alt"></i> Earn Fishing Tickets
         </button>
+        <button class="ads-button" id="fish-ads-button" onclick="showFishAds()">
+            <i class="fas fa-ad"></i> Watch Ads for Ticket
+        </button>
+        <div class="ad-status" id="fish-ad-status"></div>
         <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
             <i class="fas fa-check-circle"></i> Verify Completion
         </button>
@@ -574,7 +623,7 @@
                 offerStarted: false,
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
-                validCodes: ["LY19SHKM"]
+                validCodes: ["BP027W01TN"]
             },
             fish: {
                 tickets: 0, // No free tickets
@@ -583,7 +632,7 @@
                 offerStarted: false,
                 currentCode: '',
                 codeParts: ["Z8U", "FN6", "5V"],
-                validCodes: ["BP027W01TN"],
+                validCodes: ["Z8UFN65V"],
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -600,7 +649,12 @@
                 lastSpin: 0,
                 lastFish: 0,
                 spinCount: 0,
-                fishCount: 0
+                fishCount: 0,
+                adRetryCount: 0
+            },
+            adStatus: {
+                available: false,
+                lastChecked: 0
             }
         };
 
@@ -614,6 +668,8 @@
                 codeDisplay: document.getElementById("spin-code-display"),
                 copyButton: document.getElementById("copy-code-button"),
                 taskButton: document.getElementById("spin-task-button"),
+                adsButton: document.getElementById("spin-ads-button"),
+                adStatus: document.getElementById("spin-ad-status"),
                 verifyButton: document.getElementById("verify-spin-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
@@ -627,6 +683,8 @@
                 codeDisplay: document.getElementById("fish-code-display"),
                 copyButton: document.getElementById("copy-code-button-fish"),
                 taskButton: document.getElementById("fish-task-button"),
+                adsButton: document.getElementById("fish-ads-button"),
+                adStatus: document.getElementById("fish-ad-status"),
                 verifyButton: document.getElementById("verify-fish-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
@@ -645,6 +703,9 @@
             updateFishUI();
             updateReferralUI();
             
+            // Check ad system availability
+            checkAdSystem();
+            
             // Add bot trap
             const botTrap = document.createElement('input');
             botTrap.type = 'text';
@@ -652,6 +713,26 @@
             botTrap.name = 'bot-trap';
             botTrap.style.display = 'none';
             document.body.appendChild(botTrap);
+        }
+
+        function checkAdSystem() {
+            const now = Date.now();
+            // Only check once per session unless forced
+            if (now - gameState.adStatus.lastChecked > 10000) {
+                gameState.adStatus.lastChecked = now;
+                gameState.adStatus.available = typeof TelegramAdsController !== 'undefined';
+                
+                if (!gameState.adStatus.available) {
+                    elements.spin.adStatus.textContent = "Ad system not available";
+                    elements.fish.adStatus.textContent = "Ad system not available";
+                    elements.spin.adsButton.disabled = true;
+                    elements.fish.adsButton.disabled = true;
+                } else {
+                    elements.spin.adStatus.textContent = "Ads available";
+                    elements.fish.adStatus.textContent = "Ads available";
+                }
+            }
+            return gameState.adStatus.available;
         }
 
         function updateSpinUI() {
@@ -774,12 +855,153 @@
         }
 
         // ======================
+        // ADS FUNCTIONS
+        // ======================
+
+        function showSpinAds() {
+            try {
+                // Check if ads are available
+                if (!checkAdSystem()) {
+                    handleAdError('spin', new Error('Ad system not available'));
+                    return;
+                }
+
+                elements.spin.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                elements.spin.adsButton.disabled = true;
+                elements.spin.adStatus.textContent = "Loading ad...";
+                
+                // Show Rich Ads interstitial
+                TelegramAdsController.showInterstitial({
+                    adUnitId: "362533",
+                    onAdLoaded: function() {
+                        console.log("Spin Ad loaded");
+                        elements.spin.adStatus.textContent = "Ad loaded - watching...";
+                    },
+                    onAdClosed: function() {
+                        console.log("Spin Ad closed");
+                        handleAdReward('spin');
+                    },
+                    onAdError: function(error) {
+                        console.error("Spin Ad error:", error);
+                        handleAdError('spin', error);
+                    }
+                });
+            } catch (error) {
+                console.error("Error showing spin ads:", error);
+                handleAdError('spin', error);
+            }
+        }
+
+        function showFishAds() {
+            try {
+                // Check if ads are available
+                if (!checkAdSystem()) {
+                    handleAdError('fish', new Error('Ad system not available'));
+                    return;
+                }
+
+                elements.fish.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                elements.fish.adsButton.disabled = true;
+                elements.fish.adStatus.textContent = "Loading ad...";
+                
+                // Show Rich Ads interstitial
+                TelegramAdsController.showInterstitial({
+                    adUnitId: "362533",
+                    onAdLoaded: function() {
+                        console.log("Fish Ad loaded");
+                        elements.fish.adStatus.textContent = "Ad loaded - watching...";
+                    },
+                    onAdClosed: function() {
+                        console.log("Fish Ad closed");
+                        handleAdReward('fish');
+                    },
+                    onAdError: function(error) {
+                        console.error("Fish Ad error:", error);
+                        handleAdError('fish', error);
+                    }
+                });
+            } catch (error) {
+                console.error("Error showing fish ads:", error);
+                handleAdError('fish', error);
+            }
+        }
+
+        function handleAdReward(gameType) {
+            // Award ticket after ad is watched
+            gameState[gameType].tickets += 1;
+            if (gameType === 'spin') {
+                updateSpinUI();
+                elements.spin.adStatus.textContent = "Ad completed - ticket awarded!";
+            } else {
+                updateFishUI();
+                elements.fish.adStatus.textContent = "Ad completed - ticket awarded!";
+            }
+            
+            // Show notification
+            showNotification(`+1 ${gameType === 'spin' ? 'Spin' : 'Fishing'} Ticket Added!`);
+            
+            // Reset button
+            setTimeout(() => {
+                elements[gameType].adsButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ads for Ticket';
+                elements[gameType].adsButton.disabled = false;
+                elements[gameType].adStatus.textContent = "Ads available";
+            }, 2000);
+            
+            // Reset error count
+            gameState.userActions.adRetryCount = 0;
+        }
+
+        function handleAdError(gameType, error) {
+            // Show user-friendly error message
+            let errorMessage = "Ad failed to load. Please try again later.";
+            
+            if (error && error.message) {
+                if (error.message.includes('no fill')) {
+                    errorMessage = "No ads available at the moment. Please try again later.";
+                } else if (error.message.includes('network')) {
+                    errorMessage = "Network error. Please check your internet connection.";
+                }
+            }
+            
+            // Update status
+            elements[gameType].adStatus.textContent = errorMessage;
+            
+            // Reset button
+            elements[gameType].adsButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ads for Ticket';
+            elements[gameType].adsButton.disabled = false;
+            
+            // Track error count
+            gameState.userActions.adRetryCount = (gameState.userActions.adRetryCount || 0) + 1;
+            
+            // After 3 failures, offer alternative
+            if (gameState.userActions.adRetryCount > 2) {
+                setTimeout(() => {
+                    const trySurvey = confirm("Having trouble with ads. Complete a quick survey instead?");
+                    if (trySurvey) {
+                        if (gameType === 'spin') startSpinOffer();
+                        else startFishOffer();
+                    }
+                }, 500);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('hidden-ticket-notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        // ======================
         // GAME FUNCTIONS
         // ======================
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Complete a survey to earn tickets.");
+                alert("You need 1 spin ticket! Complete a survey or watch ads to earn tickets.");
                 return;
             }
             
@@ -823,7 +1045,7 @@
 
         function castLine() {
             if (gameState.fish.tickets < 1) {
-                alert("You need 1 fishing ticket! Complete a survey to earn tickets.");
+                alert("You need 1 fishing ticket! Complete a survey or watch ads to earn tickets.");
                 return;
             }
             
@@ -1053,14 +1275,7 @@
                 updateFishUI();
                 
                 // Show hidden notification
-                const notification = document.getElementById('hidden-ticket-notification');
-                notification.style.display = 'block';
-                
-                // Hide after animation completes
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 2000);
-                
+                showNotification("+1 Fishing Ticket Added!");
             }, 10000); // 10 second delay
         }
 
