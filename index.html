@@ -463,6 +463,28 @@
             margin-top: 5px;
         }
 
+        .ad-progress {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -527,8 +549,13 @@
             <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
         </button>
         <button class="ads-button" id="spin-ads-button" onclick="showSpinAds()">
-            <i class="fas fa-ad"></i> Watch Ads for Ticket
+            <i class="fas fa-ad"></i> Watch Ads for Ticket (0/5)
         </button>
+        <div class="ad-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="spin-progress-fill"></div>
+            </div>
+        </div>
         <div class="ad-status" id="spin-ad-status"></div>
         <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
             <i class="fas fa-check-circle"></i> Verify Completion
@@ -566,8 +593,13 @@
             <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
         </button>
         <button class="ads-button" id="fish-ads-button" onclick="showFishAds()">
-            <i class="fas fa-ad"></i> Watch Ads for Ticket
+            <i class="fas fa-ad"></i> Watch Ads for Ticket (0/5)
         </button>
+        <div class="ad-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="fish-progress-fill"></div>
+            </div>
+        </div>
         <div class="ad-status" id="fish-ad-status"></div>
         <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
             <i class="fas fa-check-circle"></i> Verify Completion
@@ -626,18 +658,19 @@
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
-                    "1. HN9XPQRC",
-                    "2. AY7QURLC",
-                    "3. 33HXYEDX",
-                    "4. 4PND0506",
-                    "5. OI7HJBFF",
+                    "1. EW5NUCRG",
+                    "2. FOQBJSHL",
+                    "3. OHA1BCE7",
+                    "4. 7HZK0DQ3",
+                    "5. 593PJ64E",
                     "6. 98HJ4FGT",
                     "7. VBN67YU8",
                     "8. 54DFG3HJ",
                     "9. KL98MN7B",
                     "10. 2WSX3EDC"
                 ],
-                currentCodeIndex: 0 // Track which code to give next
+                currentCodeIndex: 0, // Track which code to give next
+                adsWatched: 0 // Track ads watched for spin tickets
             },
             fish: {
                 tickets: 0, // No free tickets
@@ -664,7 +697,8 @@
                     { emoji: "🐠", value: 2 },
                     { emoji: "🐡", value: 3 },
                     { emoji: "🦈", value: 5 },
-                ]
+                ],
+                adsWatched: 0 // Track ads watched for fish tickets
             },
             referral: {
                 count: 0,
@@ -700,7 +734,8 @@
                 verifyButton: document.getElementById("verify-spin-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
-                spinBtn: document.getElementById("spin-btn")
+                spinBtn: document.getElementById("spin-btn"),
+                progressFill: document.getElementById("spin-progress-fill")
             },
             fish: {
                 tickets: document.getElementById("fish-tickets"),
@@ -715,7 +750,8 @@
                 verifyButton: document.getElementById("verify-fish-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
-                castBtn: document.getElementById("cast-btn")
+                castBtn: document.getElementById("cast-btn"),
+                progressFill: document.getElementById("fish-progress-fill")
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
@@ -740,6 +776,17 @@
             botTrap.name = 'bot-trap';
             botTrap.style.display = 'none';
             document.body.appendChild(botTrap);
+            
+            // Update progress bars
+            updateAdProgress('spin');
+            updateAdProgress('fish');
+        }
+
+        function updateAdProgress(gameType) {
+            const adsWatched = gameState[gameType].adsWatched;
+            const progress = (adsWatched / 5) * 100;
+            elements[gameType].progressFill.style.width = `${progress}%`;
+            elements[gameType].adsButton.innerHTML = `<i class="fas fa-ad"></i> Watch Ads for Ticket (${adsWatched}/5)`;
         }
 
         function checkAdSystem() {
@@ -1022,24 +1069,40 @@
         }
 
         function handleAdReward(gameType) {
-            // Award ticket after ad is watched
-            gameState[gameType].tickets += 1;
-            if (gameType === 'spin') {
-                updateSpinUI();
-                elements.spin.adStatus.textContent = `Ad completed (${gameState.adStatus.currentProvider}) - ticket awarded!`;
-            } else {
-                updateFishUI();
-                elements.fish.adStatus.textContent = `Ad completed (${gameState.adStatus.currentProvider}) - ticket awarded!`;
-            }
+            // Increment ads watched count
+            gameState[gameType].adsWatched++;
+            updateAdProgress(gameType);
             
-            // Show notification
-            showNotification(`+1 ${gameType === 'spin' ? 'Spin' : 'Fishing'} Ticket Added!`);
+            // Check if user has watched 5 ads
+            if (gameState[gameType].adsWatched >= 5) {
+                // Award ticket after 5 ads are watched
+                gameState[gameType].tickets += 1;
+                gameState[gameType].adsWatched = 0; // Reset counter
+                updateAdProgress(gameType);
+                
+                if (gameType === 'spin') {
+                    updateSpinUI();
+                    elements.spin.adStatus.textContent = `5 ads completed - ticket awarded!`;
+                } else {
+                    updateFishUI();
+                    elements.fish.adStatus.textContent = `5 ads completed - ticket awarded!`;
+                }
+                
+                // Show notification
+                showNotification(`+1 ${gameType === 'spin' ? 'Spin' : 'Fishing'} Ticket Added!`);
+            } else {
+                // Just show progress for current ad
+                if (gameType === 'spin') {
+                    elements.spin.adStatus.textContent = `Ad ${gameState.spin.adsWatched}/5 completed (${gameState.adStatus.currentProvider})`;
+                } else {
+                    elements.fish.adStatus.textContent = `Ad ${gameState.fish.adsWatched}/5 completed (${gameState.adStatus.currentProvider})`;
+                }
+            }
             
             // Reset button
             setTimeout(() => {
-                elements[gameType].adsButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ads for Ticket';
+                elements[gameType].adsButton.innerHTML = `<i class="fas fa-ad"></i> Watch Ads for Ticket (${gameState[gameType].adsWatched}/5)`;
                 elements[gameType].adsButton.disabled = false;
-                elements[gameType].adStatus.textContent = "Ads available";
                 gameState.adStatus.currentProvider = null;
             }, 2000);
             
@@ -1063,7 +1126,7 @@
             elements[gameType].adStatus.textContent = errorMessage;
             
             // Reset button
-            elements[gameType].adsButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ads for Ticket';
+            elements[gameType].adsButton.innerHTML = `<i class="fas fa-ad"></i> Watch Ads for Ticket (${gameState[gameType].adsWatched}/5)`;
             elements[gameType].adsButton.disabled = false;
             gameState.adStatus.currentProvider = null;
             
