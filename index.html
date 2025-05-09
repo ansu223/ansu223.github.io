@@ -6,12 +6,8 @@
     <title>Double Game App</title>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
-    <!-- RichAds Script -->
-    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <!-- AdSonar Script -->
     <script src="https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_29c5e019"></script>
-    <!-- AdsGram Script -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -645,8 +641,38 @@
     </div>
 
     <script>
-        // Initialize AdsGram SDK
-        const AdController = window.Adsgram ? window.Adsgram.init({ blockId: "int-10496" }) : null;
+        // Initialize RichAds with your credentials
+        (function() {
+            const richAdsScript = document.createElement('script');
+            richAdsScript.src = 'https://richinfo.co/richpartners/telegram/js/tg-ob.js';
+            richAdsScript.onload = function() {
+                if (typeof TelegramAdsController !== 'undefined') {
+                    window.TelegramAdsController = new TelegramAdsController();
+                    window.TelegramAdsController.initialize({
+                        pubId: "969333",
+                        appId: "2255",
+                    });
+                    console.log("RichAds initialized successfully");
+                }
+            };
+            document.head.appendChild(richAdsScript);
+        })();
+
+        // Initialize AdsGram with your credentials
+        (function() {
+            const adsGramScript = document.createElement('script');
+            adsGramScript.src = 'https://sad.adsgram.ai/js/sad.min.js';
+            adsGramScript.onload = function() {
+                if (typeof Adsgram !== 'undefined') {
+                    window.AdController = window.Adsgram.init({ 
+                        blockId: "int-10496",
+                        token: "bf42d66053de490ebe3335c8c331496b"
+                    });
+                    console.log("AdsGram initialized successfully");
+                }
+            };
+            document.head.appendChild(adsGramScript);
+        })();
 
         // Enhanced Game State with Image Codes
         const gameState = {
@@ -794,9 +820,9 @@
             // Only check once per session unless forced
             if (now - gameState.adStatus.lastChecked > 10000) {
                 gameState.adStatus.lastChecked = now;
-                gameState.adStatus.available = typeof TelegramAdsController !== 'undefined' || 
-                                              typeof window.Sonar !== 'undefined' || 
-                                              (window.Adsgram && AdController);
+                gameState.adStatus.available = (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') || 
+                                              (window.Sonar && typeof window.Sonar.show === 'function') || 
+                                              (window.AdController && typeof window.AdController.showInterstitial === 'function');
                 
                 if (!gameState.adStatus.available) {
                     elements.spin.adStatus.textContent = "Ad system not available";
@@ -931,20 +957,20 @@
         }
 
         // ======================
-        // ADS FUNCTIONS (UPDATED WITH ALL THREE NETWORKS)
+        // ADS FUNCTIONS (UPDATED WITH PROPER CREDENTIALS)
         // ======================
 
         function showSpinAds() {
             try {
-                // Try RichAds first
-                if (typeof TelegramAdsController !== 'undefined') {
+                // Try RichAds first if available and properly initialized
+                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
                     elements.spin.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
                     elements.spin.adsButton.disabled = true;
                     elements.spin.adStatus.textContent = "Loading ad (RichAds)...";
                     gameState.adStatus.currentProvider = 'richads';
                     
-                    TelegramAdsController.showInterstitial({
-                        adUnitId: "362533",
+                    TelegramAdsController.show({
+                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
                         onAdLoaded: function() {
                             console.log("RichAds Spin Ad loaded");
                             elements.spin.adStatus.textContent = "RichAds loaded - watching...";
@@ -955,12 +981,10 @@
                         },
                         onAdError: function(error) {
                             console.error("RichAds Spin Ad error:", error);
-                            // If RichAds fails, try AdSonar
                             tryAdSonar('spin');
                         }
                     });
                 } else {
-                    // If RichAds not available, try AdSonar
                     tryAdSonar('spin');
                 }
             } catch (error) {
@@ -971,15 +995,15 @@
 
         function showFishAds() {
             try {
-                // Try RichAds first
-                if (typeof TelegramAdsController !== 'undefined') {
+                // Try RichAds first if available and properly initialized
+                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
                     elements.fish.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
                     elements.fish.adsButton.disabled = true;
                     elements.fish.adStatus.textContent = "Loading ad (RichAds)...";
                     gameState.adStatus.currentProvider = 'richads';
                     
-                    TelegramAdsController.showInterstitial({
-                        adUnitId: "362533",
+                    TelegramAdsController.show({
+                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
                         onAdLoaded: function() {
                             console.log("RichAds Fish Ad loaded");
                             elements.fish.adStatus.textContent = "RichAds loaded - watching...";
@@ -990,12 +1014,10 @@
                         },
                         onAdError: function(error) {
                             console.error("RichAds Fish Ad error:", error);
-                            // If RichAds fails, try AdSonar
                             tryAdSonar('fish');
                         }
                     });
                 } else {
-                    // If RichAds not available, try AdSonar
                     tryAdSonar('fish');
                 }
             } catch (error) {
@@ -1011,7 +1033,7 @@
             gameState.adStatus.currentProvider = 'adsonar';
             
             try {
-                if (typeof window.Sonar !== 'undefined') {
+                if (window.Sonar && typeof window.Sonar.show === 'function') {
                     window.Sonar.show({
                         adUnit: "redpackt",
                         onReady: function() {
@@ -1024,7 +1046,6 @@
                         },
                         onError: function(error) {
                             console.error("AdSonar error:", error);
-                            // If AdSonar fails, try AdsGram
                             tryAdsGram(gameType);
                         }
                     });
@@ -1044,8 +1065,8 @@
             gameState.adStatus.currentProvider = 'adsgram';
             
             try {
-                if (AdController) {
-                    AdController.showInterstitial({
+                if (window.AdController && typeof window.AdController.showInterstitial === 'function') {
+                    window.AdController.showInterstitial({
                         onAdLoaded: function() {
                             console.log("AdsGram ad loaded");
                             elements[gameType].adStatus.textContent = "AdsGram loaded - watching...";
@@ -1060,7 +1081,7 @@
                         }
                     });
                 } else {
-                    handleAdError(gameType, new Error("AdsGram not available"));
+                    handleAdError(gameType, new Error("AdsGram not properly initialized"));
                 }
             } catch (error) {
                 console.error("Error showing AdsGram:", error);
