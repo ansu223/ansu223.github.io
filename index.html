@@ -684,7 +684,7 @@
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
-                    "1. S7T3QS3R",
+                    "1. B3CFJ0ZO",
                     "2. O23ACLQL",
                     "3. KALJWN01",
                     "4. AIDEKKBC",
@@ -1189,7 +1189,7 @@
             // Rate limiting
             const now = Date.now();
             if (now - gameState.userActions.lastSpin < 30000) {
-                alert("Please wait 30 seconds between spins");
+                alert("Please wait 60 seconds between spins");
                 return;
             }
             
@@ -1237,7 +1237,7 @@
             // Rate limiting
             const now = Date.now();
             if (now - gameState.userActions.lastFish < 30000) {
-                alert("Please wait 30 seconds between casts");
+                alert("Please wait 60 seconds between casts");
                 return;
             }
             
@@ -1365,7 +1365,7 @@
                 elements.spin.verifyButton.style.display = 'block';
                 elements.spin.taskProgress.innerHTML = 
                     '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
-            }, 30000);
+            }, 60000);
             
             elements.spin.taskProgress.innerHTML = 
                 '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
@@ -1381,7 +1381,7 @@
                     elements.fish.verifyButton.style.display = 'block';
                     elements.fish.taskProgress.innerHTML = 
                         'Complete the survey and verify below!';
-                }, 30000);
+                },60000);
                 
                 elements.fish.taskProgress.innerHTML = 
                     'Offer opened! Please complete the survey.';
