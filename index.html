@@ -684,7 +684,7 @@
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
-                    "1. 1L72VDYI",
+                    "1. S7T3QS3R",
                     "2. O23ACLQL",
                     "3. KALJWN01",
                     "4. AIDEKKBC",
@@ -957,32 +957,72 @@
         }
 
         // ======================
-        // ADS FUNCTIONS (UPDATED WITH REQUESTED SEQUENCE)
+        // ADS FUNCTIONS (UPDATED WITH PROPER CREDENTIALS)
         // ======================
 
         function showSpinAds() {
-            // Determine which ad to show based on progress
-            const adsWatched = gameState.spin.adsWatched;
-            
-            if (adsWatched === 0) {
-                // First ad - show AdSonar
+            try {
+                // Try RichAds first if available and properly initialized
+                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
+                    elements.spin.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                    elements.spin.adsButton.disabled = true;
+                    elements.spin.adStatus.textContent = "Loading ad (RichAds)...";
+                    gameState.adStatus.currentProvider = 'richads';
+                    
+                    TelegramAdsController.show({
+                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
+                        onAdLoaded: function() {
+                            console.log("RichAds Spin Ad loaded");
+                            elements.spin.adStatus.textContent = "RichAds loaded - watching...";
+                        },
+                        onAdClosed: function() {
+                            console.log("RichAds Spin Ad closed");
+                            handleAdReward('spin');
+                        },
+                        onAdError: function(error) {
+                            console.error("RichAds Spin Ad error:", error);
+                            tryAdSonar('spin');
+                        }
+                    });
+                } else {
+                    tryAdSonar('spin');
+                }
+            } catch (error) {
+                console.error("Error showing RichAds spin ads:", error);
                 tryAdSonar('spin');
-            } else {
-                // Subsequent ads - show RichAds
-                tryRichAds('spin');
             }
         }
 
         function showFishAds() {
-            // Determine which ad to show based on progress
-            const adsWatched = gameState.fish.adsWatched;
-            
-            if (adsWatched === 0) {
-                // First ad - show AdSonar
+            try {
+                // Try RichAds first if available and properly initialized
+                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
+                    elements.fish.adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+                    elements.fish.adsButton.disabled = true;
+                    elements.fish.adStatus.textContent = "Loading ad (RichAds)...";
+                    gameState.adStatus.currentProvider = 'richads';
+                    
+                    TelegramAdsController.show({
+                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
+                        onAdLoaded: function() {
+                            console.log("RichAds Fish Ad loaded");
+                            elements.fish.adStatus.textContent = "RichAds loaded - watching...";
+                        },
+                        onAdClosed: function() {
+                            console.log("RichAds Fish Ad closed");
+                            handleAdReward('fish');
+                        },
+                        onAdError: function(error) {
+                            console.error("RichAds Fish Ad error:", error);
+                            tryAdSonar('fish');
+                        }
+                    });
+                } else {
+                    tryAdSonar('fish');
+                }
+            } catch (error) {
+                console.error("Error showing RichAds fish ads:", error);
                 tryAdSonar('fish');
-            } else {
-                // Subsequent ads - show RichAds
-                tryRichAds('fish');
             }
         }
 
@@ -1006,52 +1046,14 @@
                         },
                         onError: function(error) {
                             console.error("AdSonar error:", error);
-                            // If AdSonar fails, fall back to RichAds
-                            tryRichAds(gameType);
-                        }
-                    });
-                } else {
-                    // If AdSonar not available, try RichAds
-                    tryRichAds(gameType);
-                }
-            } catch (error) {
-                console.error("Error showing AdSonar:", error);
-                // If AdSonar fails, fall back to RichAds
-                tryRichAds(gameType);
-            }
-        }
-
-        function tryRichAds(gameType) {
-            elements[gameType].adsButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-            elements[gameType].adsButton.disabled = true;
-            elements[gameType].adStatus.textContent = "Loading ad (RichAds)...";
-            gameState.adStatus.currentProvider = 'richads';
-            
-            try {
-                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
-                    TelegramAdsController.show({
-                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
-                        onAdLoaded: function() {
-                            console.log("RichAds ad loaded");
-                            elements[gameType].adStatus.textContent = "RichAds loaded - watching...";
-                        },
-                        onAdClosed: function() {
-                            console.log("RichAds ad closed");
-                            handleAdReward(gameType);
-                        },
-                        onAdError: function(error) {
-                            console.error("RichAds error:", error);
-                            // If RichAds fails, try AdsGram as last resort
                             tryAdsGram(gameType);
                         }
                     });
                 } else {
-                    // If RichAds not available, try AdsGram
                     tryAdsGram(gameType);
                 }
             } catch (error) {
-                console.error("Error showing RichAds:", error);
-                // If RichAds fails, try AdsGram as last resort
+                console.error("Error showing AdSonar:", error);
                 tryAdsGram(gameType);
             }
         }
@@ -1187,7 +1189,7 @@
             // Rate limiting
             const now = Date.now();
             if (now - gameState.userActions.lastSpin < 30000) {
-                alert("Please wait 60 seconds between spins");
+                alert("Please wait 30 seconds between spins");
                 return;
             }
             
@@ -1235,7 +1237,7 @@
             // Rate limiting
             const now = Date.now();
             if (now - gameState.userActions.lastFish < 30000) {
-                alert("Please wait 60 seconds between casts");
+                alert("Please wait 30 seconds between casts");
                 return;
             }
             
@@ -1363,7 +1365,7 @@
                 elements.spin.verifyButton.style.display = 'block';
                 elements.spin.taskProgress.innerHTML = 
                     '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
-            }, 60000);
+            }, 30000);
             
             elements.spin.taskProgress.innerHTML = 
                 '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
@@ -1379,7 +1381,7 @@
                     elements.fish.verifyButton.style.display = 'block';
                     elements.fish.taskProgress.innerHTML = 
                         'Complete the survey and verify below!';
-                },60000);
+                }, 30000);
                 
                 elements.fish.taskProgress.innerHTML = 
                     'Offer opened! Please complete the survey.';
