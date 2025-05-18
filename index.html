@@ -696,7 +696,8 @@
                     "10. 2WSX3EDC"
                 ],
                 currentCodeIndex: 0, // Track which code to give next
-                adsWatched: 0 // Track ads watched for spin tickets
+                adsWatched: 0, // Track ads watched for spin tickets
+                currentOfferId: null // Track current survey offer ID
             },
             fish: {
                 tickets: 0, // No free tickets
@@ -724,7 +725,8 @@
                     { emoji: "🐡", value: 3 },
                     { emoji: "🦈", value: 5 },
                 ],
-                adsWatched: 0 // Track ads watched for fish tickets
+                adsWatched: 0, // Track ads watched for fish tickets
+                currentOfferId: null // Track current survey offer ID
             },
             referral: {
                 count: 0,
@@ -806,6 +808,9 @@
             // Update progress bars
             updateAdProgress('spin');
             updateAdProgress('fish');
+            
+            // Start polling for survey completion
+            setInterval(pollForSurveyCompletion, 10000); // Check every 10 seconds
         }
 
         function updateAdProgress(gameType) {
@@ -1353,40 +1358,94 @@
         }
 
         // ======================
-        // OFFER FUNCTIONS WITH EXTERNAL BROWSER
+        // OFFER FUNCTIONS WITH POSTBACK VERIFICATION
         // ======================
 
         function startSpinOffer() {
+            // Generate a unique offer ID for tracking
+            const offerId = 'spin_' + Math.random().toString(36).substr(2, 9);
+            gameState.spin.currentOfferId = offerId;
             gameState.spin.offerStarted = true;
-            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=spin`;
+            
+            // Construct the offer URL with postback parameters
+            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=spin&postback=${encodeURIComponent(`https://website.com/postback.php?id=${offerId}&payout=1&ip={session_ip}`)}`;
+            
             openExternalBrowser(offerUrl);
             
-            setTimeout(() => {
-                elements.spin.verifyButton.style.display = 'block';
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
-            }, 30000);
+            elements.spin.verifyButton.style.display = 'block';
+            elements.spin.taskProgress.innerHTML = 
+                '<span class="offer-opened">Survey opened! Complete it and verify below.</span>';
             
             elements.spin.taskProgress.innerHTML = 
-                '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
+                'Survey opened! Please complete it and verify below.';
         }
         
         function startFishOffer() {
             if (!gameState.fish.offerStarted) {
+                // Generate a unique offer ID for tracking
+                const offerId = 'fish_' + Math.random().toString(36).substr(2, 9);
+                gameState.fish.currentOfferId = offerId;
                 gameState.fish.offerStarted = true;
-                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=fish`;
+                
+                // Construct the offer URL with postback parameters
+                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=fish&postback=${encodeURIComponent(`https://website.com/postback.php?id=${offerId}&payout=1&ip={session_ip}`)}`;
+                
                 openExternalBrowser(offerUrl);
                 
-                setTimeout(() => {
-                    elements.fish.verifyButton.style.display = 'block';
-                    elements.fish.taskProgress.innerHTML = 
-                        'Complete the survey and verify below!';
-                }, 30000);
-                
+                elements.fish.verifyButton.style.display = 'block';
                 elements.fish.taskProgress.innerHTML = 
-                    'Offer opened! Please complete the survey.';
+                    'Survey opened! Please complete it and verify below.';
             } else {
                 alert("Please complete the current survey first.");
+            }
+        }
+
+        // Poll server for survey completion
+        async function pollForSurveyCompletion() {
+            try {
+                // Check spin survey
+                if (gameState.spin.offerStarted && gameState.spin.currentOfferId) {
+                    const response = await fetch(`https://website.com/check_completion.php?id=${gameState.spin.currentOfferId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.completed) {
+                            // Survey completed - award ticket
+                            gameState.spin.tickets += 1;
+                            gameState.spin.offerStarted = false;
+                            gameState.spin.currentOfferId = null;
+                            updateSpinUI();
+                            
+                            elements.spin.verifyButton.style.display = 'none';
+                            elements.spin.taskProgress.innerHTML = 
+                                '<span class="task-completed">Survey completed! 1 spin ticket added.</span>';
+                            
+                            showNotification("+1 Spin Ticket Added!");
+                        }
+                    }
+                }
+                
+                // Check fish survey
+                if (gameState.fish.offerStarted && gameState.fish.currentOfferId) {
+                    const response = await fetch(`https://website.com/check_completion.php?id=${gameState.fish.currentOfferId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.completed) {
+                            // Survey completed - award ticket
+                            gameState.fish.tickets += 1;
+                            gameState.fish.offerStarted = false;
+                            gameState.fish.currentOfferId = null;
+                            updateFishUI();
+                            
+                            elements.fish.verifyButton.style.display = 'none';
+                            elements.fish.taskProgress.innerHTML = 
+                                '<span class="task-completed">Survey completed! 1 fishing ticket added.</span>';
+                            
+                            showNotification("+1 Fishing Ticket Added!");
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking survey completion:', error);
             }
         }
 
@@ -1398,22 +1457,29 @@
             verifyButton.disabled = true;
             
             try {
-                // Simulate verification delay (2-3 seconds)
-                await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+                // Check with server if survey was completed
+                const offerId = gameState[offerType].currentOfferId;
+                if (!offerId) {
+                    throw new Error("No active survey to verify");
+                }
                 
-                // In a real app, you would make an API call here to verify completion
-                // For demo purposes, we'll simulate a successful verification 80% of the time
-                const isVerified = Math.random() > 0.2;
+                const response = await fetch(`https://website.com/check_completion.php?id=${offerId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to check survey status");
+                }
                 
-                if (isVerified) {
+                const data = await response.json();
+                if (data.completed) {
                     // Award tickets for successful verification
+                    gameState[offerType].tickets += 1;
+                    gameState[offerType].offerStarted = false;
+                    gameState[offerType].currentOfferId = null;
+                    
                     if (offerType === 'spin') {
-                        gameState.spin.tickets += 1;
                         updateSpinUI();
                         progressElement.innerHTML = 
                             '<span class="task-completed">Verification successful! You earned 1 spin ticket.</span>';
-                    } else if (offerType === 'fish') {
-                        gameState.fish.tickets += 1;
+                    } else {
                         updateFishUI();
                         progressElement.innerHTML = 
                             '<span class="task-completed">Verification successful! You earned 1 fishing ticket.</span>';
@@ -1427,7 +1493,6 @@
                         verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
                         verifyButton.style.backgroundColor = 'var(--warning-color)';
                         verifyButton.disabled = false;
-                        gameState[offerType].offerStarted = false;
                     }, 2000);
                     
                     createConfetti(verifyButton);
