@@ -1368,7 +1368,7 @@
             gameState.spin.offerStarted = true;
             
             // Construct the offer URL with postback parameters
-            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=spin&postback=${encodeURIComponent(`https://website.com/postback.php?id=${offerId}&payout=1&ip={session_ip}`)}`;
+            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=spin&postback=${encodeURIComponent(`http://localhost:3000/postback?id=${offerId}&payout=1&ip={session_ip}`)}`;
             
             openExternalBrowser(offerUrl);
             
@@ -1388,7 +1388,7 @@
                 gameState.fish.offerStarted = true;
                 
                 // Construct the offer URL with postback parameters
-                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=fish&postback=${encodeURIComponent(`https://website.com/postback.php?id=${offerId}&payout=1&ip={session_ip}`)}`;
+                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&offer_id=${offerId}&type=fish&postback=${encodeURIComponent(`http://localhost:3000/postback?id=${offerId}&payout=1&ip={session_ip}}`)}`;
                 
                 openExternalBrowser(offerUrl);
                 
