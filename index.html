@@ -671,37 +671,11 @@
     </div>
 
     <script>
-        // Initialize RichAds with your credentials
+        // Initialize AdSonar Script
         (function() {
-            const richAdsScript = document.createElement('script');
-            richAdsScript.src = 'https://richinfo.co/richpartners/telegram/js/tg-ob.js';
-            richAdsScript.onload = function() {
-                if (typeof TelegramAdsController !== 'undefined') {
-                    window.TelegramAdsController = new TelegramAdsController();
-                    window.TelegramAdsController.initialize({
-                        pubId: "969333",
-                        appId: "2255",
-                    });
-                    console.log("RichAds initialized successfully");
-                }
-            };
-            document.head.appendChild(richAdsScript);
-        })();
-
-        // Initialize AdsGram with your credentials
-        (function() {
-            const adsGramScript = document.createElement('script');
-            adsGramScript.src = 'https://sad.adsgram.ai/js/sad.min.js';
-            adsGramScript.onload = function() {
-                if (typeof Adsgram !== 'undefined') {
-                    window.AdController = window.Adsgram.init({ 
-                        blockId: "int-10496",
-                        token: "bf42d66053de490ebe3335c8c331496b"
-                    });
-                    console.log("AdsGram initialized successfully");
-                }
-            };
-            document.head.appendChild(adsGramScript);
+            const adSonarScript = document.createElement('script');
+            adSonarScript.src = 'https://static.sonartech.io/lib/1.0.0/sonar.js?appId=app_29c5e019';
+            document.head.appendChild(adSonarScript);
         })();
 
         // Enhanced Game State with Image Codes
@@ -860,9 +834,7 @@
             // Only check once per session unless forced
             if (now - gameState.adStatus.lastChecked > 10000) {
                 gameState.adStatus.lastChecked = now;
-                gameState.adStatus.available = (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') || 
-                                              (window.Sonar && typeof window.Sonar.show === 'function') || 
-                                              (window.AdController && typeof window.AdController.showInterstitial === 'function');
+                gameState.adStatus.available = (window.Sonar && typeof window.Sonar.show === 'function');
                 
                 if (!gameState.adStatus.available) {
                     elements.spin.adStatus.textContent = "Ad system not available";
@@ -999,7 +971,7 @@
         }
 
         // ======================
-        // ADS FUNCTIONS (UPDATED WITH PROPER CREDENTIALS)
+        // ADS FUNCTIONS (ADSONAR ONLY)
         // ======================
 
         function showSpinAds(adsOption) {
@@ -1012,38 +984,7 @@
                 gameState.spin.adsReward = 2;
             }
             
-            try {
-                // Try RichAds first if available and properly initialized
-                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
-                    elements.spin.adsButton5.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                    elements.spin.adsButton10.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                    elements.spin.adsButton5.disabled = true;
-                    elements.spin.adsButton10.disabled = true;
-                    elements.spin.adStatus.textContent = "Loading ad (RichAds)...";
-                    gameState.adStatus.currentProvider = 'richads';
-                    
-                    TelegramAdsController.show({
-                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
-                        onAdLoaded: function() {
-                            console.log("RichAds Spin Ad loaded");
-                            elements.spin.adStatus.textContent = "RichAds loaded - watching...";
-                        },
-                        onAdClosed: function() {
-                            console.log("RichAds Spin Ad closed");
-                            handleAdReward('spin');
-                        },
-                        onAdError: function(error) {
-                            console.error("RichAds Spin Ad error:", error);
-                            tryAdSonar('spin');
-                        }
-                    });
-                } else {
-                    tryAdSonar('spin');
-                }
-            } catch (error) {
-                console.error("Error showing RichAds spin ads:", error);
-                tryAdSonar('spin');
-            }
+            showAdSonar('spin');
         }
 
         function showFishAds(adsOption) {
@@ -1056,46 +997,15 @@
                 gameState.fish.adsReward = 2;
             }
             
-            try {
-                // Try RichAds first if available and properly initialized
-                if (window.TelegramAdsController && typeof TelegramAdsController.show === 'function') {
-                    elements.fish.adsButton5.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                    elements.fish.adsButton10.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-                    elements.fish.adsButton5.disabled = true;
-                    elements.fish.adsButton10.disabled = true;
-                    elements.fish.adStatus.textContent = "Loading ad (RichAds)...";
-                    gameState.adStatus.currentProvider = 'richads';
-                    
-                    TelegramAdsController.show({
-                        adUnitId: "039ee4fd4cd43861adc1a98d763738c6", // Your RichAds interstitial ID
-                        onAdLoaded: function() {
-                            console.log("RichAds Fish Ad loaded");
-                            elements.fish.adStatus.textContent = "RichAds loaded - watching...";
-                        },
-                        onAdClosed: function() {
-                            console.log("RichAds Fish Ad closed");
-                            handleAdReward('fish');
-                        },
-                        onAdError: function(error) {
-                            console.error("RichAds Fish Ad error:", error);
-                            tryAdSonar('fish');
-                        }
-                    });
-                } else {
-                    tryAdSonar('fish');
-                }
-            } catch (error) {
-                console.error("Error showing RichAds fish ads:", error);
-                tryAdSonar('fish');
-            }
+            showAdSonar('fish');
         }
 
-        function tryAdSonar(gameType) {
+        function showAdSonar(gameType) {
             elements[gameType].adsButton5.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
             elements[gameType].adsButton10.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
             elements[gameType].adsButton5.disabled = true;
             elements[gameType].adsButton10.disabled = true;
-            elements[gameType].adStatus.textContent = "Loading ad (AdSonar)...";
+            elements[gameType].adStatus.textContent = "Loading ad...";
             gameState.adStatus.currentProvider = 'adsonar';
             
             try {
@@ -1104,7 +1014,7 @@
                         adUnit: "redpackt",
                         onReady: function() {
                             console.log("AdSonar ad ready");
-                            elements[gameType].adStatus.textContent = "AdSonar loaded - watching...";
+                            elements[gameType].adStatus.textContent = "Ad loaded - watching...";
                         },
                         onClose: function() {
                             console.log("AdSonar ad closed");
@@ -1112,47 +1022,14 @@
                         },
                         onError: function(error) {
                             console.error("AdSonar error:", error);
-                            tryAdsGram(gameType);
-                        }
-                    });
-                } else {
-                    tryAdsGram(gameType);
-                }
-            } catch (error) {
-                console.error("Error showing AdSonar:", error);
-                tryAdsGram(gameType);
-            }
-        }
-
-        function tryAdsGram(gameType) {
-            elements[gameType].adsButton5.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-            elements[gameType].adsButton10.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-            elements[gameType].adsButton5.disabled = true;
-            elements[gameType].adsButton10.disabled = true;
-            elements[gameType].adStatus.textContent = "Loading ad (AdsGram)...";
-            gameState.adStatus.currentProvider = 'adsgram';
-            
-            try {
-                if (window.AdController && typeof window.AdController.showInterstitial === 'function') {
-                    window.AdController.showInterstitial({
-                        onAdLoaded: function() {
-                            console.log("AdsGram ad loaded");
-                            elements[gameType].adStatus.textContent = "AdsGram loaded - watching...";
-                        },
-                        onAdClosed: function() {
-                            console.log("AdsGram ad closed");
-                            handleAdReward(gameType);
-                        },
-                        onAdError: function(error) {
-                            console.error("AdsGram error:", error);
                             handleAdError(gameType, error);
                         }
                     });
                 } else {
-                    handleAdError(gameType, new Error("AdsGram not properly initialized"));
+                    handleAdError(gameType, new Error("AdSonar not available"));
                 }
             } catch (error) {
-                console.error("Error showing AdsGram:", error);
+                console.error("Error showing AdSonar:", error);
                 handleAdError(gameType, error);
             }
         }
@@ -1182,9 +1059,9 @@
             } else {
                 // Just show progress for current ad
                 if (gameType === 'spin') {
-                    elements.spin.adStatus.textContent = `Ad ${gameState.spin.adsWatched}/${gameState.spin.adsTarget} completed (${gameState.adStatus.currentProvider})`;
+                    elements.spin.adStatus.textContent = `Ad ${gameState.spin.adsWatched}/${gameState.spin.adsTarget} completed`;
                 } else {
-                    elements.fish.adStatus.textContent = `Ad ${gameState.fish.adsWatched}/${gameState.fish.adsTarget} completed (${gameState.adStatus.currentProvider})`;
+                    elements.fish.adStatus.textContent = `Ad ${gameState.fish.adsWatched}/${gameState.fish.adsTarget} completed`;
                 }
             }
             
