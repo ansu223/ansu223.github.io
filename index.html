@@ -426,39 +426,6 @@
             top: -9999px;
         }
 
-        /* Task iframe styles */
-        .task-iframe-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            z-index: 2000;
-        }
-        
-        .task-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .close-task {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: var(--error-color);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 2001;
-        }
-
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -502,7 +469,7 @@
             </div>
         </div>
 
-        <div class="spin-notice">🔥 Complete a task to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Complete a survey to earn spin tickets! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -520,10 +487,13 @@
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
         <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">
-            <i class="fas fa-ticket-alt"></i> Complete Task for Ticket
+            <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
         </button>
         
-        <p id="spin-task-progress">Task available</p>
+        <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
+            <i class="fas fa-check-circle"></i> Verify Completion
+        </button>
+        <p id="spin-task-progress">Survey available</p>
     </div>
 
     <!-- Fish Game -->
@@ -553,10 +523,13 @@
         <button class="cast-button" id="cast-btn" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
         <button class="task-button" id="fish-task-button" onclick="startFishOffer()">
-            <i class="fas fa-ticket-alt"></i> Complete Task for Ticket
+            <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
         </button>
         
-        <p id="fish-task-progress">Task available</p>
+        <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
+            <i class="fas fa-check-circle"></i> Verify Completion
+        </button>
+        <p id="fish-task-progress">Survey available</p>
         
         <div id="catch-result"></div>
         <div id="fish-code-display" class="code-display" style="display: none;"></div>
@@ -589,12 +562,6 @@
         +1 Fishing Ticket Added!
     </div>
 
-    <!-- Task iframe container -->
-    <div class="task-iframe-container" id="task-iframe-container">
-        <button class="close-task" onclick="closeTaskFrame()">×</button>
-        <iframe class="task-iframe" id="task-iframe" allow="autoplay; fullscreen"></iframe>
-    </div>
-
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
@@ -603,19 +570,20 @@
     </div>
 
     <script>
-        // Enhanced Game State with verification tracking
+        // Enhanced Game State with Image Codes
         const gameState = {
             spin: {
-                tickets: 0,
+                tickets: 0, // No free tickets
                 totalSpins: 0,
                 codesWon: 0,
-                taskCompleted: false,
+                offerStarted: false,
                 currentCode: '',
+                codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
                     "1. APGA5YSG",
-                    "2. XEMN0KD7",
-                    "3. P6SJXI15",
-                    "4. P6SJXI15",
+                    "2. BP16P0N1WQ",
+                    "3. C1S11P5V",
+                    "4. 9A9PY0RV",
                     "5. QOS4WPNP",
                     "6. MQANOG3K",
                     "7. 0X3ST6UA",
@@ -623,19 +591,20 @@
                     "9. HIL0NU1Z",
                     "10. 2WSX3EDC"
                 ],
-                currentCodeIndex: 0
+                currentCodeIndex: 0 // Track which code to give next
             },
             fish: {
-                tickets: 0,
+                tickets: 0, // No free tickets
                 totalCasts: 0,
                 fishCaught: 0,
-                taskCompleted: false,
+                offerStarted: false,
                 currentCode: '',
+                codeParts: ["Z8U", "FN6", "5V"],
                 validCodes: [
                     "1. BP16P0N1WQ",
-                    "2. XEMN0KD7",
-                    "3. P6SJXI15",
-                    "4. KSXIN88S",
+                    "2. BP16P0N1WQ",
+                    "3. H32T5F3N",
+                    "4. SBWLXL45",
                     "5. U9qbay6g",
                     "6. ED5CVFR4",
                     "7. 7UJM8IK9",
@@ -643,7 +612,7 @@
                     "9. 2WSXCDE4",
                     "10. RFV5TGB6"
                 ],
-                currentCodeIndex: 0,
+                currentCodeIndex: 0, // Track which code to give next
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -658,7 +627,9 @@
             userId: 'user_' + Math.random().toString(36).substr(2, 9),
             userActions: {
                 lastSpin: 0,
-                lastFish: 0
+                lastFish: 0,
+                spinCount: 0,
+                fishCount: 0
             }
         };
 
@@ -672,6 +643,7 @@
                 codeDisplay: document.getElementById("spin-code-display"),
                 copyButton: document.getElementById("copy-code-button"),
                 taskButton: document.getElementById("spin-task-button"),
+                verifyButton: document.getElementById("verify-spin-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
                 spinBtn: document.getElementById("spin-btn")
@@ -684,6 +656,7 @@
                 codeDisplay: document.getElementById("fish-code-display"),
                 copyButton: document.getElementById("copy-code-button-fish"),
                 taskButton: document.getElementById("fish-task-button"),
+                verifyButton: document.getElementById("verify-fish-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
                 castBtn: document.getElementById("cast-btn")
@@ -692,10 +665,6 @@
                 spin: document.getElementById("spin-nav"),
                 fish: document.getElementById("fish-nav"),
                 invite: document.getElementById("invite-nav")
-            },
-            taskFrame: {
-                container: document.getElementById("task-iframe-container"),
-                iframe: document.getElementById("task-iframe")
             }
         };
 
@@ -806,98 +775,32 @@
         }
 
         // ======================
-        // TASK FRAME HANDLING
+        // TELEGRAM EXTERNAL BROWSER HANDLING
         // ======================
 
-        function showTaskFrame(url) {
-            elements.taskFrame.iframe.src = url;
-            elements.taskFrame.container.style.display = 'block';
-            document.body.style.overflow = 'hidden';
+        function isTelegramWebView() {
+            return navigator.userAgent.includes('Telegram') || 
+                   navigator.userAgent.includes('WebView');
         }
 
-        function closeTaskFrame() {
-            elements.taskFrame.iframe.src = '';
-            elements.taskFrame.container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // ======================
-        // TASK VERIFICATION SYSTEM
-        // ======================
-
-        function startSpinOffer() {
-            gameState.spin.taskCompleted = false;
-            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?user=${gameState.userId}&type=spin`;
-            showTaskFrame(taskUrl);
-            
-            // Start checking for task completion
-            const checkInterval = setInterval(() => {
-                if (gameState.spin.taskCompleted) {
-                    clearInterval(checkInterval);
-                    onTaskVerified('spin');
-                }
-            }, 5000);
-            
-            elements.spin.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the window to earn your ticket.</span>';
-        }
-        
-        function startFishOffer() {
-            gameState.fish.taskCompleted = false;
-            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?user=${gameState.userId}&type=fish`;
-            showTaskFrame(taskUrl);
-            
-            // Start checking for task completion
-            const checkInterval = setInterval(() => {
-                if (gameState.fish.taskCompleted) {
-                    clearInterval(checkInterval);
-                    onTaskVerified('fish');
-                }
-            }, 5000);
-            
-            elements.fish.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the window to earn your ticket.</span>';
-        }
-
-        // This function is called when the iframe confirms task completion
-        function onTaskCompleted(taskType) {
-            if (taskType === 'spin') {
-                gameState.spin.taskCompleted = true;
-            } else if (taskType === 'fish') {
-                gameState.fish.taskCompleted = true;
+        function openExternalBrowser(url) {
+            if (isTelegramWebView()) {
+                // Create a hidden link with target="_blank"
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                }, 100);
+            } else {
+                // Regular browser behavior
+                window.open(url, '_blank', 'noopener,noreferrer');
             }
         }
-
-        function onTaskVerified(taskType) {
-            closeTaskFrame();
-            
-            if (taskType === 'spin') {
-                gameState.spin.tickets += 1;
-                updateSpinUI();
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="task-completed">Task verified! You earned 1 spin ticket.</span>';
-            } else if (taskType === 'fish') {
-                gameState.fish.tickets += 1;
-                updateFishUI();
-                elements.fish.taskProgress.innerHTML = 
-                    '<span class="task-completed">Task verified! You earned 1 fishing ticket.</span>';
-            }
-            
-            createConfetti(document.querySelector(`#${taskType}-task-button`));
-        }
-
-        // ======================
-        // IFRAME MESSAGE HANDLING
-        // ======================
-
-        window.addEventListener('message', (event) => {
-            // Only accept messages from our task iframe domain
-            if (event.origin !== "https://verifyuser.org") return;
-            
-            if (event.data.type === 'taskCompleted') {
-                onTaskCompleted(event.data.taskType);
-            }
-        });
 
         // ======================
         // GAME FUNCTIONS
@@ -905,7 +808,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Complete a task to earn tickets.");
+                alert("You need 1 spin ticket! Complete a survey to earn tickets.");
                 return;
             }
             
@@ -932,7 +835,7 @@
                 const validCode = gameState.spin.validCodes[gameState.spin.currentCodeIndex];
                 gameState.spin.currentCode = validCode;
                 
-                // Move to next code for next time
+                // Move to next code for next time (loop back to start if at end)
                 gameState.spin.currentCodeIndex = 
                     (gameState.spin.currentCodeIndex + 1) % gameState.spin.validCodes.length;
                 
@@ -953,7 +856,7 @@
 
         function castLine() {
             if (gameState.fish.tickets < 1) {
-                alert("You need 1 fishing ticket! Complete a task to earn tickets.");
+                alert("You need 1 fishing ticket! Complete a survey to earn tickets.");
                 return;
             }
             
@@ -1013,7 +916,7 @@
                 const validCode = gameState.fish.validCodes[gameState.fish.currentCodeIndex];
                 gameState.fish.currentCode = validCode;
                 
-                // Move to next code for next time
+                // Move to next code for next time (loop back to start if at end)
                 gameState.fish.currentCodeIndex = 
                     (gameState.fish.currentCodeIndex + 1) % gameState.fish.validCodes.length;
                 
@@ -1034,11 +937,12 @@
         }
 
         // ======================
-        // COPY FUNCTIONS
+        // COPY FUNCTIONS (UPDATED)
         // ======================
 
         function copyResultCode() {
             if (gameState.spin.currentCode) {
+                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
                 const codeToCopy = gameState.spin.currentCode.replace(/^\d+\.\s*/, '');
                 copyToClipboard(codeToCopy, elements.spin.copyButton);
             }
@@ -1046,6 +950,7 @@
 
         function copyResultCodeFish() {
             if (gameState.fish.currentCode) {
+                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
                 const codeToCopy = gameState.fish.currentCode.replace(/^\d+\.\s*/, '');
                 copyToClipboard(codeToCopy, elements.fish.copyButton);
             }
@@ -1073,17 +978,127 @@
             }
         }
 
+        // ======================
+        // OFFER FUNCTIONS WITH EXTERNAL BROWSER
+        // ======================
+
+        function startSpinOffer() {
+            gameState.spin.offerStarted = true;
+            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=spin`;
+            openExternalBrowser(offerUrl);
+            
+            setTimeout(() => {
+                elements.spin.verifyButton.style.display = 'block';
+                elements.spin.taskProgress.innerHTML = 
+                    '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
+            }, 30000);
+            
+            elements.spin.taskProgress.innerHTML = 
+                '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
+        }
+        
+        function startFishOffer() {
+            if (!gameState.fish.offerStarted) {
+                gameState.fish.offerStarted = true;
+                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=fish`;
+                openExternalBrowser(offerUrl);
+                
+                setTimeout(() => {
+                    elements.fish.verifyButton.style.display = 'block';
+                    elements.fish.taskProgress.innerHTML = 
+                        'Complete the survey and verify below!';
+                }, 30000);
+                
+                elements.fish.taskProgress.innerHTML = 
+                    'Offer opened! Please complete the survey.';
+            } else {
+                alert("Please complete the current survey first.");
+            }
+        }
+
+        async function verifyCompletion(offerType) {
+            const verifyButton = elements[offerType].verifyButton;
+            const progressElement = elements[offerType].taskProgress;
+            
+            verifyButton.innerHTML = '<div class="loading-spinner"></div> Verifying...';
+            verifyButton.disabled = true;
+            
+            try {
+                // Simulate verification delay (2-3 seconds)
+                await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+                
+                // In a real app, you would make an API call here to verify completion
+                // For demo purposes, we'll simulate a successful verification 80% of the time
+                const isVerified = Math.random() > 0.2;
+                
+                if (isVerified) {
+                    // Award tickets for successful verification
+                    if (offerType === 'spin') {
+                        gameState.spin.tickets += 1;
+                        updateSpinUI();
+                        progressElement.innerHTML = 
+                            '<span class="task-completed">Verification successful! You earned 1 spin ticket.</span>';
+                    } else if (offerType === 'fish') {
+                        gameState.fish.tickets += 1;
+                        updateFishUI();
+                        progressElement.innerHTML = 
+                            '<span class="task-completed">Verification successful! You earned 1 fishing ticket.</span>';
+                    }
+                    
+                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
+                    verifyButton.style.backgroundColor = 'var(--success-color)';
+                    
+                    setTimeout(() => {
+                        verifyButton.style.display = 'none';
+                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                        verifyButton.style.backgroundColor = 'var(--warning-color)';
+                        verifyButton.disabled = false;
+                        gameState[offerType].offerStarted = false;
+                    }, 2000);
+                    
+                    createConfetti(verifyButton);
+                } else {
+                    // If verification fails
+                    verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Failed';
+                    verifyButton.style.backgroundColor = 'var(--error-color)';
+                    progressElement.innerHTML = 'Survey not completed. Please finish the survey and try again.';
+                    
+                    setTimeout(() => {
+                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                        verifyButton.style.backgroundColor = 'var(--warning-color)';
+                        verifyButton.disabled = false;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Error';
+                verifyButton.style.backgroundColor = 'var(--error-color)';
+                progressElement.innerHTML = 'Verification failed. Please try again later.';
+                
+                setTimeout(() => {
+                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
+                    verifyButton.style.backgroundColor = 'var(--warning-color)';
+                    verifyButton.disabled = false;
+                }, 2000);
+            }
+        }
+
         function shareOnTelegram() {
             const message = `🎉 Join this awesome crypto rewards app and earn free crypto https://t.me/redpacket_box!`;
             const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
             
+            // Open Telegram share dialog
             window.open(shareUrl, '_blank', 'noopener,noreferrer');
             
+            // Show temporary notification after 10 seconds
             setTimeout(() => {
+                // Add ticket to fish game
                 gameState.fish.tickets += 1;
                 updateFishUI();
+                
+                // Show hidden notification
                 showNotification("+1 Fishing Ticket Added!");
-            }, 10000);
+            }, 10000); // 10 second delay
         }
 
         function showPage(pageId) {
@@ -1091,6 +1106,7 @@
             document.getElementById('fishing-game').style.display = pageId === 'fishing-game' ? 'block' : 'none';
             document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
             
+            // Update active nav button
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
             elements.nav.fish.classList.toggle('active', pageId === 'fishing-game');
             elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
@@ -1122,7 +1138,7 @@
                     
                     const animate = () => {
                         posX += x;
-                        posY += y + 0.5;
+                        posY += y + 0.5; // Add gravity
                         opacity -= 0.02;
                         scale -= 0.01;
                         
