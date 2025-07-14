@@ -426,39 +426,6 @@
             top: -9999px;
         }
 
-        /* Task iframe styles */
-        .task-iframe-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            z-index: 2000;
-        }
-        
-        .task-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .close-task {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: var(--error-color);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 2001;
-        }
-
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -524,6 +491,11 @@
         </button>
         
         <p id="spin-task-progress">Task available</p>
+        
+        <!-- Verify button will be shown after returning from task -->
+        <button id="verify-spin-task" class="verify-completion-button" onclick="verifyTaskCompletion('spin')">
+            <i class="fas fa-check-circle"></i> I Completed the Task
+        </button>
     </div>
 
     <!-- Fish Game -->
@@ -558,6 +530,11 @@
         
         <p id="fish-task-progress">Task available</p>
         
+        <!-- Verify button will be shown after returning from task -->
+        <button id="verify-fish-task" class="verify-completion-button" onclick="verifyTaskCompletion('fish')">
+            <i class="fas fa-check-circle"></i> I Completed the Task
+        </button>
+        
         <div id="catch-result"></div>
         <div id="fish-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button-fish" class="cast-button" style="display: none;" onclick="copyResultCodeFish()">📋 Copy Code</button>
@@ -589,12 +566,6 @@
         +1 Fishing Ticket Added!
     </div>
 
-    <!-- Task iframe container -->
-    <div class="task-iframe-container" id="task-iframe-container">
-        <button class="close-task" onclick="closeTaskFrame()">×</button>
-        <iframe class="task-iframe" id="task-iframe" allow="autoplay; fullscreen"></iframe>
-    </div>
-
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
@@ -623,7 +594,8 @@
                     "9. HIL0NU1Z",
                     "10. 2WSX3EDC"
                 ],
-                currentCodeIndex: 0
+                currentCodeIndex: 0,
+                taskInProgress: false
             },
             fish: {
                 tickets: 0,
@@ -649,7 +621,8 @@
                     { emoji: "🐠", value: 2 },
                     { emoji: "🐡", value: 3 },
                     { emoji: "🦈", value: 5 },
-                ]
+                ],
+                taskInProgress: false
             },
             referral: {
                 count: 0,
@@ -674,7 +647,8 @@
                 taskButton: document.getElementById("spin-task-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
-                spinBtn: document.getElementById("spin-btn")
+                spinBtn: document.getElementById("spin-btn"),
+                verifyButton: document.getElementById("verify-spin-task")
             },
             fish: {
                 tickets: document.getElementById("fish-tickets"),
@@ -686,16 +660,13 @@
                 taskButton: document.getElementById("fish-task-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
-                castBtn: document.getElementById("cast-btn")
+                castBtn: document.getElementById("cast-btn"),
+                verifyButton: document.getElementById("verify-fish-task")
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
                 fish: document.getElementById("fish-nav"),
                 invite: document.getElementById("invite-nav")
-            },
-            taskFrame: {
-                container: document.getElementById("task-iframe-container"),
-                iframe: document.getElementById("task-iframe")
             }
         };
 
@@ -806,124 +777,57 @@
         }
 
         // ======================
-        // TASK FRAME HANDLING
-        // ======================
-
-        function showTaskFrame(url) {
-            elements.taskFrame.iframe.src = url;
-            elements.taskFrame.container.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeTaskFrame() {
-            elements.taskFrame.iframe.src = '';
-            elements.taskFrame.container.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // ======================
-        // TASK VERIFICATION SYSTEM
+        // TASK HANDLING (EXTERNAL BROWSER)
         // ======================
 
         function startSpinOffer() {
-            gameState.spin.taskCompleted = false;
+            gameState.spin.taskInProgress = true;
+            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=spin`;
             
-const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=spin`;
-fetch(`http://yourserver.com/check_task?aff_sub=${gameState.userId}&type=spin`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.completed) {
-      gameState.spin.tickets += 1;
-      updateSpinUI();
-      elements.spin.taskProgress.innerHTML =
-        '<span class="task-completed">Task verified! You earned 1 spin ticket.</span>';
-      createConfetti(document.querySelector(`#spin-task-button`));
-    }
-  });
-
-            showTaskFrame(taskUrl);
+            // Open in new tab/window
+            window.open(taskUrl, '_blank');
             
-            // Start checking for task completion
-            const checkInterval = setInterval(() => {
-                if (gameState.spin.taskCompleted) {
-                    clearInterval(checkInterval);
-                    onTaskVerified('spin');
-                }
-            }, 5000);
-            
+            // Show verify button
+            elements.spin.verifyButton.style.display = 'block';
             elements.spin.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the window to earn your ticket.</span>';
+                '<span class="offer-opened">Complete the task in the external window, then return here and click "I Completed the Task"</span>';
         }
         
         function startFishOffer() {
-            gameState.fish.taskCompleted = false;
+            gameState.fish.taskInProgress = true;
+            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=fish`;
             
-const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=fish`;
-fetch(`http://yourserver.com/check_task?aff_sub=${gameState.userId}&type=fish`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.completed) {
-      gameState.fish.tickets += 1;
-      updateFishUI();
-      elements.fish.taskProgress.innerHTML =
-        '<span class="task-completed">Task verified! You earned 1 fishing ticket.</span>';
-      createConfetti(document.querySelector(`#fish-task-button`));
-    }
-  });
-
-            showTaskFrame(taskUrl);
+            // Open in new tab/window
+            window.open(taskUrl, '_blank');
             
-            // Start checking for task completion
-            const checkInterval = setInterval(() => {
-                if (gameState.fish.taskCompleted) {
-                    clearInterval(checkInterval);
-                    onTaskVerified('fish');
-                }
-            }, 5000);
-            
+            // Show verify button
+            elements.fish.verifyButton.style.display = 'block';
             elements.fish.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the window to earn your ticket.</span>';
+                '<span class="offer-opened">Complete the task in the external window, then return here and click "I Completed the Task"</span>';
         }
 
-        // This function is called when the iframe confirms task completion
-        function onTaskCompleted(taskType) {
-            if (taskType === 'spin') {
-                gameState.spin.taskCompleted = true;
-            } else if (taskType === 'fish') {
-                gameState.fish.taskCompleted = true;
-            }
-        }
-
-        function onTaskVerified(taskType) {
-            closeTaskFrame();
+        function verifyTaskCompletion(taskType) {
+            // In a real app, you would verify with your server here
+            // For demo purposes, we'll just assume the task was completed
             
             if (taskType === 'spin') {
                 gameState.spin.tickets += 1;
+                gameState.spin.taskInProgress = false;
                 updateSpinUI();
                 elements.spin.taskProgress.innerHTML = 
                     '<span class="task-completed">Task verified! You earned 1 spin ticket.</span>';
+                elements.spin.verifyButton.style.display = 'none';
             } else if (taskType === 'fish') {
                 gameState.fish.tickets += 1;
+                gameState.fish.taskInProgress = false;
                 updateFishUI();
                 elements.fish.taskProgress.innerHTML = 
                     '<span class="task-completed">Task verified! You earned 1 fishing ticket.</span>';
+                elements.fish.verifyButton.style.display = 'none';
             }
             
             createConfetti(document.querySelector(`#${taskType}-task-button`));
         }
-
-        // ======================
-        // IFRAME MESSAGE HANDLING
-        // ======================
-
-        window.addEventListener('message', (event) => {
-            // Only accept messages from our task iframe domain
-            if (event.origin !== "https://verifyuser.org") return;
-            
-            if (event.data.type === 'taskCompleted') {
-                onTaskCompleted(event.data.taskType);
-            }
-        });
 
         // ======================
         // GAME FUNCTIONS
