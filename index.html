@@ -283,48 +283,6 @@
             border-left: 4px solid gold;
         }
 
-        .verify-completion-button {
-            background-color: var(--warning-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 15px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            display: none;
-            width: 100%;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .verify-completion-button:hover {
-            background-color: #e69500;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        .verify-completion-button i {
-            margin-right: 10px;
-        }
-        
-        .code-display {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 20px;
-            word-break: break-all;
-            border: 1px dashed var(--primary-color);
-            color: var(--primary-color);
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
         .offer-opened {
             color: var(--warning-color);
             font-weight: bold;
@@ -491,11 +449,6 @@
         </button>
         
         <p id="spin-task-progress">Task available</p>
-        
-        <!-- Verify button will be shown after returning from task -->
-        <button id="verify-spin-task" class="verify-completion-button" onclick="verifyTaskCompletion('spin')">
-            <i class="fas fa-check-circle"></i> I Completed the Task
-        </button>
     </div>
 
     <!-- Fish Game -->
@@ -529,11 +482,6 @@
         </button>
         
         <p id="fish-task-progress">Task available</p>
-        
-        <!-- Verify button will be shown after returning from task -->
-        <button id="verify-fish-task" class="verify-completion-button" onclick="verifyTaskCompletion('fish')">
-            <i class="fas fa-check-circle"></i> I Completed the Task
-        </button>
         
         <div id="catch-result"></div>
         <div id="fish-code-display" class="code-display" style="display: none;"></div>
@@ -580,12 +528,11 @@
                 tickets: 0,
                 totalSpins: 0,
                 codesWon: 0,
-                taskCompleted: false,
                 currentCode: '',
                 validCodes: [
-                    "1. 3GRBVH67",
-                    "2. RM0MGJ5F",
-                    "3. BP16P0N1WQ",
+                    "1. RM0MGJ5F",
+                    "2. 3GRBVH67",
+                    "3. P6SJXI15",
                     "4. P6SJXI15",
                     "5. QOS4WPNP",
                     "6. MQANOG3K",
@@ -595,13 +542,12 @@
                     "10. 2WSX3EDC"
                 ],
                 currentCodeIndex: 0,
-                taskInProgress: false
+                taskTimer: null
             },
             fish: {
                 tickets: 0,
                 totalCasts: 0,
                 fishCaught: 0,
-                taskCompleted: false,
                 currentCode: '',
                 validCodes: [
                     "1. BP16P0N1WQ",
@@ -622,7 +568,7 @@
                     { emoji: "🐡", value: 3 },
                     { emoji: "🦈", value: 5 },
                 ],
-                taskInProgress: false
+                taskTimer: null
             },
             referral: {
                 count: 0,
@@ -632,8 +578,14 @@
             userActions: {
                 lastSpin: 0,
                 lastFish: 0
-            }
+            },
+            pageActive: true
         };
+
+        // Track page visibility
+        document.addEventListener('visibilitychange', () => {
+            gameState.pageActive = !document.hidden;
+        });
 
         // DOM Elements
         const elements = {
@@ -647,8 +599,7 @@
                 taskButton: document.getElementById("spin-task-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
-                spinBtn: document.getElementById("spin-btn"),
-                verifyButton: document.getElementById("verify-spin-task")
+                spinBtn: document.getElementById("spin-btn")
             },
             fish: {
                 tickets: document.getElementById("fish-tickets"),
@@ -660,8 +611,7 @@
                 taskButton: document.getElementById("fish-task-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
-                castBtn: document.getElementById("cast-btn"),
-                verifyButton: document.getElementById("verify-fish-task")
+                castBtn: document.getElementById("cast-btn")
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
@@ -781,52 +731,59 @@
         // ======================
 
         function startSpinOffer() {
-            gameState.spin.taskInProgress = true;
-            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=spin`;
+            // Clear any existing timer
+            if (gameState.spin.taskTimer) {
+                clearTimeout(gameState.spin.taskTimer);
+            }
             
-            // Open in new tab/window
+            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=spin`;
             window.open(taskUrl, '_blank');
             
-            // Show verify button
-            elements.spin.verifyButton.style.display = 'block';
             elements.spin.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the external window, then return here and click "I Completed the Task"</span>';
+                '<span class="offer-opened">Complete the task in the external window to earn your ticket...</span>';
+            
+            // Start 45-second timer to grant ticket
+            gameState.spin.taskTimer = setTimeout(() => {
+                if (gameState.pageActive) { // Only grant if user stayed on page
+                    grantTaskReward('spin');
+                }
+            }, 45000); // 45 seconds
         }
         
         function startFishOffer() {
-            gameState.fish.taskInProgress = true;
-            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=fish`;
-            
-            // Open in new tab/window
-            window.open(taskUrl, '_blank');
-            
-            // Show verify button
-            elements.fish.verifyButton.style.display = 'block';
-            elements.fish.taskProgress.innerHTML = 
-                '<span class="offer-opened">Complete the task in the external window, then return here and click "I Completed the Task"</span>';
-        }
-
-        function verifyTaskCompletion(taskType) {
-            // In a real app, you would verify with your server here
-            // For demo purposes, we'll just assume the task was completed
-            
-            if (taskType === 'spin') {
-                gameState.spin.tickets += 1;
-                gameState.spin.taskInProgress = false;
-                updateSpinUI();
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="task-completed">Task verified! You earned 1 spin ticket.</span>';
-                elements.spin.verifyButton.style.display = 'none';
-            } else if (taskType === 'fish') {
-                gameState.fish.tickets += 1;
-                gameState.fish.taskInProgress = false;
-                updateFishUI();
-                elements.fish.taskProgress.innerHTML = 
-                    '<span class="task-completed">Task verified! You earned 1 fishing ticket.</span>';
-                elements.fish.verifyButton.style.display = 'none';
+            // Clear any existing timer
+            if (gameState.fish.taskTimer) {
+                clearTimeout(gameState.fish.taskTimer);
             }
             
-            createConfetti(document.querySelector(`#${taskType}-task-button`));
+            const taskUrl = `https://verifyuser.org/cl/i/dv6k2k?aff_sub=${gameState.userId}&type=fish`;
+            window.open(taskUrl, '_blank');
+            
+            elements.fish.taskProgress.innerHTML = 
+                '<span class="offer-opened">Complete the task in the external window to earn your ticket...</span>';
+            
+            // Start 45-second timer to grant ticket
+            gameState.fish.taskTimer = setTimeout(() => {
+                if (gameState.pageActive) { // Only grant if user stayed on page
+                    grantTaskReward('fish');
+                }
+            }, 45000); // 45 seconds
+        }
+
+        function grantTaskReward(taskType) {
+            if (taskType === 'spin') {
+                gameState.spin.tickets += 1;
+                updateSpinUI();
+                elements.spin.taskProgress.innerHTML = 
+                    '<span class="task-completed">Task completed! You earned 1 spin ticket.</span>';
+                createConfetti(elements.spin.taskButton);
+            } else if (taskType === 'fish') {
+                gameState.fish.tickets += 1;
+                updateFishUI();
+                elements.fish.taskProgress.innerHTML = 
+                    '<span class="task-completed">Task completed! You earned 1 fishing ticket.</span>';
+                createConfetti(elements.fish.taskButton);
+            }
         }
 
         // ======================
