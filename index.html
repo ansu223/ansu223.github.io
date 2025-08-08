@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Game App</title>
-    <!-- Content Locker Script -->
-    <noscript><meta http-equiv="refresh" content="0;url=https://verifysuper.com/noscript" /></noscript>
-    <script type="text/javascript">var ogblock=true;</script>
-    <script type="text/javascript" id="ogjs" src="https://verifysuper.com/cl/js/dv6k2k"></script>
-    <script type="text/javascript">if(ogblock) window.location.href = "https://verifysuper.com/adblock";</script>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Ad SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
     <style>
         :root {
             --primary-color: #2dd60c;
@@ -288,105 +285,15 @@
             border-left: 4px solid gold;
         }
 
-        .verify-completion-button {
-            background-color: var(--warning-color);
+        .ad-button {
+            background-color: var(--ads-color);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            margin: 15px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            display: none;
-            width: 100%;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .verify-completion-button:hover {
-            background-color: #e69500;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .ad-button:hover {
+            background-color: #e64a19;
         }
         
-        .verify-completion-button i {
-            margin-right: 10px;
-        }
-        
-        .code-display {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 20px;
-            word-break: break-all;
-            border: 1px dashed var(--primary-color);
-            color: var(--primary-color);
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .offer-opened {
-            color: var(--warning-color);
-            font-weight: bold;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
         .telegram-button {
             background-color: var(--telegram-color);
         }
@@ -474,7 +381,7 @@
             </div>
         </div>
 
-        <div class="spin-notice">🔥 Complete a survey to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Watch an ad to earn spin tickets! 🔥</div>
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -491,14 +398,11 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <button class="task-button" id="spin-task-button" onclick="startSpinOffer()">
-            <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
+        <button class="task-button ad-button" id="spin-task-button" onclick="watchAdForSpinTicket()">
+            <i class="fas fa-ad"></i> Watch Ad for Ticket
         </button>
         
-        <button id="verify-spin-button" class="verify-completion-button" onclick="verifyCompletion('spin')">
-            <i class="fas fa-check-circle"></i> Verify Completion
-        </button>
-        <p id="spin-task-progress">Survey available</p>
+        <p id="spin-task-progress"></p>
     </div>
 
     <!-- Fish Game -->
@@ -527,14 +431,11 @@
 
         <button class="cast-button" id="cast-btn" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
-        <button class="task-button" id="fish-task-button" onclick="startFishOffer()">
-            <i class="fas fa-ticket-alt"></i> Complete Survey for Ticket
+        <button class="task-button ad-button" id="fish-task-button" onclick="watchAdForFishTicket()">
+            <i class="fas fa-ad"></i> Watch Ad for Ticket
         </button>
         
-        <button id="verify-fish-button" class="verify-completion-button" onclick="verifyCompletion('fish')" style="display: none;">
-            <i class="fas fa-check-circle"></i> Verify Completion
-        </button>
-        <p id="fish-task-progress">Survey available</p>
+        <p id="fish-task-progress"></p>
         
         <div id="catch-result"></div>
         <div id="fish-code-display" class="code-display" style="display: none;"></div>
@@ -581,7 +482,6 @@
                 tickets: 0, // No free tickets
                 totalSpins: 0,
                 codesWon: 0,
-                offerStarted: false,
                 currentCode: '',
                 codeParts: ["BP0", "27W", "01TN"],
                 validCodes: [
@@ -602,7 +502,6 @@
                 tickets: 0, // No free tickets
                 totalCasts: 0,
                 fishCaught: 0,
-                offerStarted: false,
                 currentCode: '',
                 codeParts: ["Z8U", "FN6", "5V"],
                 validCodes: [
@@ -648,7 +547,6 @@
                 codeDisplay: document.getElementById("spin-code-display"),
                 copyButton: document.getElementById("copy-code-button"),
                 taskButton: document.getElementById("spin-task-button"),
-                verifyButton: document.getElementById("verify-spin-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
                 spinBtn: document.getElementById("spin-btn")
@@ -661,7 +559,6 @@
                 codeDisplay: document.getElementById("fish-code-display"),
                 copyButton: document.getElementById("copy-code-button-fish"),
                 taskButton: document.getElementById("fish-task-button"),
-                verifyButton: document.getElementById("verify-fish-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
                 castBtn: document.getElementById("cast-btn")
@@ -678,14 +575,6 @@
             updateSpinUI();
             updateFishUI();
             updateReferralUI();
-            
-            // Add bot trap
-            const botTrap = document.createElement('input');
-            botTrap.type = 'text';
-            botTrap.id = 'bot-trap';
-            botTrap.name = 'bot-trap';
-            botTrap.style.display = 'none';
-            document.body.appendChild(botTrap);
         }
 
         function updateSpinUI() {
@@ -780,31 +669,51 @@
         }
 
         // ======================
-        // TELEGRAM EXTERNAL BROWSER HANDLING
+        // AD FUNCTIONS
         // ======================
 
-        function isTelegramWebView() {
-            return navigator.userAgent.includes('Telegram') || 
-                   navigator.userAgent.includes('WebView');
+        function watchAdForSpinTicket() {
+            elements.spin.taskButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+            elements.spin.taskButton.disabled = true;
+            
+            show_9679447().then(() => {
+                // Ad watched successfully
+                gameState.spin.tickets += 1;
+                updateSpinUI();
+                elements.spin.taskProgress.innerHTML = 
+                    '<span class="task-completed">Ad completed! You earned 1 spin ticket.</span>';
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.spin.taskButton.disabled = false;
+                createConfetti(elements.spin.taskButton);
+            }).catch((error) => {
+                // Ad failed to load or was skipped
+                console.error('Ad error:', error);
+                elements.spin.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.spin.taskButton.disabled = false;
+            });
         }
 
-        function openExternalBrowser(url) {
-            if (isTelegramWebView()) {
-                // Create a hidden link with target="_blank"
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                }, 100);
-            } else {
-                // Regular browser behavior
-                window.open(url, '_blank', 'noopener,noreferrer');
-            }
+        function watchAdForFishTicket() {
+            elements.fish.taskButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+            elements.fish.taskButton.disabled = true;
+            
+            show_9679447().then(() => {
+                // Ad watched successfully
+                gameState.fish.tickets += 1;
+                updateFishUI();
+                elements.fish.taskProgress.innerHTML = 
+                    '<span class="task-completed">Ad completed! You earned 1 fishing ticket.</span>';
+                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.fish.taskButton.disabled = false;
+                createConfetti(elements.fish.taskButton);
+            }).catch((error) => {
+                // Ad failed to load or was skipped
+                console.error('Ad error:', error);
+                elements.fish.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
+                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.fish.taskButton.disabled = false;
+            });
         }
 
         // ======================
@@ -813,7 +722,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Complete a survey to earn tickets.");
+                alert("You need 1 spin ticket! Watch an ad to earn tickets.");
                 return;
             }
             
@@ -861,7 +770,7 @@
 
         function castLine() {
             if (gameState.fish.tickets < 1) {
-                alert("You need 1 fishing ticket! Complete a survey to earn tickets.");
+                alert("You need 1 fishing ticket! Watch an ad to earn tickets.");
                 return;
             }
             
@@ -942,7 +851,7 @@
         }
 
         // ======================
-        // COPY FUNCTIONS (UPDATED)
+        // COPY FUNCTIONS
         // ======================
 
         function copyResultCode() {
@@ -980,111 +889,6 @@
                 alert("Could not copy code. Please copy manually.");
             } finally {
                 document.body.removeChild(textarea);
-            }
-        }
-
-        // ======================
-        // OFFER FUNCTIONS WITH EXTERNAL BROWSER
-        // ======================
-
-        function startSpinOffer() {
-            gameState.spin.offerStarted = true;
-            const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=spin`;
-            openExternalBrowser(offerUrl);
-            
-            setTimeout(() => {
-                elements.spin.verifyButton.style.display = 'block';
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="offer-opened">Offer opened! Complete the survey and verify below.</span>';
-            }, 30000);
-            
-            elements.spin.taskProgress.innerHTML = 
-                '<span class="offer-opened">Opening offer... Please complete the survey.</span>';
-        }
-        
-        function startFishOffer() {
-            if (!gameState.fish.offerStarted) {
-                gameState.fish.offerStarted = true;
-                const offerUrl = `https://areyourealhuman.com/sl/0m5zj?user=${gameState.userId}&type=fish`;
-                openExternalBrowser(offerUrl);
-                
-                setTimeout(() => {
-                    elements.fish.verifyButton.style.display = 'block';
-                    elements.fish.taskProgress.innerHTML = 
-                        'Complete the survey and verify below!';
-                }, 30000);
-                
-                elements.fish.taskProgress.innerHTML = 
-                    'Offer opened! Please complete the survey.';
-            } else {
-                alert("Please complete the current survey first.");
-            }
-        }
-
-        async function verifyCompletion(offerType) {
-            const verifyButton = elements[offerType].verifyButton;
-            const progressElement = elements[offerType].taskProgress;
-            
-            verifyButton.innerHTML = '<div class="loading-spinner"></div> Verifying...';
-            verifyButton.disabled = true;
-            
-            try {
-                // Simulate verification delay (2-3 seconds)
-                await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
-                
-                // In a real app, you would make an API call here to verify completion
-                // For demo purposes, we'll simulate a successful verification 80% of the time
-                const isVerified = Math.random() > 0.2;
-                
-                if (isVerified) {
-                    // Award tickets for successful verification
-                    if (offerType === 'spin') {
-                        gameState.spin.tickets += 1;
-                        updateSpinUI();
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Verification successful! You earned 1 spin ticket.</span>';
-                    } else if (offerType === 'fish') {
-                        gameState.fish.tickets += 1;
-                        updateFishUI();
-                        progressElement.innerHTML = 
-                            '<span class="task-completed">Verification successful! You earned 1 fishing ticket.</span>';
-                    }
-                    
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified!';
-                    verifyButton.style.backgroundColor = 'var(--success-color)';
-                    
-                    setTimeout(() => {
-                        verifyButton.style.display = 'none';
-                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                        verifyButton.style.backgroundColor = 'var(--warning-color)';
-                        verifyButton.disabled = false;
-                        gameState[offerType].offerStarted = false;
-                    }, 2000);
-                    
-                    createConfetti(verifyButton);
-                } else {
-                    // If verification fails
-                    verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Failed';
-                    verifyButton.style.backgroundColor = 'var(--error-color)';
-                    progressElement.innerHTML = 'Survey not completed. Please finish the survey and try again.';
-                    
-                    setTimeout(() => {
-                        verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                        verifyButton.style.backgroundColor = 'var(--warning-color)';
-                        verifyButton.disabled = false;
-                    }, 2000);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                verifyButton.innerHTML = '<i class="fas fa-times-circle"></i> Error';
-                verifyButton.style.backgroundColor = 'var(--error-color)';
-                progressElement.innerHTML = 'Verification failed. Please try again later.';
-                
-                setTimeout(() => {
-                    verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verify Completion';
-                    verifyButton.style.backgroundColor = 'var(--warning-color)';
-                    verifyButton.disabled = false;
-                }, 2000);
             }
         }
 
@@ -1187,4 +991,3 @@
     </script>
 </body>
 </html>
-
