@@ -338,6 +338,26 @@
             top: -9999px;
         }
 
+        /* Progress bar styles */
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            text-align: center;
+            line-height: 20px;
+            color: #000;
+            font-weight: bold;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -381,7 +401,13 @@
             </div>
         </div>
 
-        <div class="spin-notice">🔥 Watch an ad to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Watch 5 ads to earn 1 spin ticket! 🔥</div>
+        
+        <!-- Progress bar for spin ads -->
+        <div class="progress-container">
+            <div id="spin-progress-bar" class="progress-bar" style="width: 0%">0/5</div>
+        </div>
+        
         <div class="wheel-container">
             <div class="arrow"></div>
             <div class="wheel" id="wheel">
@@ -399,7 +425,7 @@
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
         <button class="task-button ad-button" id="spin-task-button" onclick="watchAdForSpinTicket()">
-            <i class="fas fa-ad"></i> Watch Ad for Ticket
+            <i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">0</span>/5)
         </button>
         
         <p id="spin-task-progress"></p>
@@ -425,6 +451,13 @@
             </div>
         </div>
 
+        <div class="spin-notice">🔥 Watch 5 ads to earn 1 fishing ticket! 🔥</div>
+        
+        <!-- Progress bar for fish ads -->
+        <div class="progress-container">
+            <div id="fish-progress-bar" class="progress-bar" style="width: 0%">0/5</div>
+        </div>
+
         <div class="fish-pond" id="fish-pond">
             <!-- Fish will appear here dynamically -->
         </div>
@@ -432,7 +465,7 @@
         <button class="cast-button" id="cast-btn" onclick="castLine()">🎣 Cast Line Now (1 Ticket)</button>
         
         <button class="task-button ad-button" id="fish-task-button" onclick="watchAdForFishTicket()">
-            <i class="fas fa-ad"></i> Watch Ad for Ticket
+            <i class="fas fa-ad"></i> Watch Ad (Progress: <span id="fish-ad-count">0</span>/5)
         </button>
         
         <p id="fish-task-progress"></p>
@@ -496,7 +529,8 @@
                     "9. HIL0NU1Z",
                     "10. 2WSX3EDC"
                 ],
-                currentCodeIndex: 0 // Track which code to give next
+                currentCodeIndex: 0, // Track which code to give next
+                adsWatched: 0 // Track ads watched for spin tickets
             },
             fish: {
                 tickets: 0, // No free tickets
@@ -517,6 +551,7 @@
                     "10. RFV5TGB6"
                 ],
                 currentCodeIndex: 0, // Track which code to give next
+                adsWatched: 0, // Track ads watched for fish tickets
                 types: [
                     { emoji: "🐟", value: 1 },
                     { emoji: "🐠", value: 2 },
@@ -549,7 +584,9 @@
                 taskButton: document.getElementById("spin-task-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
-                spinBtn: document.getElementById("spin-btn")
+                spinBtn: document.getElementById("spin-btn"),
+                progressBar: document.getElementById("spin-progress-bar"),
+                adCount: document.getElementById("spin-ad-count")
             },
             fish: {
                 tickets: document.getElementById("fish-tickets"),
@@ -561,7 +598,9 @@
                 taskButton: document.getElementById("fish-task-button"),
                 taskProgress: document.getElementById("fish-task-progress"),
                 pond: document.getElementById("fish-pond"),
-                castBtn: document.getElementById("cast-btn")
+                castBtn: document.getElementById("cast-btn"),
+                progressBar: document.getElementById("fish-progress-bar"),
+                adCount: document.getElementById("fish-ad-count")
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
@@ -582,6 +621,12 @@
             elements.spin.totalSpins.textContent = gameState.spin.totalSpins;
             elements.spin.codesWon.textContent = gameState.spin.codesWon;
             elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+            
+            // Update progress bar
+            const progressPercentage = (gameState.spin.adsWatched / 5) * 100;
+            elements.spin.progressBar.style.width = `${progressPercentage}%`;
+            elements.spin.progressBar.textContent = `${gameState.spin.adsWatched}/5`;
+            elements.spin.adCount.textContent = gameState.spin.adsWatched;
         }
 
         function updateFishUI() {
@@ -589,6 +634,12 @@
             elements.fish.totalCasts.textContent = gameState.fish.totalCasts;
             elements.fish.fishCaught.textContent = gameState.fish.fishCaught;
             elements.fish.castBtn.disabled = gameState.fish.tickets < 1;
+            
+            // Update progress bar
+            const progressPercentage = (gameState.fish.adsWatched / 5) * 100;
+            elements.fish.progressBar.style.width = `${progressPercentage}%`;
+            elements.fish.progressBar.textContent = `${gameState.fish.adsWatched}/5`;
+            elements.fish.adCount.textContent = gameState.fish.adsWatched;
         }
 
         function updateReferralUI() {
@@ -669,7 +720,7 @@
         }
 
         // ======================
-        // AD FUNCTIONS
+        // AD FUNCTIONS (Updated for 5 ads per ticket)
         // ======================
 
         function watchAdForSpinTicket() {
@@ -678,18 +729,28 @@
             
             show_9679447().then(() => {
                 // Ad watched successfully
-                gameState.spin.tickets += 1;
+                gameState.spin.adsWatched++;
+                
+                // Check if user has watched 5 ads
+                if (gameState.spin.adsWatched >= 5) {
+                    gameState.spin.tickets += 1;
+                    gameState.spin.adsWatched = 0; // Reset counter
+                    elements.spin.taskProgress.innerHTML = 
+                        '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
+                    createConfetti(elements.spin.taskButton);
+                } else {
+                    elements.spin.taskProgress.innerHTML = 
+                        `<span>Ad completed! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
+                }
+                
                 updateSpinUI();
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="task-completed">Ad completed! You earned 1 spin ticket.</span>';
-                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
                 elements.spin.taskButton.disabled = false;
-                createConfetti(elements.spin.taskButton);
             }).catch((error) => {
                 // Ad failed to load or was skipped
                 console.error('Ad error:', error);
                 elements.spin.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
-                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
                 elements.spin.taskButton.disabled = false;
             });
         }
@@ -700,18 +761,28 @@
             
             show_9679447().then(() => {
                 // Ad watched successfully
-                gameState.fish.tickets += 1;
+                gameState.fish.adsWatched++;
+                
+                // Check if user has watched 5 ads
+                if (gameState.fish.adsWatched >= 5) {
+                    gameState.fish.tickets += 1;
+                    gameState.fish.adsWatched = 0; // Reset counter
+                    elements.fish.taskProgress.innerHTML = 
+                        '<span class="task-completed">5 ads completed! You earned 1 fishing ticket.</span>';
+                    createConfetti(elements.fish.taskButton);
+                } else {
+                    elements.fish.taskProgress.innerHTML = 
+                        `<span>Ad completed! Watch ${5 - gameState.fish.adsWatched} more ads for a ticket.</span>`;
+                }
+                
                 updateFishUI();
-                elements.fish.taskProgress.innerHTML = 
-                    '<span class="task-completed">Ad completed! You earned 1 fishing ticket.</span>';
-                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="fish-ad-count">' + gameState.fish.adsWatched + '</span>/5)';
                 elements.fish.taskButton.disabled = false;
-                createConfetti(elements.fish.taskButton);
             }).catch((error) => {
                 // Ad failed to load or was skipped
                 console.error('Ad error:', error);
                 elements.fish.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
-                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad for Ticket';
+                elements.fish.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="fish-ad-count">' + gameState.fish.adsWatched + '</span>/5)';
                 elements.fish.taskButton.disabled = false;
             });
         }
@@ -722,7 +793,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Watch an ad to earn tickets.");
+                alert("You need 1 spin ticket! Watch 5 ads to earn a ticket.");
                 return;
             }
             
@@ -770,7 +841,7 @@
 
         function castLine() {
             if (gameState.fish.tickets < 1) {
-                alert("You need 1 fishing ticket! Watch an ad to earn tickets.");
+                alert("You need 1 fishing ticket! Watch 5 ads to earn a ticket.");
                 return;
             }
             
@@ -991,16 +1062,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
