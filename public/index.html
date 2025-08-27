@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftBox - Spin & Win Free Crypto Codes Daily</title>
+    <meta name="description" content="Play GiftBox to earn free crypto instantly. Spin the wheel, complete tasks, and win daily rewards like XRP, BTC, ETH codes. 100% free crypto rewards game.">
+    <meta name="keywords" content="free crypto, spin to win crypto, earn XRP codes, win BTC, crypto rewards, crypto games, play to earn">
+    <meta name="author" content="GiftBox Team">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://giftbox-beta.vercel.app/">
+
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="GiftBox - Spin & Win Free Crypto Codes Daily">
+    <meta property="og:description" content="Play now & claim free XRP, BTC, ETH codes instantly. 100% free crypto rewards game.">
+    <meta property="og:url" content="https://giftbox-beta.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://giftbox-beta.vercel.app/preview.png">
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Ad SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
+    
+    <!-- Added ad scripts -->
+    <script type="text/javascript">
+        atOptions = {
+            'key' : '97a82020dbbd3ce08e9c832f7dd17a53',
+            'format' : 'iframe',
+            'height' : 60,
+            'width' : 468,
+            'params' : {}
+        };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/97a82020dbbd3ce08e9c832f7dd17a53/invoke.js"></script>
+    <script type='text/javascript' src='//pl27492038.profitableratecpm.com/01/11/95/01119594eb3f21869f9cdd409f5d1e65.js'></script>
+    <!-- End of added ad scripts -->
+    
+    <style>
+        :root {
+            --primary-color: #2dd60c;
+            --secondary-color: #1a73e8;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --text-secondary: #b0b0b0;
+            --success-color: #4CAF50;
+            --warning-color: #FFA500;
+            --error-color: #f44336;
+            --wheel-border: #ffffff;
+            --navbar-bg: #333333;
+            --button-bg: #444444;
+            --button-hover: #555555;
+            --telegram-color: #0088cc;
+            --ads-color: #FF5722;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 70px;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--navbar-bg);
+            padding: 12px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar button {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .navbar button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .navbar button.active {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .game-container {
+            margin: 20px auto;
+            padding: 25px;
+            max-width: 420px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            transition: transform 0.3s ease;
+        }
+
+        .game-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .wheel-container {
+            position: relative;
+            margin: 25px auto;
+            width: 250px;
+            height: 250px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid var(--wheel-border);
+            position: relative;
+            background: conic-gradient(
+                #ff0000 0deg 60deg,
+                #33cc33 60deg 120deg,
+                #ffcc00 120deg 180deg,
+                #00ccff 180deg 240deg,
+                #ff6600 240deg 300deg,
+                #cc00ff 300deg 360deg
+            );
+            transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .wheel span {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(var(--rotate));
+            top: var(--top);
+            left: var(--left);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .wheel .usdt { --rotate: -30deg; --top: 15%; --left: 75%; }
+        .wheel .bttc { --rotate: 30deg; --top: 15%; --left: 25%; }
+        .wheel .lunc { --rotate: 90deg; --top: 50%; --left: 10%; }
+        .wheel .pepe { --rotate: 150deg; --top: 85%; --left: 25%; }
+        .wheel .bnb { --rotate: 210deg; --top: 85%; --left: 75%; }
+        .wheel .ltc { --rotate: 270deg; --top: 50%; --left: 90%; }
+
+        .arrow {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 24px solid var(--wheel-border);
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .spin-button, .cast-button {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .spin-button:hover, .cast-button:hover {
+            background-color: #26c20a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-button:disabled, .cast-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #spin-result, #catch-result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+            min-height: 24px;
+        }
+
+        #copy-code-button, #copy-code-button-fish {
+            display: none;
+            margin-top: 15px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .task-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .task-button:hover {
+            background-color: #1557b0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .task-completed {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .ticket-count {
+            font-size: 20px;
+            margin: 15px 0;
+            color: gold;
+            font-weight: 600;
+        }
+        
+        .spin-notice {
+            color: gold;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 12px;
+            background-color: rgba(255, 215, 0, 0.15);
+            border-radius: 10px;
+            border-left: 4px solid gold;
+        }
+
+        .ad-button {
+            background-color: var(--ads-color);
+            color: white;
+        }
+        
+        .ad-button:hover {
+            background-color: #e64a19;
+        }
+        
+        .telegram-button {
+            background-color: var(--telegram-color);
+        }
+
+        .telegram-button:hover {
+            background-color: #0077b5;
+        }
+
+        .hidden-ticket-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.8);
+            color: gold;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            display: none;
+            animation: fadeInOut 2s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+           100% { opacity: 0; }
+        }
+
+        /* Code Image Styles */
+        .code-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 1px solid gold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .hidden-canvas {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        /* Progress bar styles */
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            text-align: center;
+            line-height: 20px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* News/Blog Styles */
+        .news-container {
+            max-width: 100%;
+            text-align: left;
+        }
+
+        .news-article {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .news-article h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .news-article p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .news-article a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .news-article a:hover {
+            text-decoration: underline;
+        }
+
+        .news-date {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        /* Sitemap Verification Tool */
+        .seo-tool {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .seo-tool h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .seo-tool button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .seo-tool button:hover {
+            background-color: #1557b0;
+        }
+
+        .seo-tool .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #333;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .code-block {
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                margin: 15px;
+                padding: 20px;
+            }
+            
+            .wheel-container {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .navbar button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .spin-button, .cast-button, .task-button {
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Spin Game -->
+    <div id="spin-game" class="game-container">
+        <h2>🎡 Spin & Win Crypto 🎡</h2>
+
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="spin-tickets">0</div>
+                <div class="stat-label">Spin Tickets</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-spins">0</div>
+                <div class="stat-label">Total Spins</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="codes-won">0</div>
+                <div class="stat-label">Codes Won</div>
+            </div>
+        </div>
+
+        <div class="spin-notice">🔥 Watch 5 ads to earn 1 spin ticket! 🔥</div>
+        
+        <!-- Progress bar for spin ads -->
+        <div class="progress-container">
+            <div id="spin-progress-bar" class="progress-bar" style="width: 0%">0/5</div>
+        </div>
+        
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel" id="wheel">
+                <span class="usdt">USDT🔴💰</span>
+                <span class="bttc">BTTC🟢💰</span>
+                <span class="lunc">LUNC🟡💰</span>
+                <span class="pepe">PEPE🔵💰</span>
+                <span class="bnb">BNB🟠💰</span>
+                <span class="ltc">LTC🟣💰</span>
+            </div>
+        </div>
+        <button class="spin-button" id="spin-btn" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
+        <div id="spin-result"></div>
+        <div id="spin-code-display" class="code-display" style="display: none;"></div>
+        <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
+        
+        <button class="task-button ad-button" id="spin-task-button" onclick="watchAdForSpinTicket()">
+            <i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">0</span>/5)
+        </button>
+        
+        <p id="spin-task-progress"></p>
+    </div>
+
+    <!-- News/Blog Section -->
+    <div id="news-section" class="game-container" style="display: none;">
+        <h2>📰 Crypto News & Tips 📰</h2>
+        <p>Stay updated with the latest crypto earning strategies!</p>
+
+        <div class="news-container">
+            <div class="news-article">
+                <h3>How to Earn Free Crypto in 2025</h3>
+                <div class="news-date">March 15, 2025</div>
+                <p>In 2025, earning free cryptocurrency has become easier than ever. From play-to-earn games to reward apps, you can now collect crypto without investing money. One of the most popular ways is through spin & win games. Platforms like GiftBox allow players to spin a wheel and win real crypto codes daily. Each spin gives you a chance to claim XRP, BTC, ETH, and more.</p>
+                <p>Many platforms reward users with crypto for simple actions: watching ads, filling surveys, or downloading apps. This is a risk-free way to start building your crypto wallet. Inviting friends is another powerful method. GiftBox, for example, gives bonus tickets when you share your link, making it easier to win more crypto.</p>
+                <p>If you want to earn free crypto in 2025, try a combination of games, surveys, and referrals. Start with GiftBox today and claim your daily rewards instantly!</p>
+                <a href="https://giftbox-beta.vercel.app/blog/free-crypto-earn-2025.html">Read more →</a>
+            </div>
+            
+            <div class="news-article">
+                <h3>Top 5 Crypto Reward Platforms</h3>
+                <div class="news-date">March 10, 2025</div>
+                <p>Looking for the best platforms to earn free crypto? We've compiled a list of the top 5 legitimate platforms that reward users with cryptocurrency. These platforms offer various ways to earn including games, surveys, and referral programs.</p>
+                <p>1. GiftBox - Our top pick for its user-friendly interface and daily rewards. With a simple spin wheel game, users can earn codes for various cryptocurrencies.</p>
+                <p>2. CoinBucks - A survey-based platform that pays users in Bitcoin for completing market research surveys and offers.</p>
+                <p>3. CryptoPop - A mobile game that rewards players with Ethereum for completing puzzles and reaching milestones.</p>
+                <p>4. BitRewards - A shopping rewards platform that gives cashback in Bitcoin when you shop at participating retailers.</p>
+                <p>5. FreeBitcoin - The oldest platform in the space, offering hourly rewards and lottery tickets for visiting the site regularly.</p>
+                <p>Each platform has its unique advantages, but GiftBox stands out for its simplicity and instant gratification with no initial investment required.</p>
+                <a href="#">Read more →</a>
+            </div>
+            
+            <div class="news-article">
+                <h3>Understanding Crypto Security</h3>
+                <div class="news-date">March 5, 2025</div>
+                <p>Learn how to keep your cryptocurrency safe from scams and hacks. Essential security tips every crypto enthusiast should know. From wallet security to recognizing phishing attempts, this guide covers everything you need to protect your digital assets.</p>
+                <p>1. Use Hardware Wallets: For significant amounts of cryptocurrency, consider using a hardware wallet like Ledger or Trezor. These devices store your private keys offline, making them immune to online hacking attempts.</p>
+                <p>2. Enable Two-Factor Authentication: Always enable 2FA on all your crypto exchange accounts and wallets. This adds an extra layer of security beyond just a password.</p>
+                <p>3. Beware of Phishing Scams: Be cautious of emails, messages, or websites that ask for your private keys or seed phrases. Legitimate services will never ask for this information.</p>
+                <p>4. Keep Software Updated: Regularly update your wallet software, operating system, and antivirus programs to protect against known vulnerabilities.</p>
+                <p>5. Diversify Your Storage: Don't keep all your crypto in one place. Use a combination of hot wallets (for daily use) and cold storage (for long-term holding).</p>
+                <p>Remember, in the world of cryptocurrency, you are your own bank. Taking proper security measures is essential to protect your digital assets from theft or loss.</p>
+                <a href="#">Read more →</a>
+            </div>
+
+            <!-- Sitemap Verification Tool -->
+            <div class="seo-tool">
+                <h3>🔍 SEO Sitemap Verification Tool</h3>
+                <p>Check if your sitemap is accessible to search engines. Your sitemap is currently returning a 404 error.</p>
+                <button onclick="checkSitemap()">Test Sitemap.xml</button>
+                <button onclick="checkRobots()">Test Robots.txt</button>
+                <button onclick="showFixInstructions()">Show Fix Instructions</button>
+                <div id="seo-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Friends Section -->
+    <div id="invite-friends" class="game-container" style="display: none;">
+        <h2>👫 Invite Friends & Earn Tickets 👫</h2>
+        <p>Share with friends and earn rewards!</p>
+        
+        <button class="task-button telegram-button" id="telegram-share-btn" onclick="shareOnTelegram()">
+            <i class="fab fa-telegram"></i> Share on Telegram
+        </button>
+        
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="referrals-count">0</div>
+                <div class="stat-label">Friends Joined</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="referral-tickets">0</div>
+                <div class="stat-label">Tickets Earned</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Ticket Notification -->
+    <div id="hidden-ticket-notification" class="hidden-ticket-notification">
+        +1 Spin Ticket Added!
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
+        <button id="news-nav" onclick="showPage('news-section')"><i class="fas fa-newspaper"></i> News</button>
+        <button id="invite-nav" onclick="showPage('invite-friends')"><i class="fas fa-user-plus"></i> Invite</button>
+    </div>
+
+    <script>
+        // Enhanced Game State with Image Codes
+        const gameState = {
+            spin: {
+                tickets: 0, // No free tickets
+                totalSpins: 0,
+                codesWon: 0,
+                currentCode: '',
+                codeParts: ["BP0", "27W", "01TN"],
+                validCodes: [
+                    "1. 7OPN96EW",
+                    "2. GV1YOPO0",
+                    "3. BWX2RS8O",
+                    "4. ZD3FIYAU",
+                    "5. PBQN0BZX",
+                    "6. 31YV7SD9",
+                    "7. JWE1921F",
+                    "8. H3TICR5K",
+                    "9. UI5BMMZV",
+                    "10. 2WSX3EDC"
+                ],
+                currentCodeIndex: 0, // Track which code to give next
+                adsWatched: 0 // Track ads watched for spin tickets
+            },
+            referral: {
+                count: 0,
+                ticketsEarned: 0
+            },
+            userId: 'user_' + Math.random().toString(36).substr(2, 9),
+            userActions: {
+                lastSpin: 0,
+                spinCount: 0
+            }
+        };
+
+        // DOM Elements
+        const elements = {
+            spin: {
+                tickets: document.getElementById("spin-tickets"),
+                totalSpins: document.getElementById("total-spins"),
+                codesWon: document.getElementById("codes-won"),
+                result: document.getElementById("spin-result"),
+                codeDisplay: document.getElementById("spin-code-display"),
+                copyButton: document.getElementById("copy-code-button"),
+                taskButton: document.getElementById("spin-task-button"),
+                taskProgress: document.getElementById("spin-task-progress"),
+                wheel: document.getElementById("wheel"),
+                spinBtn: document.getElementById("spin-btn"),
+                progressBar: document.getElementById("spin-progress-bar"),
+                adCount: document.getElementById("spin-ad-count")
+            },
+            nav: {
+                spin: document.getElementById("spin-nav"),
+                news: document.getElementById("news-nav"),
+                invite: document.getElementById("invite-nav")
+            }
+        };
+
+        // Initialize UI
+        function initUI() {
+            updateSpinUI();
+            updateReferralUI();
+        }
+
+        function updateSpinUI() {
+            elements.spin.tickets.textContent = gameState.spin.tickets;
+            elements.spin.totalSpins.textContent = gameState.spin.totalSpins;
+            elements.spin.codesWon.textContent = gameState.spin.codesWon;
+            elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+            
+            // Update progress bar
+            const progressPercentage = (gameState.spin.adsWatched / 5) * 100;
+            elements.spin.progressBar.style.width = `${progressPercentage}%`;
+            elements.spin.progressBar.textContent = `${gameState.spin.adsWatched}/5`;
+            elements.spin.adCount.textContent = gameState.spin.adsWatched;
+        }
+
+        function updateReferralUI() {
+            document.getElementById("referrals-count").textContent = gameState.referral.count;
+            document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
+        }
+
+        // ======================
+        // SITEMAP VERIFICATION TOOL
+        // ======================
+
+        function checkSitemap() {
+            const resultElement = document.getElementById('seo-result');
+            resultElement.innerHTML = 'Testing sitemap.xml...';
+            
+            fetch('https://giftbox-beta.vercel.app/sitemap.xml')
+                .then(response => {
+                    if (response.ok) {
+                        resultElement.innerHTML = '<span class="success">✅ SUCCESS: Sitemap.xml is accessible!</span>';
+                    } else {
+                        resultElement.innerHTML = `<span class="error">❌ ERROR: Sitemap returned status ${response.status}</span>
+                        <p>This is likely because the file doesn't exist at the expected location.</p>`;
+                    }
+                })
+                .catch(error => {
+                    resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
+                    <p>Your sitemap.xml file is not accessible at https://giftbox-beta.vercel.app/sitemap.xml</p>`;
+                });
+        }
+
+        function checkRobots() {
+            const resultElement = document.getElementById('seo-result');
+            resultElement.innerHTML = 'Testing robots.txt...';
+            
+            fetch('https://giftbox-beta.vercel.app/robots.txt')
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                })
+                .then(text => {
+                    resultElement.innerHTML = `<span class="success">✅ SUCCESS: Robots.txt is accessible!</span>
+                    <pre>${text}</pre>`;
+                })
+                .catch(error => {
+                    resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
+                    <p>Your robots.txt file is not accessible at https://giftbox-beta.vercel.app/robots.txt</p>`;
+                });
+        }
+
+        function showFixInstructions() {
+            const resultElement = document.getElementById('seo-result');
+            resultElement.innerHTML = `<h4>How to Fix the Sitemap 404 Error:</h4>
+            <p>You need to create these files in your GitHub repository:</p>
+            
+            <h4>1. Create vercel.json in your project root:</h4>
+            <div class="code-block">
+{
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    }
+  ]
+}
+            </div>
+            
+            <h4>2. Create api/sitemap.js:</h4>
+            <div class="code-block">
+export default function handler(req, res) {
+  const xml = \`&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://giftbox-beta.vercel.app/&lt;/loc&gt;
+    &lt;changefreq&gt;daily&lt;/changefreq&gt;
+    &lt;priority&gt;1.0&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://giftbox-beta.vercel.app/blog/free-crypto-earn-2025.html&lt;/loc&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.8&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;\`;
+
+  res.setHeader('Content-Type', 'application/xml');
+  res.send(xml);
+}
+            </div>
+            
+            <h4>3. Create public/robots.txt:</h4>
+            <div class="code-block">
+User-agent: *
+Allow: /
+
+Sitemap: https://giftbox-beta.vercel.app/sitemap.xml
+            </div>
+            
+            <p>After creating these files, push them to GitHub and your sitemap should work correctly.</p>`;
+        }
+
+        // ======================
+        // IMAGE-BASED CODE SYSTEM
+        // ======================
+
+        function createCodeImage(code, containerElement) {
+            // Create hidden canvas
+            const canvas = document.createElement('canvas');
+            canvas.className = 'hidden-canvas';
+            canvas.width = 300;
+            canvas.height = 80;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2dd60c');
+            gradient.addColorStop(1, '#1a73e8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add noise pattern
+            for (let i = 0; i < 200; i++) {
+                ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.1})`;
+                ctx.fillRect(
+                    Math.random()*canvas.width, 
+                    Math.random()*canvas.height, 
+                    Math.random()*3, 
+                    Math.random()*3
+                );
+            }
+            
+            // Draw the code with effects
+            ctx.font = 'bold 28px Courier New';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Text shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            for (let i = 0; i < 3; i++) {
+                ctx.fillText(code, canvas.width/2 + i, canvas.height/2 + i);
+            }
+            
+            // Main text with gradient
+            const textGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            textGradient.addColorStop(0, 'gold');
+            textGradient.addColorStop(0.5, 'white');
+            textGradient.addColorStop(1, 'gold');
+            ctx.fillStyle = textGradient;
+            ctx.fillText(code, canvas.width/2, canvas.height/2);
+            
+            // Create image from canvas
+            const dataURL = canvas.toDataURL('image/png');
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.className = 'code-image';
+            img.alt = 'Your reward code';
+            
+            // Clear container and add image
+            containerElement.innerHTML = '';
+            containerElement.appendChild(img);
+            
+            // Add canvas to body temporarily
+            document.body.appendChild(canvas);
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(canvas);
+            }, 1000);
+            
+            return dataURL;
+        }
+
+        // ======================
+        // AD FUNCTIONS (Updated for 5 ads per ticket)
+        // ======================
+
+        function watchAdForSpinTicket() {
+            elements.spin.taskButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
+            elements.spin.taskButton.disabled = true;
+            
+            show_9679447().then(() => {
+                // Ad watched successfully
+                gameState.spin.adsWatched++;
+                
+                // Check if user has watched 5 ads
+                if (gameState.spin.adsWatched >= 5) {
+                    gameState.spin.tickets += 1;
+                    gameState.spin.adsWatched = 0; // Reset counter
+                    elements.spin.taskProgress.innerHTML = 
+                        '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
+                    createConfetti(elements.spin.taskButton);
+                } else {
+                    elements.spin.taskProgress.innerHTML = 
+                        `<span>Ad completed! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
+                }
+                
+                updateSpinUI();
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
+                elements.spin.taskButton.disabled = false;
+            }).catch((error) => {
+                // Ad failed to load or was skipped
+                console.error('Ad error:', error);
+                elements.spin.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
+                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
+                elements.spin.taskButton.disabled = false;
+            });
+        }
+
+        // ======================
+        // GAME FUNCTIONS
+        // ======================
+
+        function spinWheel() {
+            if (gameState.spin.tickets < 1) {
+                alert("You need 1 spin ticket! Watch 5 ads to earn a ticket.");
+                return;
+            }
+            
+            // Rate limiting
+            const now = Date.now();
+            if (now - gameState.userActions.lastSpin < 30000) {
+                alert("Please wait 30 seconds between spins");
+                return;
+            }
+            
+            gameState.spin.tickets--;
+            gameState.spin.totalSpins++;
+            gameState.userActions.lastSpin = now;
+            updateSpinUI();
+            
+            // Disable spin button during animation
+            elements.spin.spinBtn.disabled = true;
+            
+            const degrees = Math.floor(Math.random() * 3600) + 1800;
+            elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
+
+            setTimeout(() => {
+                // Get the next code in order
+                const validCode = gameState.spin.validCodes[gameState.spin.currentCodeIndex];
+                gameState.spin.currentCode = validCode;
+                
+                // Move to next code for next time (loop back to start if at end)
+                gameState.spin.currentCodeIndex = 
+                    (gameState.spin.currentCodeIndex + 1) % gameState.spin.validCodes.length;
+                
+                // Create and display code as image
+                createCodeImage(validCode, elements.spin.codeDisplay);
+                
+                elements.spin.result.innerHTML = `You won crypto code ${gameState.spin.currentCodeIndex}/${gameState.spin.validCodes.length}!`;
+                elements.spin.codeDisplay.style.display = "block";
+                elements.spin.copyButton.style.display = "inline-block";
+                
+                gameState.spin.codesWon++;
+                updateSpinUI();
+                elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+                
+                createConfetti(elements.spin.wheel);
+            }, 3000);
+        }
+
+        // ======================
+        // COPY FUNCTIONS
+        // ======================
+
+        function copyResultCode() {
+            if (gameState.spin.currentCode) {
+                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
+                const codeToCopy = gameState.spin.currentCode.replace(/^\d+\.\s*/, '');
+                copyToClipboard(codeToCopy, elements.spin.copyButton);
+            }
+        }
+
+        function copyToClipboard(text, buttonElement) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                buttonElement.innerHTML = '✓ Copied!';
+                buttonElement.style.backgroundColor = 'var(--success-color)';
+                setTimeout(() => {
+                    buttonElement.innerHTML = '📋 Copy Code';
+                    buttonElement.style.backgroundColor = 'var(--primary-color)';
+                }, 2000);
+            } catch (err) {
+                alert("Could not copy code. Please copy manually.");
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function shareOnTelegram() {
+            const message = `🎉 Join this awesome crypto rewards app and earn free crypto https://t.me/redpacket_box!`;
+            const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+            
+            // Open Telegram share dialog
+            window.open(shareUrl, '_blank', 'noopener,noreferrer');
+            
+            // Show temporary notification after 10 seconds
+            setTimeout(() => {
+                // Add ticket to spin game
+                gameState.spin.tickets += 1;
+                updateSpinUI();
+                
+                // Show hidden notification
+                showNotification("+1 Spin Ticket Added!");
+            }, 10000); // 10 second delay
+        }
+
+        function showPage(pageId) {
+            document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
+            document.getElementById('news-section').style.display = pageId === 'news-section' ? 'block' : 'none';
+            document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
+            
+            // Update active nav button
+            elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
+            elements.nav.news.classList.toggle('active', pageId === 'news-section');
+            elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
+        }
+
+        function createConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = centerX + 'px';
+                    confetti.style.top = centerY + 'px';
+                    confetti.style.backgroundColor = getRandomColor();
+                    document.body.appendChild(confetti);
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 3 + Math.random() * 3;
+                    const x = Math.cos(angle) * velocity;
+                    const y = Math.sin(angle) * velocity;
+                    
+                    let posX = centerX;
+                    let posY = centerY;
+                    let opacity = 1;
+                    let scale = 0.5 + Math.random();
+                    
+                    const animate = () => {
+                        posX += x;
+                        posY += y + 0.5; // Add gravity
+                        opacity -= 0.02;
+                        scale -= 0.01;
+                        
+                        if (opacity <= 0 || scale <= 0) {
+                            confetti.remove();
+                            return;
+                        }
+                        
+                        confetti.style.left = posX + 'px';
+                        confetti.style.top = posY + 'px';
+                        confetti.style.opacity = opacity;
+                        confetti.style.transform = `scale(${scale})`;
+                        requestAnimationFrame(animate);
+                    };
+                    
+                    animate();
+                }, i * 20);
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('hidden-ticket-notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            showPage('spin-game');
+        });
+    </script>
+</body>
+</html>
