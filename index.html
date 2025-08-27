@@ -407,6 +407,7 @@
             border-radius: 5px;
             cursor: pointer;
             margin-right: 10px;
+            margin-bottom: 10px;
         }
 
         .seo-tool button:hover {
@@ -418,14 +419,29 @@
             padding: 10px;
             border-radius: 5px;
             background-color: #333;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .success {
             color: var(--success-color);
+            font-weight: bold;
         }
 
         .error {
             color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .code-block {
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
         }
 
         @media (max-width: 480px) {
@@ -545,9 +561,10 @@
             <!-- Sitemap Verification Tool -->
             <div class="seo-tool">
                 <h3>🔍 SEO Sitemap Verification Tool</h3>
-                <p>Check if your sitemap is accessible to search engines:</p>
-                <button onclick="checkSitemap()">Test Sitemap</button>
+                <p>Check if your sitemap is accessible to search engines. Your sitemap is currently returning a 404 error.</p>
+                <button onclick="checkSitemap()">Test Sitemap.xml</button>
                 <button onclick="checkRobots()">Test Robots.txt</button>
+                <button onclick="showFixInstructions()">Show Fix Instructions</button>
                 <div id="seo-result" class="result"></div>
             </div>
         </div>
@@ -682,37 +699,12 @@
                         resultElement.innerHTML = '<span class="success">✅ SUCCESS: Sitemap.xml is accessible!</span>';
                     } else {
                         resultElement.innerHTML = `<span class="error">❌ ERROR: Sitemap returned status ${response.status}</span>
-                        <p>Try creating a /api/sitemap.js file instead:</p>
-                        <pre>// api/sitemap.js
-export default function handler(req, res) {
-  const xml = \`&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
-  &lt;url&gt;
-    &lt;loc&gt;https://giftbox-beta.vercel.app/&lt;/loc&gt;
-    &lt;changefreq&gt;daily&lt;/changefreq&gt;
-    &lt;priority&gt;1.0&lt;/priority&gt;
-  &lt;/url&gt;
-  &lt;url&gt;
-    &lt;loc&gt;https://giftbox-beta.vercel.app/blog/free-crypto-earn-2025.html&lt;/loc&gt;
-    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
-    &lt;priority&gt;0.8&lt;/priority&gt;
-  &lt;/url&gt;
-&lt;/urlset&gt;\`;
-
-  res.setHeader('Content-Type', 'application/xml');
-  res.send(xml);
-}</pre>`;
+                        <p>This is likely because the file doesn't exist at the expected location.</p>`;
                     }
                 })
                 .catch(error => {
                     resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
-                    <p>Your sitemap.xml file is not accessible at https://giftbox-beta.vercel.app/sitemap.xml</p>
-                    <p>Try these solutions:</p>
-                    <ol>
-                        <li>Create a /api/sitemap.js file as shown above</li>
-                        <li>Or add a vercel.json file to configure headers</li>
-                        <li>Or ensure the file is in the /public folder</li>
-                    </ol>`;
+                    <p>Your sitemap.xml file is not accessible at https://giftbox-beta.vercel.app/sitemap.xml</p>`;
                 });
         }
 
@@ -734,13 +726,69 @@ export default function handler(req, res) {
                 })
                 .catch(error => {
                     resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
-                    <p>Your robots.txt file is not accessible at https://giftbox-beta.vercel.app/robots.txt</p>
-                    <p>Create a robots.txt file in your /public folder with this content:</p>
-                    <pre>User-agent: *
+                    <p>Your robots.txt file is not accessible at https://giftbox-beta.vercel.app/robots.txt</p>`;
+                });
+        }
+
+        function showFixInstructions() {
+            const resultElement = document.getElementById('seo-result');
+            resultElement.innerHTML = `<h4>How to Fix the Sitemap 404 Error:</h4>
+            <p>You need to create these files in your GitHub repository:</p>
+            
+            <h4>1. Create vercel.json in your project root:</h4>
+            <div class="code-block">
+{
+  "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    }
+  ]
+}
+            </div>
+            
+            <h4>2. Create api/sitemap.js:</h4>
+            <div class="code-block">
+export default function handler(req, res) {
+  const xml = \`&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://giftbox-beta.vercel.app/&lt;/loc&gt;
+    &lt;changefreq&gt;daily&lt;/changefreq&gt;
+    &lt;priority&gt;1.0&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://giftbox-beta.vercel.app/blog/free-crypto-earn-2025.html&lt;/loc&gt;
+    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+    &lt;priority&gt;0.8&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;\`;
+
+  res.setHeader('Content-Type', 'application/xml');
+  res.send(xml);
+}
+            </div>
+            
+            <h4>3. Create public/robots.txt:</h4>
+            <div class="code-block">
+User-agent: *
 Allow: /
 
-Sitemap: https://giftbox-beta.vercel.app/sitemap.xml</pre>`;
-                });
+Sitemap: https://giftbox-beta.vercel.app/sitemap.xml
+            </div>
+            
+            <p>After creating these files, push them to GitHub and your sitemap should work correctly.</p>`;
         }
 
         // ======================
