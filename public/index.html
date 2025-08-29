@@ -24,9 +24,6 @@
     <!-- Ad SDK -->
     <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
     
-    <!-- New ad script -->
-    <script async="async" data-cfasync="false" src="//pl27526849.effectivecpmrate.com/b99b664827dff91097da4dfb3433cb1a/invoke.js"></script>
-    
     <style>
         :root {
             --primary-color: #2dd60c;
@@ -374,65 +371,6 @@
             margin-bottom: 10px;
         }
 
-        /* Sitemap Verification Tool */
-        .seo-tool {
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        .seo-tool h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        .seo-tool button {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .seo-tool button:hover {
-            background-color: #1557b0;
-        }
-
-        .seo-tool .result {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #333;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 14px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .success {
-            color: var(--success-color);
-            font-weight: bold;
-        }
-
-        .error {
-            color: var(--error-color);
-            font-weight: bold;
-        }
-
-        .code-block {
-            background-color: #1a1a1a;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -457,9 +395,6 @@
     </style>
 </head>
 <body>
-    <!-- New ad container -->
-    <div id="container-b99b664827dff91097da4dfb3433cb1a"></div>
-    
     <!-- Spin Game -->
     <div id="spin-game" class="game-container">
         <h2>🎡 Spin & Win Crypto 🎡</h2>
@@ -548,16 +483,6 @@
                 <p>5. Diversify Your Storage: Don't keep all your crypto in one place. Use a combination of hot wallets (for daily use) and cold storage (for long-term holding).</p>
                 <p>Remember, in the world of cryptocurrency, you are your own bank. Taking proper security measures is essential to protect your digital assets from theft or loss.</p>
                 <a href="#">Read more →</a>
-            </div>
-
-            <!-- Sitemap Verification Tool -->
-            <div class="seo-tool">
-                <h3>🔍 SEO Sitemap Verification Tool</h3>
-                <p>Check if your sitemap is accessible to search engines. Your sitemap is currently returning a 404 error.</p>
-                <button onclick="checkSitemap()">Test Sitemap.xml</button>
-                <button onclick="checkRobots()">Test Robots.txt</button>
-                <button onclick="showFixInstructions()">Show Fix Instructions</button>
-                <div id="seo-result" class="result"></div>
             </div>
         </div>
     </div>
@@ -675,112 +600,6 @@
         function updateReferralUI() {
             document.getElementById("referrals-count").textContent = gameState.referral.count;
             document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
-        }
-
-        // ======================
-        // SITEMAP VERIFICATION TOOL
-        // ======================
-
-        function checkSitemap() {
-            const resultElement = document.getElementById('seo-result');
-            resultElement.innerHTML = 'Testing sitemap.xml...';
-            
-            fetch('https://giftbox-beta.vercel.app/sitemap.xml')
-                .then(response => {
-                    if (response.ok) {
-                        resultElement.innerHTML = '<span class="success">✅ SUCCESS: Sitemap.xml is accessible!</span>';
-                    } else {
-                        resultElement.innerHTML = `<span class="error">❌ ERROR: Sitemap returned status ${response.status}</span>
-                        <p>This is likely because the file doesn't exist at the expected location.</p>`;
-                    }
-                })
-                .catch(error => {
-                    resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
-                    <p>Your sitemap.xml file is not accessible at https://giftbox-beta.vercel.app/sitemap.xml</p>`;
-                });
-        }
-
-        function checkRobots() {
-            const resultElement = document.getElementById('seo-result');
-            resultElement.innerHTML = 'Testing robots.txt...';
-            
-            fetch('https://giftbox-beta.vercel.app/robots.txt')
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    } else {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                })
-                .then(text => {
-                    resultElement.innerHTML = `<span class="success">✅ SUCCESS: Robots.txt is accessible!</span>
-                    <pre>${text}</pre>`;
-                })
-                .catch(error => {
-                    resultElement.innerHTML = `<span class="error">❌ ERROR: ${error.message}</span>
-                    <p>Your robots.txt file is not accessible at https://giftbox-beta.vercel.app/robots.txt</p>`;
-                });
-        }
-
-        function showFixInstructions() {
-            const resultElement = document.getElementById('seo-result');
-            resultElement.innerHTML = `<h4>How to Fix the Sitemap 404 Error:</h4>
-            <p>You need to create these files in your GitHub repository:</p>
-            
-            <h4>1. Create vercel.json in your project root:</h4>
-            <div class="code-block">
-{
-  "headers": [
-    {
-      "source": "/sitemap.xml",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/xml"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
-    }
-  ]
-}
-            </div>
-            
-            <h4>2. Create api/sitemap.js:</h4>
-            <div class="code-block">
-export default function handler(req, res) {
-  const xml = \`&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
-  &lt;url&gt;
-    &lt;loc&gt;https://giftbox-beta.vercel.app/&lt;/loc&gt;
-    &lt;changefreq&gt;daily&lt;/changefreq&gt;
-    &lt;priority&gt;1.0&lt;/priority&gt;
-  &lt;/url&gt;
-  &lt;url&gt;
-    &lt;loc&gt;https://giftbox-beta.vercel.app/blog/free-crypto-earn-2025.html&lt;/loc&gt;
-    &lt;changefreq&gt;weekly&lt;/changefreq&gt;
-    &lt;priority&gt;0.8&lt;/priority&gt;
-  &lt;/url&gt;
-&lt;/urlset&gt;\`;
-
-  res.setHeader('Content-Type', 'application/xml');
-  res.send(xml);
-}
-            </div>
-            
-            <h4>3. Create public/robots.txt:</h4>
-            <div class="code-block">
-User-agent: *
-Allow: /
-
-Sitemap: https://giftbox-beta.vercel.app/sitemap.xml
-            </div>
-            
-            <p>After creating these files, push them to GitHub and your sitemap should work correctly.</p>`;
         }
 
         // ======================
