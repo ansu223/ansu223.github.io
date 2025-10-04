@@ -399,6 +399,39 @@
             top: -9999px;
         }
 
+        /* Telegram Code Display */
+        .telegram-code-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px solid #ffd700;
+            color: white;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 15px 0;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .code-header {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .code-value {
+            font-size: 22px;
+            color: #ffd700;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .code-instruction {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
         /* Progress bar styles */
         .progress-container {
             width: 100%;
@@ -1009,18 +1042,9 @@
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
-                codeParts: ["BP0", "27W", "01TN"],
+                // ONLY 1 VALID CODE NOW
                 validCodes: [
-                    "1. VO294O4B",
-                    "2. BPG9Q2XXYM",
-                    "3. BPG9Q2XXYM",
-                    "4. J59SI9P5",
-                    "5. OQ4PSQ3B",
-                    "6. 31YV7SD9",
-                    "7. JWE1921F",
-                    "8. H3TICR5K",
-                    "9. UI5BMMZV",
-                    "10. 2WSX3EDC"
+                    "VO294O4B"
                 ],
                 currentCodeIndex: 0, // Track which code to give next
                 adsWatched: 0 // Track ads watched for spin tickets
@@ -1079,6 +1103,10 @@
                 updateTime: document.getElementById("prediction-update-time")
             }
         };
+
+        // Telegram detection
+        const isTelegramBrowser = navigator.userAgent.includes('Telegram') || 
+                                 window.TelegramWebViewProxy !== undefined;
 
         // Initialize UI
         function initUI() {
@@ -1230,11 +1258,23 @@
         }
 
         // ======================
-        // IMAGE-BASED CODE SYSTEM
+        // IMAGE-BASED CODE SYSTEM (WITH TELEGRAM FIX)
         // ======================
 
         function createCodeImage(code, containerElement) {
-            // Create hidden canvas
+            if (isTelegramBrowser) {
+                // Telegram-friendly version
+                containerElement.innerHTML = `
+                    <div class="telegram-code-display">
+                        <div class="code-header">🎁 CRYPTO REWARD CODE 🎁</div>
+                        <div class="code-value">${code}</div>
+                        <div class="code-instruction">Tap "Copy Code" below to claim your reward!</div>
+                    </div>
+                `;
+                return '';
+            }
+            
+            // Original canvas code for other browsers
             const canvas = document.createElement('canvas');
             canvas.className = 'hidden-canvas';
             canvas.width = 300;
@@ -1366,18 +1406,14 @@
             elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
 
             setTimeout(() => {
-                // Get the next code in order
-                const validCode = gameState.spin.validCodes[gameState.spin.currentCodeIndex];
+                // Get the only code (always the same)
+                const validCode = gameState.spin.validCodes[0];
                 gameState.spin.currentCode = validCode;
-                
-                // Move to next code for next time (loop back to start if at end)
-                gameState.spin.currentCodeIndex = 
-                    (gameState.spin.currentCodeIndex + 1) % gameState.spin.validCodes.length;
                 
                 // Create and display code as image
                 createCodeImage(validCode, elements.spin.codeDisplay);
                 
-                elements.spin.result.innerHTML = `You won crypto code ${gameState.spin.currentCodeIndex}/${gameState.spin.validCodes.length}!`;
+                elements.spin.result.innerHTML = `You won a crypto code!`;
                 elements.spin.codeDisplay.style.display = "block";
                 elements.spin.copyButton.style.display = "inline-block";
                 
@@ -1395,9 +1431,7 @@
 
         function copyResultCode() {
             if (gameState.spin.currentCode) {
-                // Remove the number prefix (e.g., "1. CODE" becomes "CODE")
-                const codeToCopy = gameState.spin.currentCode.replace(/^\d+\.\s*/, '');
-                copyToClipboard(codeToCopy, elements.spin.copyButton);
+                copyToClipboard(gameState.spin.currentCode, elements.spin.copyButton);
             }
         }
 
@@ -1430,15 +1464,11 @@
             // Open Telegram share dialog
             window.open(shareUrl, '_blank', 'noopener,noreferrer');
             
-            // Show temporary notification after 10 seconds
+            // REMOVED: No ticket reward for sharing
+            // Just show a thank you message
             setTimeout(() => {
-                // Add ticket to spin game
-                gameState.spin.tickets += 1;
-                updateSpinUI();
-                
-                // Show hidden notification
-                showNotification("+1 Spin Ticket Added!");
-            }, 10000); // 10 second delay
+                showNotification("Thanks for sharing! 🎁");
+            }, 2000);
         }
 
         function showPage(pageId) {
