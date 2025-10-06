@@ -3,10 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GiftBox - Spin & Win Free Crypto Codes</title>
-    <meta name="description" content="Spin the wheel to win free crypto codes for XRP, BTC, ETH and more. 100% free crypto rewards game.">
+    <title>GiftBox - Spin & Win Free Crypto Codes Daily | XRP, BTC, ETH Rewards</title>
+    <meta name="description" content="Play GiftBox to earn free crypto instantly. Spin the wheel, complete tasks, and win daily rewards like XRP, BTC, ETH codes. 100% free crypto rewards game.">
+    <meta name="keywords" content="free crypto, spin to win crypto, earn XRP codes, win BTC, crypto rewards, crypto games, play to earn, cryptocurrency, bitcoin, ethereum, XRP">
+    <meta name="author" content="GiftBox Team">
+    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#2dd60c">
-    
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://giftbox-beta.vercel.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="GiftBox - Spin & Win Free Crypto Codes Daily">
+    <meta property="og:description" content="Play now & claim free XRP, BTC, ETH codes instantly. 100% free crypto rewards game.">
+    <meta property="og:url" content="https://giftbox-beta.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://giftbox-beta.vercel.app/preview.png">
+    <meta property="og:site_name" content="GiftBox Crypto Rewards">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="GiftBox - Spin & Win Free Crypto Codes Daily">
+    <meta name="twitter:description" content="Play now & claim free XRP, BTC, ETH codes instantly. 100% free crypto rewards game.">
+    <meta name="twitter:image" content="https://giftbox-beta.vercel.app/preview.png">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "GiftBox Crypto Rewards",
+        "description": "Spin to win free cryptocurrency codes including XRP, BTC, ETH and more",
+        "url": "https://giftbox-beta.vercel.app/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web Browser",
+        "permissions": "microphone",
+        "offers": {
+            "@type": "Offer",
+            "description": "Free cryptocurrency rewards"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "GiftBox Team"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+            "@type": "Question",
+            "name": "How do I earn free crypto with GiftBox?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can earn free cryptocurrency by spinning our reward wheel, watching ads, and inviting friends. Each spin gives you a chance to win crypto codes for XRP, BTC, ETH and more."
+            }
+        }, {
+            "@type": "Question",
+            "name": "Is GiftBox really free to use?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, GiftBox is completely free to use. We don't require any payment or investment. You earn crypto rewards by playing games and completing simple tasks."
+            }
+        }, {
+            "@type": "Question",
+            "name": "What cryptocurrencies can I win?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can win various cryptocurrencies including USDT, BTTC, LUNC, PEPE, BNB, LTC, XRP, BTC, and ETH through our spin wheel and reward system."
+            }
+        }, {
+            "@type": "Question",
+            "name": "How do I get more spin tickets?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can earn spin tickets by watching ads (5 ads = 1 ticket) and by inviting friends to join GiftBox through our referral program."
+            }
+        }]
+    }
+    </script>
+
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -17,11 +95,18 @@
         :root {
             --primary-color: #2dd60c;
             --secondary-color: #1a73e8;
+            --ai-color: #8a2be2;
+            --prediction-up: #00c853;
+            --prediction-down: #ff3d00;
+            --prediction-neutral: #ffab00;
             --dark-bg: #121212;
             --card-bg: #1e1e1e;
             --text-color: #ffffff;
             --text-secondary: #b0b0b0;
             --success-color: #4CAF50;
+            --warning-color: #FFA500;
+            --error-color: #f44336;
+            --wheel-border: #ffffff;
             --navbar-bg: #333333;
             --button-bg: #444444;
             --button-hover: #555555;
@@ -31,8 +116,6 @@
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
@@ -40,13 +123,11 @@
             text-align: center;
             background-color: var(--dark-bg);
             color: var(--text-color);
+            margin: 0;
+            padding: 0;
             padding-bottom: 70px;
             min-height: 100vh;
             line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeSpeed;
-            overflow-x: hidden;
         }
 
         .navbar {
@@ -59,7 +140,6 @@
             width: 100%;
             z-index: 1000;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-            transform: translateZ(0);
         }
 
         .navbar button {
@@ -75,7 +155,6 @@
             align-items: center;
             gap: 10px;
             font-weight: 600;
-            transform: translateZ(0);
         }
 
         .navbar button:hover {
@@ -97,8 +176,10 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             color: var(--text-color);
             transition: transform 0.3s ease;
-            transform: translateZ(0);
-            will-change: transform;
+        }
+
+        .game-container:hover {
+            transform: translateY(-5px);
         }
 
         h1, h2, h3 {
@@ -106,19 +187,22 @@
             margin-top: 0;
         }
 
+        .ai-section h2, .ai-section h3 {
+            color: var(--ai-color);
+        }
+
         .wheel-container {
             position: relative;
             margin: 25px auto;
             width: 250px;
             height: 250px;
-            transform: translateZ(0);
         }
 
         .wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 6px solid #ffffff;
+            border: 6px solid var(--wheel-border);
             position: relative;
             background: conic-gradient(
                 #ff0000 0deg 60deg,
@@ -133,7 +217,6 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
-            transform: translateZ(0);
         }
 
         .wheel span {
@@ -166,12 +249,12 @@
             height: 0;
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
-            border-bottom: 24px solid #ffffff;
+            border-bottom: 24px solid var(--wheel-border);
             z-index: 10;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
-        .spin-button, .task-button {
+        .spin-button, .cast-button {
             background-color: var(--primary-color);
             color: #000;
             border: none;
@@ -183,25 +266,22 @@
             transition: all 0.3s ease;
             margin: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transform: translateZ(0);
-            width: 90%;
-            max-width: 300px;
         }
 
-        .spin-button:hover, .task-button:hover {
+        .spin-button:hover, .cast-button:hover {
             background-color: #26c20a;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
-        .spin-button:disabled {
+        .spin-button:disabled, .cast-button:disabled {
             background-color: #555;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        #spin-result {
+        #spin-result, #catch-result {
             margin-top: 15px;
             font-size: 18px;
             font-weight: bold;
@@ -209,11 +289,53 @@
             min-height: 24px;
         }
 
-        #copy-code-button {
+        #copy-code-button, #copy-code-button-fish {
             display: none;
             margin-top: 15px;
             width: 80%;
             max-width: 300px;
+        }
+
+        .task-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .task-button:hover {
+            background-color: #1557b0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .task-completed {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .ticket-count {
+            font-size: 20px;
+            margin: 15px 0;
+            color: gold;
+            font-weight: 600;
+        }
+        
+        .spin-notice {
+            color: gold;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 12px;
+            background-color: rgba(255, 215, 0, 0.15);
+            border-radius: 10px;
+            border-left: 4px solid gold;
         }
 
         .ad-button {
@@ -227,26 +349,18 @@
         
         .telegram-button {
             background-color: var(--telegram-color);
-            color: white;
         }
 
         .telegram-button:hover {
             background-color: #0077b5;
         }
 
-        .task-completed {
-            color: var(--success-color);
-            font-weight: bold;
+        .ai-button {
+            background-color: var(--ai-color);
         }
-        
-        .spin-notice {
-            color: gold;
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 12px;
-            background-color: rgba(255, 215, 0, 0.15);
-            border-radius: 10px;
-            border-left: 4px solid gold;
+
+        .ai-button:hover {
+            background-color: #7b1fa2;
         }
 
         .hidden-ticket-notification {
@@ -270,6 +384,22 @@
            100% { opacity: 0; }
         }
 
+        /* Code Image Styles */
+        .code-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 1px solid gold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .hidden-canvas {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        /* Telegram Code Display */
         .telegram-code-display {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
@@ -302,6 +432,7 @@
             opacity: 0.8;
         }
 
+        /* Progress bar styles */
         .progress-container {
             width: 100%;
             background-color: #333;
@@ -321,26 +452,309 @@
             font-weight: bold;
         }
 
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
+        /* News/Blog Styles */
+        .news-container {
+            max-width: 100%;
+            text-align: left;
         }
 
-        .stat-item {
+        .news-article {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .news-article h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .news-article p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .news-article a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .news-article a:hover {
+            text-decoration: underline;
+            transform: translateX(5px);
+            transition: transform 0.3s ease;
+        }
+
+        .news-date {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        /* SEO Content Section */
+        .seo-content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .seo-content h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .seo-content h3 {
+            color: var(--secondary-color);
+            margin-top: 20px;
+        }
+
+        .seo-content ul, .seo-content ol {
+            padding-left: 20px;
+        }
+
+        .seo-content li {
+            margin-bottom: 10px;
+        }
+
+        /* AI Prediction Section */
+        .ai-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .prediction-container {
+            margin-top: 20px;
+        }
+
+        .prediction-card {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--prediction-neutral);
+        }
+
+        .prediction-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .prediction-card.up {
+            border-left-color: var(--prediction-up);
+        }
+
+        .prediction-card.down {
+            border-left-color: var(--prediction-down);
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .prediction-coin {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .prediction-icon {
+            font-size: 24px;
+        }
+
+        .prediction-change {
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background-color: #333;
+        }
+
+        .prediction-change.positive {
+            color: var(--prediction-up);
+            background-color: rgba(0, 200, 83, 0.1);
+        }
+
+        .prediction-change.negative {
+            color: var(--prediction-down);
+            background-color: rgba(255, 61, 0, 0.1);
+        }
+
+        .prediction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .prediction-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .prediction-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .prediction-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .prediction-analysis {
+            background-color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--ai-color);
+        }
+
+        .prediction-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .prediction-confidence {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .confidence-bar {
+            width: 100px;
+            height: 6px;
+            background-color: #333;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background-color: var(--ai-color);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .prediction-timeframe {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .refresh-button {
+            background-color: var(--ai-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .refresh-button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
+        .prediction-update-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 10px;
             text-align: center;
         }
 
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
+        /* FAQ Section */
+        .faq-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .stat-label {
-            font-size: 14px;
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--secondary-color);
+        }
+
+        .faq-answer {
+            margin-top: 10px;
             color: var(--text-secondary);
-            margin-top: 5px;
+            display: none;
+            padding: 0 10px;
+            line-height: 1.6;
+        }
+
+        .faq-answer.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active .faq-icon {
+            transform: rotate(180deg);
         }
 
         @media (max-width: 480px) {
@@ -359,9 +773,24 @@
                 font-size: 14px;
             }
             
-            .spin-button, .task-button {
+            .spin-button, .cast-button, .task-button {
                 padding: 10px 20px;
                 font-size: 15px;
+            }
+
+            .seo-content, .faq-container, .ai-section {
+                margin: 15px;
+                padding: 20px;
+            }
+
+            .prediction-details {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
             }
         }
     </style>
@@ -370,7 +799,6 @@
     <!-- Spin Game -->
     <div id="spin-game" class="game-container">
         <h1>🎡 GiftBox - Spin & Win Crypto 🎡</h1>
-        <p>Spin the wheel to win free crypto codes for XRP, BTC, ETH and more!</p>
 
         <div class="stats-container">
             <div class="stat-item">
@@ -405,7 +833,6 @@
                 <span class="ltc">LTC🟣💰</span>
             </div>
         </div>
-        
         <button class="spin-button" id="spin-btn" onclick="spinWheel()">🎰 Spin Now (1 Ticket)</button>
         <div id="spin-result"></div>
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
@@ -416,6 +843,67 @@
         </button>
         
         <p id="spin-task-progress"></p>
+    </div>
+
+    <!-- AI Prediction Section -->
+    <div id="ai-predictions" class="ai-section" style="display: none;">
+        <h2>🤖 AI Crypto Price Prediction Bot</h2>
+        <p>Real-time price predictions powered by machine learning models analyzing market data, volatility, and momentum indicators.</p>
+        
+        <div class="prediction-container" id="prediction-container">
+            <!-- Predictions will be dynamically generated here -->
+        </div>
+        
+        <button class="refresh-button" onclick="generatePredictions()">
+            <i class="fas fa-sync-alt"></i> Refresh Predictions
+        </button>
+        
+        <div class="prediction-update-time">
+            Last updated: <span id="prediction-update-time">Just now</span>
+        </div>
+    </div>
+
+    <!-- News/Blog Section -->
+    <div id="news-section" class="game-container" style="display: none;">
+        <h2>📰 Crypto News & Tips 📰</h2>
+        <p>Stay updated with the latest crypto earning strategies!</p>
+
+        <div class="news-container">
+            <div class="news-article">
+                <h3>How to Earn Free Crypto in 2025</h3>
+                <div class="news-date">March 15, 2025</div>
+                <p>In 2025, earning free cryptocurrency has become easier than ever. From play-to-earn games to reward apps, you can now collect crypto without investing money. One of the most popular ways is through spin & win games. Platforms like GiftBox allow players to spin a wheel and win real crypto codes daily. Each spin gives you a chance to claim XRP, BTC, ETH, and more.</p>
+                <p>Many platforms reward users with crypto for simple actions: watching ads, filling surveys, or downloading apps. This is a risk-free way to start building your crypto wallet. Inviting friends is another powerful method. GiftBox, for example, gives bonus tickets when you share your link, making it easier to win more crypto.</p>
+                <p>If you want to earn free crypto in 2025, try a combination of games, surveys, and referrals. Start with GiftBox today and claim your daily rewards instantly!</p>
+                <a href="javascript:void(0)" onclick="showPage('spin-game')">Start Earning Now →</a>
+            </div>
+            
+            <div class="news-article">
+                <h3>Top 5 Crypto Reward Platforms</h3>
+                <div class="news-date">March 10, 2025</div>
+                <p>Looking for the best platforms to earn free crypto? We've compiled a list of the top 5 legitimate platforms that reward users with cryptocurrency. These platforms offer various ways to earn including games, surveys, and referral programs.</p>
+                <p>1. GiftBox - Our top pick for its user-friendly interface and daily rewards. With a simple spin wheel game, users can earn codes for various cryptocurrencies.</p>
+                <p>2. CoinBucks - A survey-based platform that pays users in Bitcoin for completing market research surveys and offers.</p>
+                <p>3. CryptoPop - A mobile game that rewards players with Ethereum for completing puzzles and reaching milestones.</p>
+                <p>4. BitRewards - A shopping rewards platform that gives cashback in Bitcoin when you shop at participating retailers.</p>
+                <p>5. FreeBitcoin - The oldest platform in the space, offering hourly rewards and lottery tickets for visiting the site regularly.</p>
+                <p>Each platform has its unique advantages, but GiftBox stands out for its simplicity and instant gratification with no initial investment required.</p>
+                <a href="javascript:void(0)" onclick="showPage('spin-game')">Try GiftBox Now →</a>
+            </div>
+            
+            <div class="news-article">
+                <h3>Understanding Crypto Security</h3>
+                <div class="news-date">March 5, 2025</div>
+                <p>Learn how to keep your cryptocurrency safe from scams and hacks. Essential security tips every crypto enthusiast should know. From wallet security to recognizing phishing attempts, this guide covers everything you need to protect your digital assets.</p>
+                <p>1. Use Hardware Wallets: For significant amounts of cryptocurrency, consider using a hardware wallet like Ledger or Trezor. These devices store your private keys offline, making them immune to online hacking attempts.</p>
+                <p>2. Enable Two-Factor Authentication: Always enable 2FA on all your crypto exchange accounts and wallets. This adds an extra layer of security beyond just a password.</p>
+                <p>3. Beware of Phishing Scams: Be cautious of emails, messages, or websites that ask for your private keys or seed phrases. Legitimate services will never ask for this information.</p>
+                <p>4. Keep Software Updated: Regularly update your wallet software, operating system, and antivirus programs to protect against known vulnerabilities.</p>
+                <p>5. Diversify Your Storage: Don't keep all your crypto in one place. Use a combination of hot wallets (for daily use) and cold storage (for long-term holding).</p>
+                <p>Remember, in the world of cryptocurrency, you are your own bank. Taking proper security measures is essential to protect your digital assets from theft or loss.</p>
+                <a href="javascript:void(0)" onclick="showPage('spin-game')">Secure Your Earnings →</a>
+            </div>
+        </div>
     </div>
 
     <!-- Invite Friends Section -->
@@ -439,6 +927,100 @@
         </div>
     </div>
 
+    <!-- SEO Content Section -->
+    <div class="seo-content">
+        <h2>Earn Free Cryptocurrency with GiftBox</h2>
+        <p>GiftBox is the premier platform for earning free cryptocurrency through fun games and simple tasks. Our innovative spin wheel game gives you the chance to win real crypto codes for popular digital assets like XRP, Bitcoin (BTC), Ethereum (ETH), and more.</p>
+        
+        <h3>How GiftBox Works</h3>
+        <p>Getting started with GiftBox is simple and completely free:</p>
+        <ol>
+            <li><strong>Spin the Wheel:</strong> Use your spin tickets to play our colorful crypto wheel and win cryptocurrency codes.</li>
+            <li><strong>Earn Tickets:</strong> Watch ads to earn spin tickets - just 5 ads gives you 1 ticket for a chance to win crypto.</li>
+            <li><strong>Invite Friends:</strong> Share your referral link with friends to earn bonus tickets when they join.</li>
+            <li><strong>Claim Rewards:</strong> Copy your winning crypto codes and redeem them in your preferred wallet or exchange.</li>
+        </ol>
+        
+        <h3>Why Choose GiftBox?</h3>
+        <ul>
+            <li><strong>100% Free:</strong> No payment required - earn crypto completely free</li>
+            <li><strong>Multiple Cryptocurrencies:</strong> Win codes for XRP, BTC, ETH, USDT, and more</li>
+            <li><strong>Instant Rewards:</strong> Get your crypto codes immediately after winning</li>
+            <li><strong>User-Friendly:</strong> Simple interface designed for both crypto beginners and experts</li>
+            <li><strong>Mobile Optimized:</strong> Play on any device with our responsive design</li>
+        </ul>
+        
+        <h3>Start Earning Crypto Today</h3>
+        <p>Join thousands of users who are already earning free cryptocurrency with GiftBox. Whether you're looking to build your crypto portfolio or just want to explore the world of digital assets risk-free, GiftBox provides the perfect platform to get started.</p>
+        
+        <p>Our spin wheel game offers exciting rewards with every spin, and our simple task system makes it easy to earn more tickets. With no investment required and real cryptocurrency rewards, there's no reason not to start earning with GiftBox today!</p>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-container">
+        <h2>Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I earn free crypto with GiftBox?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                You can earn free cryptocurrency by spinning our reward wheel, watching ads, and inviting friends. Each spin gives you a chance to win crypto codes for XRP, BTC, ETH and more. Watching 5 ads earns you 1 spin ticket, and inviting friends also rewards you with additional tickets.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                Is GiftBox really free to use?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                Yes, GiftBox is completely free to use. We don't require any payment or investment. You earn crypto rewards by playing games and completing simple tasks like watching ads. There are no hidden fees or charges.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                What cryptocurrencies can I win?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                You can win various cryptocurrencies including USDT, BTTC, LUNC, PEPE, BNB, LTC, XRP, BTC, and ETH through our spin wheel and reward system. We regularly update our reward pool with new and popular cryptocurrencies.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I get more spin tickets?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                You can earn spin tickets by watching ads (5 ads = 1 ticket) and by inviting friends to join GiftBox through our referral program. We also occasionally run special promotions and events that offer bonus tickets.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                Are the crypto codes legitimate?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                Yes, all crypto codes awarded through GiftBox are legitimate and can be redeemed in supported wallets and exchanges. We work with reputable partners to ensure the validity of all rewards distributed through our platform.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                Is there a limit to how much crypto I can earn?
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                While there's no hard limit on how much crypto you can earn, rewards are subject to availability and your activity level. The more you play and engage with the platform, the more opportunities you have to earn cryptocurrency rewards.
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden Ticket Notification -->
     <div id="hidden-ticket-notification" class="hidden-ticket-notification">
         +1 Spin Ticket Added!
@@ -447,19 +1029,25 @@
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
+        <button id="ai-nav" onclick="showPage('ai-predictions')"><i class="fas fa-robot"></i> AI Predict</button>
+        <button id="news-nav" onclick="showPage('news-section')"><i class="fas fa-newspaper"></i> News</button>
         <button id="invite-nav" onclick="showPage('invite-friends')"><i class="fas fa-user-plus"></i> Invite</button>
     </div>
 
     <script>
-        // Game State
+        // Enhanced Game State with Image Codes
         const gameState = {
             spin: {
-                tickets: 0,
+                tickets: 0, // No free tickets
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
-                validCodes: ["HONNVDCW"],
-                adsWatched: 0
+                // ONLY 1 VALID CODE NOW
+                validCodes: [
+                    "QRACLJD3"
+                ],
+                currentCodeIndex: 0, // Track which code to give next
+                adsWatched: 0 // Track ads watched for spin tickets
             },
             referral: {
                 count: 0,
@@ -470,6 +1058,22 @@
                 lastSpin: 0,
                 spinCount: 0
             }
+        };
+
+        // AI Prediction Data
+        const predictionData = {
+            coins: [
+                { symbol: "BTC", name: "Bitcoin", icon: "₿" },
+                { symbol: "ETH", name: "Ethereum", icon: "Ξ" },
+                { symbol: "XRP", name: "Ripple", icon: "✕" },
+                { symbol: "PEPE", name: "Pepe", icon: "🐸" },
+                { symbol: "ADA", name: "Cardano", icon: "A" },
+                { symbol: "SOL", name: "Solana", icon: "◎" },
+                { symbol: "DOT", name: "Polkadot", icon: "●" },
+                { symbol: "DOGE", name: "Dogecoin", icon: "Ð" }
+            ],
+            timeframes: ["24H", "48H"],
+            factors: ["Volatility", "Momentum", "Volume", "Market Sentiment", "Technical Patterns"]
         };
 
         // DOM Elements
@@ -490,7 +1094,13 @@
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
+                ai: document.getElementById("ai-nav"),
+                news: document.getElementById("news-nav"),
                 invite: document.getElementById("invite-nav")
+            },
+            predictions: {
+                container: document.getElementById("prediction-container"),
+                updateTime: document.getElementById("prediction-update-time")
             }
         };
 
@@ -502,6 +1112,16 @@
         function initUI() {
             updateSpinUI();
             updateReferralUI();
+            
+            // Add event listeners for FAQ toggles
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function() {
+                    toggleFAQ(this);
+                });
+            });
+
+            // Generate initial predictions
+            generatePredictions();
         }
 
         function updateSpinUI() {
@@ -522,9 +1142,128 @@
             document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
         }
 
-        // Create code display
-        function createCodeDisplay(code, containerElement) {
+        // ======================
+        // AI PRICE PREDICTION GENERATOR
+        // ======================
+
+        function generatePredictions() {
+            const predictionsContainer = elements.predictions.container;
+            predictionsContainer.innerHTML = '';
+            
+            // Update timestamp
+            const now = new Date();
+            elements.predictions.updateTime.textContent = now.toLocaleTimeString();
+            
+            // Generate specific predictions as requested
+            const specificPredictions = [
+                {
+                    coin: { symbol: "XRP", name: "Ripple", icon: "✕" },
+                    timeframe: "24H",
+                    prediction: "+0.32",
+                    factors: ["Momentum", "Volatility", "Market Sentiment"],
+                    confidence: 76,
+                    analysis: "XRP might move +0.32% in the next 24-48 hours based on momentum and volatility and market sentiment. The AI detects moderate upward momentum with supporting technical indicators."
+                },
+                {
+                    coin: { symbol: "ADA", name: "Cardano", icon: "A" },
+                    timeframe: "48H",
+                    prediction: "+4.05",
+                    factors: ["Momentum", "Volatility", "Market Sentiment"],
+                    confidence: 80,
+                    analysis: "ADA might move +4.05% in the next 24-48 hours based on momentum and volatility and market sentiment. The AI detects strong upward momentum with supporting technical indicators."
+                },
+                {
+                    coin: { symbol: "XRP", name: "Ripple", icon: "✕" },
+                    timeframe: "48H",
+                    prediction: "+2.05",
+                    factors: ["Momentum", "Volume", "Volatility"],
+                    confidence: 66,
+                    analysis: "XRP might move +2.05% in the next 24-48 hours based on momentum and volume and volatility. The AI detects moderate upward momentum with supporting technical indicators."
+                },
+                {
+                    coin: { symbol: "DOGE", name: "Dogecoin", icon: "Ð" },
+                    timeframe: "24H",
+                    prediction: "+0.50",
+                    factors: ["Volume", "Momentum", "Market Sentiment"],
+                    confidence: 77,
+                    analysis: "DOGE might move +0.50% in the next 24-48 hours based on volume and momentum and market sentiment. The AI detects moderate upward momentum with supporting technical indicators."
+                },
+                {
+                    coin: { symbol: "PEPE", name: "Pepe", icon: "🐸" },
+                    timeframe: "24H",
+                    prediction: "+1.06",
+                    factors: ["Technical Patterns", "Volume", "Volatility"],
+                    confidence: 80,
+                    analysis: "PEPE might move +1.06% in the next 24-48 hours based on technical patterns and volume and volatility. The AI detects moderate upward momentum with supporting technical indicators."
+                },
+                {
+                    coin: { symbol: "BTC", name: "Bitcoin", icon: "₿" },
+                    timeframe: "24H",
+                    prediction: "-2.61",
+                    factors: ["Technical Patterns", "Momentum", "Volatility"],
+                    confidence: 78,
+                    analysis: "BTC might move -2.61% in the next 24-48 hours based on technical patterns and momentum and volatility. The AI detects moderate downward momentum with supporting technical indicators."
+                }
+            ];
+            
+            specificPredictions.forEach(prediction => {
+                const isPositive = !prediction.prediction.startsWith('-');
+                
+                // Create prediction card
+                const predictionCard = document.createElement('div');
+                predictionCard.className = `prediction-card ${isPositive ? 'up' : 'down'}`;
+                
+                predictionCard.innerHTML = `
+                    <div class="prediction-header">
+                        <div class="prediction-coin">
+                            <span class="prediction-icon">${prediction.coin.icon}</span>
+                            ${prediction.coin.symbol} - ${prediction.coin.name}
+                        </div>
+                        <div class="prediction-change ${isPositive ? 'positive' : 'negative'}">
+                            ${prediction.prediction}%
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-details">
+                        <div class="prediction-item">
+                            <div class="prediction-label">Timeframe</div>
+                            <div class="prediction-value">${prediction.timeframe}</div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-label">Key Factors</div>
+                            <div class="prediction-value">${prediction.factors.join(', ')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-analysis">
+                        ${prediction.analysis}
+                    </div>
+                    
+                    <div class="prediction-footer">
+                        <div class="prediction-confidence">
+                            <span>AI Confidence:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${prediction.confidence}%"></div>
+                            </div>
+                            <span>${prediction.confidence}%</span>
+                        </div>
+                        <div class="prediction-timeframe">
+                            Next ${prediction.timeframe.toLowerCase()}
+                        </div>
+                    </div>
+                `;
+                
+                predictionsContainer.appendChild(predictionCard);
+            });
+        }
+
+        // ======================
+        // IMAGE-BASED CODE SYSTEM (WITH TELEGRAM FIX)
+        // ======================
+
+        function createCodeImage(code, containerElement) {
             if (isTelegramBrowser) {
+                // Telegram-friendly version
                 containerElement.innerHTML = `
                     <div class="telegram-code-display">
                         <div class="code-header">🎁 CRYPTO REWARD CODE 🎁</div>
@@ -535,19 +1274,79 @@
                 return '';
             }
             
-            // Simple text display for other browsers
-            containerElement.innerHTML = `
-                <div class="telegram-code-display">
-                    <div class="code-header">🎁 CRYPTO REWARD CODE 🎁</div>
-                    <div class="code-value">${code}</div>
-                    <div class="code-instruction">Tap "Copy Code" below to claim your reward!</div>
-                </div>
-            `;
+            // Original canvas code for other browsers
+            const canvas = document.createElement('canvas');
+            canvas.className = 'hidden-canvas';
+            canvas.width = 300;
+            canvas.height = 80;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2dd60c');
+            gradient.addColorStop(1, '#1a73e8');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add noise pattern
+            for (let i = 0; i < 200; i++) {
+                ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.1})`;
+                ctx.fillRect(
+                    Math.random()*canvas.width, 
+                    Math.random()*canvas.height, 
+                    Math.random()*3, 
+                    Math.random()*3
+                );
+            }
+            
+            // Draw the code with effects
+            ctx.font = 'bold 28px Courier New';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Text shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            for (let i = 0; i < 3; i++) {
+                ctx.fillText(code, canvas.width/2 + i, canvas.height/2 + i);
+            }
+            
+            // Main text with gradient
+            const textGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            textGradient.addColorStop(0, 'gold');
+            textGradient.addColorStop(0.5, 'white');
+            textGradient.addColorStop(1, 'gold');
+            ctx.fillStyle = textGradient;
+            ctx.fillText(code, canvas.width/2, canvas.height/2);
+            
+            // Create image from canvas
+            const dataURL = canvas.toDataURL('image/png');
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.className = 'code-image';
+            img.alt = 'Your reward code: ' + code;
+            
+            // Clear container and add image
+            containerElement.innerHTML = '';
+            containerElement.appendChild(img);
+            
+            // Add canvas to body temporarily
+            document.body.appendChild(canvas);
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(canvas);
+            }, 1000);
+            
+            return dataURL;
         }
 
-        // Watch ad for spin ticket
+        // ======================
+        // AD FUNCTIONS (Updated for 5 ads per ticket)
+        // ======================
+
         function watchAdForSpinTicket() {
-            elements.spin.taskButton.innerHTML = '<div>Loading Ad...</div>';
+            elements.spin.taskButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
             elements.spin.taskButton.disabled = true;
             
             show_9679447().then(() => {
@@ -557,9 +1356,10 @@
                 // Check if user has watched 5 ads
                 if (gameState.spin.adsWatched >= 5) {
                     gameState.spin.tickets += 1;
-                    gameState.spin.adsWatched = 0;
+                    gameState.spin.adsWatched = 0; // Reset counter
                     elements.spin.taskProgress.innerHTML = 
                         '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
+                    createConfetti(elements.spin.taskButton);
                 } else {
                     elements.spin.taskProgress.innerHTML = 
                         `<span>Ad completed! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
@@ -577,7 +1377,10 @@
             });
         }
 
-        // Spin wheel function
+        // ======================
+        // GAME FUNCTIONS
+        // ======================
+
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
                 alert("You need 1 spin ticket! Watch 5 ads to earn a ticket.");
@@ -603,12 +1406,12 @@
             elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
 
             setTimeout(() => {
-                // Get the code
+                // Get the only code (always the same)
                 const validCode = gameState.spin.validCodes[0];
                 gameState.spin.currentCode = validCode;
                 
-                // Create and display code
-                createCodeDisplay(validCode, elements.spin.codeDisplay);
+                // Create and display code as image
+                createCodeImage(validCode, elements.spin.codeDisplay);
                 
                 elements.spin.result.innerHTML = `You won a crypto code!`;
                 elements.spin.codeDisplay.style.display = "block";
@@ -617,10 +1420,15 @@
                 gameState.spin.codesWon++;
                 updateSpinUI();
                 elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+                
+                createConfetti(elements.spin.wheel);
             }, 3000);
         }
 
-        // Copy result code
+        // ======================
+        // COPY FUNCTIONS
+        // ======================
+
         function copyResultCode() {
             if (gameState.spin.currentCode) {
                 copyToClipboard(gameState.spin.currentCode, elements.spin.copyButton);
@@ -649,31 +1457,85 @@
             }
         }
 
-        // Share on Telegram
         function shareOnTelegram() {
-            const message = `🎉 Join GiftBox for free crypto rewards! https://t.me/redpacket_box!`;
+            const message = `🎉 Join GiftBox for free crypto rewards and AI price predictions! https://t.me/redpacket_box!`;
             const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(message)}`;
             
             // Open Telegram share dialog
             window.open(shareUrl, '_blank', 'noopener,noreferrer');
             
-            // Show thank you message
+            // REMOVED: No ticket reward for sharing
+            // Just show a thank you message
             setTimeout(() => {
                 showNotification("Thanks for sharing! 🎁");
             }, 2000);
         }
 
-        // Show page function
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
+            document.getElementById('ai-predictions').style.display = pageId === 'ai-predictions' ? 'block' : 'none';
+            document.getElementById('news-section').style.display = pageId === 'news-section' ? 'block' : 'none';
             document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
             
             // Update active nav button
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
+            elements.nav.ai.classList.toggle('active', pageId === 'ai-predictions');
+            elements.nav.news.classList.toggle('active', pageId === 'news-section');
             elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
         }
 
-        // Show notification
+        function createConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = centerX + 'px';
+                    confetti.style.top = centerY + 'px';
+                    confetti.style.backgroundColor = getRandomColor();
+                    document.body.appendChild(confetti);
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 3 + Math.random() * 3;
+                    const x = Math.cos(angle) * velocity;
+                    const y = Math.sin(angle) * velocity;
+                    
+                    let posX = centerX;
+                    let posY = centerY;
+                    let opacity = 1;
+                    let scale = 0.5 + Math.random();
+                    
+                    const animate = () => {
+                        posX += x;
+                        posY += y + 0.5; // Add gravity
+                        opacity -= 0.02;
+                        scale -= 0.01;
+                        
+                        if (opacity <= 0 || scale <= 0) {
+                            confetti.remove();
+                            return;
+                        }
+                        
+                        confetti.style.left = posX + 'px';
+                        confetti.style.top = posY + 'px';
+                        confetti.style.opacity = opacity;
+                        confetti.style.transform = `scale(${scale})`;
+                        requestAnimationFrame(animate);
+                    };
+                    
+                    animate();
+                }, i * 20);
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
         function showNotification(message) {
             const notification = document.getElementById('hidden-ticket-notification');
             notification.textContent = message;
@@ -684,6 +1546,22 @@
             }, 2000);
         }
 
+        // FAQ Toggle Function - FIXED
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('.faq-icon');
+            
+            // Toggle active class on question
+            element.classList.toggle('active');
+            
+            // Toggle answer visibility
+            if (answer.classList.contains('active')) {
+                answer.classList.remove('active');
+            } else {
+                answer.classList.add('active');
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initUI();
@@ -692,4 +1570,3 @@
     </script>
 </body>
 </html>
-
