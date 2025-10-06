@@ -116,6 +116,8 @@
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -123,8 +125,6 @@
             text-align: center;
             background-color: var(--dark-bg);
             color: var(--text-color);
-            margin: 0;
-            padding: 0;
             padding-bottom: 70px;
             min-height: 100vh;
             line-height: 1.6;
@@ -757,6 +757,37 @@
             transform: rotate(180deg);
         }
 
+        /* Stats container */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Confetti styles */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -1035,19 +1066,15 @@
     </div>
 
     <script>
-        // Enhanced Game State with Image Codes
+        // Game State
         const gameState = {
             spin: {
-                tickets: 0, // No free tickets
+                tickets: 0,
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
-                // ONLY 1 VALID CODE NOW
-                validCodes: [
-                    "QRACLJD3"
-                ],
-                currentCodeIndex: 0, // Track which code to give next
-                adsWatched: 0 // Track ads watched for spin tickets
+                validCodes: ["QRACLJD3"],
+                adsWatched: 0
             },
             referral: {
                 count: 0,
@@ -1060,23 +1087,7 @@
             }
         };
 
-        // AI Prediction Data
-        const predictionData = {
-            coins: [
-                { symbol: "BTC", name: "Bitcoin", icon: "₿" },
-                { symbol: "ETH", name: "Ethereum", icon: "Ξ" },
-                { symbol: "XRP", name: "Ripple", icon: "✕" },
-                { symbol: "PEPE", name: "Pepe", icon: "🐸" },
-                { symbol: "ADA", name: "Cardano", icon: "A" },
-                { symbol: "SOL", name: "Solana", icon: "◎" },
-                { symbol: "DOT", name: "Polkadot", icon: "●" },
-                { symbol: "DOGE", name: "Dogecoin", icon: "Ð" }
-            ],
-            timeframes: ["24H", "48H"],
-            factors: ["Volatility", "Momentum", "Volume", "Market Sentiment", "Technical Patterns"]
-        };
-
-        // DOM Elements
+        // DOM Elements Cache
         const elements = {
             spin: {
                 tickets: document.getElementById("spin-tickets"),
@@ -1206,6 +1217,9 @@
                 }
             ];
             
+            // Use DocumentFragment for better performance
+            const fragment = document.createDocumentFragment();
+            
             specificPredictions.forEach(prediction => {
                 const isPositive = !prediction.prediction.startsWith('-');
                 
@@ -1253,8 +1267,10 @@
                     </div>
                 `;
                 
-                predictionsContainer.appendChild(predictionCard);
+                fragment.appendChild(predictionCard);
             });
+            
+            predictionsContainer.appendChild(fragment);
         }
 
         // ======================
@@ -1489,46 +1505,54 @@
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = centerX + 'px';
-                    confetti.style.top = centerY + 'px';
-                    confetti.style.backgroundColor = getRandomColor();
-                    document.body.appendChild(confetti);
+            // Use requestAnimationFrame for smoother animation
+            let confettiCount = 0;
+            
+            function createPiece() {
+                if (confettiCount >= 50) return;
+                
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = centerX + 'px';
+                confetti.style.top = centerY + 'px';
+                confetti.style.backgroundColor = getRandomColor();
+                document.body.appendChild(confetti);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 3 + Math.random() * 3;
+                const x = Math.cos(angle) * velocity;
+                const y = Math.sin(angle) * velocity;
+                
+                let posX = centerX;
+                let posY = centerY;
+                let opacity = 1;
+                let scale = 0.5 + Math.random();
+                
+                const animate = () => {
+                    posX += x;
+                    posY += y + 0.5; // Add gravity
+                    opacity -= 0.02;
+                    scale -= 0.01;
                     
-                    const angle = Math.random() * Math.PI * 2;
-                    const velocity = 3 + Math.random() * 3;
-                    const x = Math.cos(angle) * velocity;
-                    const y = Math.sin(angle) * velocity;
+                    if (opacity <= 0 || scale <= 0) {
+                        confetti.remove();
+                        return;
+                    }
                     
-                    let posX = centerX;
-                    let posY = centerY;
-                    let opacity = 1;
-                    let scale = 0.5 + Math.random();
-                    
-                    const animate = () => {
-                        posX += x;
-                        posY += y + 0.5; // Add gravity
-                        opacity -= 0.02;
-                        scale -= 0.01;
-                        
-                        if (opacity <= 0 || scale <= 0) {
-                            confetti.remove();
-                            return;
-                        }
-                        
-                        confetti.style.left = posX + 'px';
-                        confetti.style.top = posY + 'px';
-                        confetti.style.opacity = opacity;
-                        confetti.style.transform = `scale(${scale})`;
-                        requestAnimationFrame(animate);
-                    };
-                    
-                    animate();
-                }, i * 20);
+                    confetti.style.left = posX + 'px';
+                    confetti.style.top = posY + 'px';
+                    confetti.style.opacity = opacity;
+                    confetti.style.transform = `scale(${scale})`;
+                    requestAnimationFrame(animate);
+                };
+                
+                animate();
+                
+                confettiCount++;
+                setTimeout(createPiece, 20);
             }
+            
+            createPiece();
         }
 
         function getRandomColor() {
