@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url>
-      <loc>https://www.spin2earncrypto.lat/</loc>
+      <loc>https://www.spin2earncrypto.lat/index.html</loc>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
    </url>
    <url>
-      <loc>https://www.spin2earncrypto.lat/game</loc>
+      <loc>https://www.spin2earncrypto.lat/game.html</loc>
       <changefreq>daily</changefreq>
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>https://www.spin2earncrypto.lat/about</loc>
+      <loc>https://www.spin2earncrypto.lat/about.html</loc>
       <changefreq>weekly</changefreq>
       <priority>0.5</priority>
    </url>
    <url>
-      <loc>https://www.spin2earncrypto.lat/contact</loc>
+      <loc>https://www.spin2earncrypto.lat/contact.html</loc>
       <changefreq>monthly</changefreq>
       <priority>0.4</priority>
    </url>
    <url>
-      <loc>https://www.spin2earncrypto.lat/faq</loc>
+      <loc>https://www.spin2earncrypto.lat/faq.html</loc>
       <changefreq>weekly</changefreq>
       <priority>0.6</priority>
+   </url>
+   <url>
+      <loc>https://www.spin2earncrypto.lat/privacy.html</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.3</priority>
+   </url>
+   <url>
+      <loc>https://www.spin2earncrypto.lat/terms.html</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.3</priority>
    </url>
 </urlset>
