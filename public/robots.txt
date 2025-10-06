@@ -1,0 +1,13 @@
+# robots.txt for https://www.spin2earncrypto.lat/
+
+# Allow all crawlers full access
+User-agent: *
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+
+# Sitemap location
+Sitemap: https://www.spin2earncrypto.lat/sitemap.xml
+
+# Optional: Crawl-delay to reduce server load (in seconds)
+# Crawl-delay: 5
