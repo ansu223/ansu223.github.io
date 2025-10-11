@@ -1518,39 +1518,29 @@
         }
 
         // ======================
-        // AD FUNCTIONS (Updated for 5 ads per ticket)
+        // AD FUNCTIONS (UPDATED WITH DIRECT LINK)
         // ======================
 
         function watchAdForSpinTicket() {
-            elements.spin.taskButton.innerHTML = '<div class="loading-spinner"></div> Loading Ad...';
-            elements.spin.taskButton.disabled = true;
+            // Open the direct ad link in a new tab
+            window.open('https://otieu.com/4/9695530', '_blank');
             
-            show_9679447().then(() => {
-                // Ad watched successfully
-                gameState.spin.adsWatched++;
-                
-                // Check if user has watched 5 ads
-                if (gameState.spin.adsWatched >= 5) {
-                    gameState.spin.tickets += 1;
-                    gameState.spin.adsWatched = 0; // Reset counter
-                    elements.spin.taskProgress.innerHTML = 
-                        '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
-                    createConfetti(elements.spin.taskButton);
-                } else {
-                    elements.spin.taskProgress.innerHTML = 
-                        `<span>Ad completed! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
-                }
-                
-                updateSpinUI();
-                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
-                elements.spin.taskButton.disabled = false;
-            }).catch((error) => {
-                // Ad failed to load or was skipped
-                console.error('Ad error:', error);
-                elements.spin.taskProgress.innerHTML = 'Ad failed to load. Please try again.';
-                elements.spin.taskButton.innerHTML = '<i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">' + gameState.spin.adsWatched + '</span>/5)';
-                elements.spin.taskButton.disabled = false;
-            });
+            // Update progress
+            gameState.spin.adsWatched++;
+            
+            // Check if user has watched 5 ads
+            if (gameState.spin.adsWatched >= 5) {
+                gameState.spin.tickets += 1;
+                gameState.spin.adsWatched = 0; // Reset counter
+                elements.spin.taskProgress.innerHTML = 
+                    '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
+                createConfetti(elements.spin.taskButton);
+            } else {
+                elements.spin.taskProgress.innerHTML = 
+                    `<span>Ad opened! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
+            }
+            
+            updateSpinUI();
         }
 
         // ======================
