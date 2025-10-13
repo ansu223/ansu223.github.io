@@ -4,8 +4,12 @@
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="favicon.png">
     <meta name="google-site-verification" content="DFaKQIDQ7Wul82pnfmvGfGb8GWwjX-0tthwMeqM" />
+    
+    <!-- 🪝 AD SCRIPTS AT THE TOP FOR FAST LOADING -->
     <script src="https://fpyf8.com/88/tag.min.js" data-zone="176111" async data-cfasync="false"></script>
     <script src="https://pertawee.net/act/files/tag.min.js?z=9980074" data-cfasync="false" async></script>
+    <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -121,8 +125,6 @@
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js?57"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Ad SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
     
     <style>
         :root {
@@ -1079,6 +1081,11 @@
         <a href="/terms.html" style="color:#ffd700; margin:0 15px; text-decoration:none; font-weight:bold;">Terms</a>
     </nav>
 
+    <!-- 📊 AD CONTAINER PLACED ABOVE CONTENT FOR HIGHER CPM -->
+    <div id="ad-container-top" style="margin: 10px auto; text-align: center; max-width: 728px; min-height: 90px; background: transparent;">
+        <!-- Ad content will be loaded here by the ad scripts -->
+    </div>
+
     <!-- Spin Game -->
     <div id="spin-game" class="game-container">
         <h1>🎡 GiftBox - Spin & Win Crypto 🎡</h1>
@@ -1123,6 +1130,11 @@
         
         <button class="task-button ad-button" id="spin-task-button" onclick="watchAdForSpinTicket()">
             <i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">0</span>/5)
+        </button>
+
+        <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
+        <button class="task-button telegram-button" onclick="window.open('https://t.me/redpacket_box', '_blank')" style="margin-top: 15px;">
+            <i class="fab fa-telegram"></i> Join Telegram Group
         </button>
         
         <p id="spin-task-progress"></p>
@@ -1564,6 +1576,9 @@
             
             // Initial calculation for earnings
             calculateEarnings();
+
+            // 🛡️ REMOVED AD FALLBACK COMPLETELY - NO MESSAGES, NO RELOADS
+            // Ads will either load or not, no interference
         }
 
         function updateSpinUI() {
