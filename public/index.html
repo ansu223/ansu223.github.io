@@ -7,7 +7,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-BPPDVDQLLF');
     </script>
     <link rel="icon" href="favicon.png" type="image/png">
@@ -690,8 +689,8 @@
         }
 
         .confidence-bar {
-            width = 100px;
-            height = 6px;
+            width: 100px;
+            height: 6px;
             background-color: #333;
             border-radius: 3px;
             overflow: hidden;
@@ -1022,6 +1021,65 @@
             margin: 0;
         }
 
+        /* Blog Section */
+        .blog-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .blog-card {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .blog-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .blog-card p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .blog-card a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .blog-card a:hover {
+            text-decoration: underline;
+        }
+
+        .blog-date {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -1043,7 +1101,7 @@
                 font-size: 15px;
             }
 
-            .seo-content, .faq-container, .ai-section, .trust-section, .testimonials-section, .legitimacy-section {
+            .seo-content, .faq-container, .ai-section, .trust-section, .testimonials-section, .legitimacy-section, .blog-section {
                 margin: 15px;
                 padding: 20px;
             }
@@ -1067,7 +1125,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .trust-grid, .testimonial-grid, .legitimacy-points {
+            .trust-grid, .testimonial-grid, .legitimacy-points, .blog-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1241,6 +1299,62 @@
         <div style="text-align: center; margin-top: 25px;">
             <button class="spin-button" onclick="showPage('spin-game')">
                 <i class="fas fa-play-circle"></i> Start Earning Risk-Free
+            </button>
+        </div>
+    </div>
+
+    <!-- Blog Section -->
+    <div id="blog-section" class="blog-section" style="display: none;">
+        <h2>📝 Crypto Earning Blog & Guides</h2>
+        <p>Learn how to maximize your crypto earnings with our expert guides and tutorials.</p>
+
+        <div class="blog-grid">
+            <div class="blog-card">
+                <h3>How to Earn Free Crypto Without Investing</h3>
+                <div class="blog-date">March 20, 2025</div>
+                <p>Complete guide to earning cryptocurrency without any financial investment. Learn proven methods and strategies.</p>
+                <a href="/blog-1.html">Read More →</a>
+            </div>
+            
+            <div class="blog-card">
+                <h3>Top 10 Legit Spin-to-Earn Crypto Games</h3>
+                <div class="blog-date">March 18, 2025</div>
+                <p>Discover the best legitimate spin games that actually pay real cryptocurrency rewards.</p>
+                <a href="/blog-2.html">Read More →</a>
+            </div>
+            
+            <div class="blog-card">
+                <h3>Step-by-Step: How Spin2EarnCrypto Works</h3>
+                <div class="blog-date">March 15, 2025</div>
+                <p>Complete walkthrough of our platform from ad watching to crypto code redemption.</p>
+                <a href="/blog-3.html">Read More →</a>
+            </div>
+            
+            <div class="blog-card">
+                <h3>Watch Ads, Earn Crypto – The Truth</h3>
+                <div class="blog-date">March 12, 2025</div>
+                <p>Understand how watching ads can earn you real cryptocurrency with our transparent model.</p>
+                <a href="/blog-4.html">Read More →</a>
+            </div>
+            
+            <div class="blog-card">
+                <h3>5 Myths About Free Crypto – Busted</h3>
+                <div class="blog-date">March 10, 2025</div>
+                <p>Debunking common misconceptions about earning free cryptocurrency online.</p>
+                <a href="/blog-5.html">Read More →</a>
+            </div>
+            
+            <div class="blog-card">
+                <h3>The Best Referral Programs to Earn Crypto</h3>
+                <div class="blog-date">March 8, 2025</div>
+                <p>Maximize your earnings through crypto referral programs and friend invitations.</p>
+                <a href="/blog-6.html">Read More →</a>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 25px;">
+            <button class="spin-button" onclick="loadMoreBlogs()">
+                <i class="fas fa-book"></i> Load More Articles
             </button>
         </div>
     </div>
@@ -1485,6 +1599,7 @@
     <div class="navbar">
         <button id="spin-nav" onclick="showPage('spin-game')" class="active"><i class="fas fa-sync-alt"></i> Spin</button>
         <button id="ai-nav" onclick="showPage('ai-predictions')"><i class="fas fa-robot"></i> AI Predict</button>
+        <button id="blog-nav" onclick="showPage('blog-section')"><i class="fas fa-blog"></i> Blog</button>
         <button id="news-nav" onclick="showPage('news-section')"><i class="fas fa-newspaper"></i> News</button>
         <button id="invite-nav" onclick="showPage('invite-friends')"><i class="fas fa-user-plus"></i> Invite</button>
     </div>
@@ -1550,6 +1665,7 @@
             nav: {
                 spin: document.getElementById("spin-nav"),
                 ai: document.getElementById("ai-nav"),
+                blog: document.getElementById("blog-nav"),
                 news: document.getElementById("news-nav"),
                 invite: document.getElementById("invite-nav")
             },
@@ -1945,12 +2061,14 @@
         function showPage(pageId) {
             document.getElementById('spin-game').style.display = pageId === 'spin-game' ? 'block' : 'none';
             document.getElementById('ai-predictions').style.display = pageId === 'ai-predictions' ? 'block' : 'none';
+            document.getElementById('blog-section').style.display = pageId === 'blog-section' ? 'block' : 'none';
             document.getElementById('news-section').style.display = pageId === 'news-section' ? 'block' : 'none';
             document.getElementById('invite-friends').style.display = pageId === 'invite-friends' ? 'block' : 'none';
             
             // Update active nav button
             elements.nav.spin.classList.toggle('active', pageId === 'spin-game');
             elements.nav.ai.classList.toggle('active', pageId === 'ai-predictions');
+            elements.nav.blog.classList.toggle('active', pageId === 'blog-section');
             elements.nav.news.classList.toggle('active', pageId === 'news-section');
             elements.nav.invite.classList.toggle('active', pageId === 'invite-friends');
         }
@@ -2031,6 +2149,46 @@
             } else {
                 answer.classList.add('active');
             }
+        }
+
+        // Blog Load More Function
+        function loadMoreBlogs() {
+            const blogGrid = document.querySelector('.blog-grid');
+            const newBlogs = [
+                {
+                    title: "How to Redeem Your Crypto Codes Safely",
+                    date: "March 7, 2025",
+                    description: "Step-by-step guide to safely claiming and redeeming your cryptocurrency reward codes.",
+                    link: "/blog-7.html"
+                },
+                {
+                    title: "BTTC Explained – Why It's the Token of the Future",
+                    date: "March 5, 2025",
+                    description: "Complete guide to BTTC (BitTorrent Token) and why it's becoming a popular reward token.",
+                    link: "/blog-8.html"
+                },
+                {
+                    title: "How to Avoid Crypto Scams While Earning Online",
+                    date: "March 3, 2025",
+                    description: "Essential security tips to protect yourself from scams while earning free cryptocurrency.",
+                    link: "/blog-9.html"
+                }
+            ];
+            
+            newBlogs.forEach(blog => {
+                const blogCard = document.createElement('div');
+                blogCard.className = 'blog-card';
+                blogCard.innerHTML = `
+                    <h3>${blog.title}</h3>
+                    <div class="blog-date">${blog.date}</div>
+                    <p>${blog.description}</p>
+                    <a href="${blog.link}">Read More →</a>
+                `;
+                blogGrid.appendChild(blogCard);
+            });
+            
+            // Hide the load more button after loading
+            document.querySelector('.blog-section .spin-button').style.display = 'none';
         }
 
         // Initialize
