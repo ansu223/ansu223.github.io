@@ -4,7 +4,7 @@
    <!-- Homepage -->
    <url>
       <loc>https://spin2earncrypto.lat/</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
    </url>
@@ -12,43 +12,38 @@
    <!-- Main Pages -->
    <url>
       <loc>https://spin2earncrypto.lat/game.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>daily</changefreq>
       <priority>0.8</priority>
    </url>
-   <url>
-      <loc>https://spin2earncrypto.lat/blog.html</loc>
-      <lastmod>2025-10-09</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.7</priority>
-   </url>
+   <!-- REMOVED blog.html entry - file doesn't exist -->
    <url>
       <loc>https://spin2earncrypto.lat/about.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.5</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/contact.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.4</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/faq.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/privacy.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.3</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/terms.html</loc>
-      <lastmod>2025-10-09</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.3</priority>
    </url>
@@ -56,121 +51,121 @@
    <!-- Blog Articles 1-20 -->
    <url>
       <loc>https://spin2earncrypto.lat/blog-1.html</loc>
-      <lastmod>2025-03-20</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-2.html</loc>
-      <lastmod>2025-03-18</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-3.html</loc>
-      <lastmod>2025-03-15</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-4.html</loc>
-      <lastmod>2025-03-12</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-5.html</loc>
-      <lastmod>2025-03-10</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-6.html</loc>
-      <lastmod>2025-03-08</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-7.html</loc>
-      <lastmod>2025-03-07</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-8.html</loc>
-      <lastmod>2025-03-05</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-9.html</loc>
-      <lastmod>2025-03-03</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-10.html</loc>
-      <lastmod>2025-03-01</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-11.html</loc>
-      <lastmod>2025-02-28</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-12.html</loc>
-      <lastmod>2025-02-25</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-13.html</loc>
-      <lastmod>2025-02-22</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-14.html</loc>
-      <lastmod>2025-02-20</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-15.html</loc>
-      <lastmod>2025-02-18</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-16.html</loc>
-      <lastmod>2025-02-15</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-17.html</loc>
-      <lastmod>2025-02-12</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-18.html</loc>
-      <lastmod>2025-02-10</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-19.html</loc>
-      <lastmod>2025-02-08</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
    <url>
       <loc>https://spin2earncrypto.lat/blog-20.html</loc>
-      <lastmod>2025-02-05</lastmod>
+      <lastmod>2025-11-19</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.6</priority>
    </url>
