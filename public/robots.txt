@@ -1,9 +1,24 @@
-# robots.txt for https://spin2earncrypto.lat/
-
-User-agent: *
-Disallow: /admin/
-Disallow: /private/
-Disallow: /temp/
-
-# Sitemap location
-Sitemap: https://spin2earncrypto.lat/sitemap.xml
+{
+  "redirects": [
+    {
+      "source": "/blog.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "http://www.spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*",
+      "permanent": true
+    },
+    {
+      "source": "http://spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*", 
+      "permanent": true
+    },
+    {
+      "source": "https://www.spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*",
+      "permanent": true
+    }
+  ]
+}
