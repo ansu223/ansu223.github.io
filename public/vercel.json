@@ -1,11 +1,24 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "api/sitemap.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/sitemap.xml", "dest": "/api/sitemap" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "redirects": [
+    {
+      "source": "/blog.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "http://www.spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*",
+      "permanent": true
+    },
+    {
+      "source": "http://spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*", 
+      "permanent": true
+    },
+    {
+      "source": "https://www.spin2earncrypto.lat/:path*",
+      "destination": "https://spin2earncrypto.lat/:path*",
+      "permanent": true
+    }
   ]
 }
