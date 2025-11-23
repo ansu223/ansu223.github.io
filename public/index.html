@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,6 +151,7 @@
             --button-hover: #555555;
             --telegram-color: #0088cc;
             --ads-color: #FF5722;
+            --disabled-color: #777777;
         }
 
         * {
@@ -404,7 +404,7 @@
         }
 
         .spin-button, .cast-button {
-            background-color: var(--primary-color);
+            background-color: var(--disabled-color);
             color: #000;
             border: none;
             padding: 12px 24px;
@@ -417,14 +417,18 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .spin-button:hover, .cast-button:hover {
+        .spin-button.enabled, .cast-button.enabled {
+            background-color: var(--primary-color);
+        }
+
+        .spin-button:hover.enabled, .cast-button:hover.enabled {
             background-color: #26c20a;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
         .spin-button:disabled, .cast-button:disabled {
-            background-color: #555;
+            background-color: var(--disabled-color);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -1869,7 +1873,15 @@
             elements.spin.tickets.textContent = gameState.spin.tickets;
             elements.spin.totalSpins.textContent = gameState.spin.totalSpins;
             elements.spin.codesWon.textContent = gameState.spin.codesWon;
-            elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+            
+            // Update spin button state based on tickets
+            if (gameState.spin.tickets < 1) {
+                elements.spin.spinBtn.disabled = true;
+                elements.spin.spinBtn.classList.remove('enabled');
+            } else {
+                elements.spin.spinBtn.disabled = false;
+                elements.spin.spinBtn.classList.add('enabled');
+            }
             
             // Update progress bar
             const progressPercentage = (gameState.spin.adsVisited / 5) * 100;
@@ -2152,6 +2164,7 @@
             
             // Disable spin button during animation
             elements.spin.spinBtn.disabled = true;
+            elements.spin.spinBtn.classList.remove('enabled');
             
             const degrees = Math.floor(Math.random() * 3600) + 1800;
             elements.spin.wheel.style.transform = `rotate(${degrees}deg)`;
@@ -2170,7 +2183,12 @@
                 
                 gameState.spin.codesWon++;
                 updateSpinUI();
-                elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
+                
+                // Re-enable spin button if there are tickets
+                if (gameState.spin.tickets > 0) {
+                    elements.spin.spinBtn.disabled = false;
+                    elements.spin.spinBtn.classList.add('enabled');
+                }
                 
                 createConfetti(elements.spin.wheel);
             }, 3000);
