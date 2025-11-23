@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +97,7 @@
             "name": "How do I get more spin tickets?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You can earn spin tickets by watching ads (5 ads = 1 ticket) and by inviting friends to join GiftBox through our referral program."
+                "text": "You can earn spin tickets by visiting ad links (5 visits = 1 ticket) and by inviting friends to join GiftBox through our referral program."
             }
         }]
     }
@@ -228,6 +229,115 @@
 
         .ai-section h2, .ai-section h3 {
             color: var(--ai-color);
+        }
+
+        /* Binance Logo Styles */
+        .binance-logo {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            object-fit: contain;
+            filter: brightness(0) invert(1); /* Makes the logo white */
+        }
+
+        .title-center h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Updated Bonus Banner */
+        .bonus-banner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 2px solid gold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .bonus-code {
+            color: #FFD700;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            background-color: rgba(255, 215, 0, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+
+        .bonus-code:hover {
+            background-color: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .bonus-code:active {
+            transform: scale(0.95);
+        }
+
+        .bonus-code.copied {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.5);
+            color: #4CAF50;
+        }
+
+        .copy-tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .bonus-code:hover .copy-tooltip {
+            opacity: 1;
+        }
+
+        /* Adsterra Banner Styles */
+        .adsterra-banner {
+            margin: 15px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .adsterra-banner img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .adsterra-banner img:hover {
+            transform: scale(1.02);
+        }
+
+        .adsterra-banner a {
+            display: inline-block;
+            text-decoration: none;
+            width: 100%;
         }
 
         .wheel-container {
@@ -1129,6 +1239,17 @@
             .trust-grid, .testimonial-grid, .legitimacy-points, .blog-grid {
                 grid-template-columns: 1fr;
             }
+
+            .binance-logo {
+                width: 20px;
+                height: 20px;
+            }
+
+            .bonus-banner {
+                font-size: 14px;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -1152,26 +1273,30 @@
 
     <!-- Spin Game -->
     <div id="spin-game" class="game-container">
-        <h1>🎡 GiftBox - Spin & Win Crypto 🎡</h1>
-
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-value" id="spin-tickets">0</div>
-                <div class="stat-label">Spin Tickets</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="total-spins">0</div>
-                <div class="stat-label">Total Spins</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="codes-won">0</div>
-                <div class="stat-label">Codes Won</div>
-            </div>
+        <!-- Updated Title with Binance Logo -->
+        <div class="title-center">
+            <h1><img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" alt="Binance" class="binance-logo"> GiftBox - Spin & Win Crypto <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" alt="Binance" class="binance-logo"></h1>
         </div>
 
-        <div class="spin-notice">🔥 Watch 5 ads to earn 1 spin ticket! 🔥</div>
+        <!-- Bonus Banner with Click-to-Copy Code -->
+        <div class="bonus-banner">
+            <span>Red Packet Code November:</span>
+            <span class="bonus-code" onclick="copyBonusCode(this)" data-code="BPQ58M7V3L">
+                BPQ58M7V3L 🎁
+                <span class="copy-tooltip">Click to copy</span>
+            </span>
+        </div>
+
+        <!-- Adsterra Banner -->
+        <div class="adsterra-banner">
+            <a href="https://beta.publishers.adsterra.com/referral/GFz7CUfuSB" rel="nofollow" target="_blank">
+                <img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/gif/720x90_adsterra_reff.gif" />
+            </a>
+        </div>
+
+                <div class="spin-notice">🔥 Visit 5 ad links to earn 1 spin ticket! 🔥</div>
         
-        <!-- Progress bar for spin ads -->
+        <!-- Progress bar for ad visits -->
         <div class="progress-container">
             <div id="spin-progress-bar" class="progress-bar" style="width: 0%">0/5</div>
         </div>
@@ -1192,8 +1317,9 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <button class="task-button ad-button" id="spin-task-button" onclick="watchAdForSpinTicket()">
-            <i class="fas fa-ad"></i> Watch Ad (Progress: <span id="spin-ad-count">0</span>/5)
+        <!-- Updated Ad Visit Button -->
+        <button class="task-button ad-button" id="spin-task-button" onclick="visitAdForSpinTicket()">
+            <i class="fas fa-ad"></i> Visit Ad Link (Progress: <span id="spin-ad-count">0</span>/5)
         </button>
 
         <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
@@ -1333,9 +1459,9 @@
             </div>
             
             <div class="blog-card">
-                <h3>Watch Ads, Earn Crypto – The Truth</h3>
+                <h3>Visit Ads, Earn Crypto – The Truth</h3>
                 <div class="blog-date">March 12, 2025</div>
-                <p>Understand how watching ads can earn you real cryptocurrency with our transparent model.</p>
+                <p>Understand how visiting ad links can earn you real cryptocurrency with our transparent model.</p>
                 <a href="/blog-4.html">Read More →</a>
             </div>
             
@@ -1389,7 +1515,7 @@
                 <h3>How to Earn Free Crypto in 2025</h3>
                 <div class="news-date">March 15, 2025</div>
                 <p>In 2025, earning free cryptocurrency has become easier than ever. From play-to-earn games to reward apps, you can now collect crypto without investing money. One of the most popular ways is through spin & win games. Platforms like GiftBox allow players to spin a wheel and win real crypto codes daily. Each spin gives you a chance to claim XRP, BTC, ETH, and more.</p>
-                <p>Many platforms reward users with crypto for simple actions: watching ads, filling surveys, or downloading apps. This is a risk-free way to start building your crypto wallet. Inviting friends is another powerful method. GiftBox, for example, gives bonus tickets when you share your link, making it easier to win more crypto.</p>
+                <p>Many platforms reward users with crypto for simple actions: visiting ad links, filling surveys, or downloading apps. This is a risk-free way to start building your crypto wallet. Inviting friends is another powerful method. GiftBox, for example, gives bonus tickets when you share your link, making it easier to win more crypto.</p>
                 <p>If you want to earn free crypto in 2025, try a combination of games, surveys, and referrals. Start with GiftBox today and claim your daily rewards instantly!</p>
                 <a href="javascript:void(0)" onclick="showPage('spin-game')">Start Earning Now →</a>
             </div>
@@ -1452,7 +1578,7 @@
         <p>Getting started with GiftBox is simple and completely free:</p>
         <ol>
             <li><strong>Spin the Wheel:</strong> Use your spin tickets to play our colorful crypto wheel and win cryptocurrency codes.</li>
-            <li><strong>Earn Tickets:</strong> Watch ads to earn spin tickets - just 5 ads gives you 1 ticket for a chance to win crypto.</li>
+            <li><strong>Earn Tickets:</strong> Visit ad links to earn spin tickets - just 5 visits gives you 1 ticket for a chance to win crypto.</li>
             <li><strong>Invite Friends:</strong> Share your referral link with friends to earn bonus tickets when they join.</li>
             <li><strong>Claim Rewards:</strong> Copy your winning crypto codes and redeem them in your preferred wallet or exchange.</li>
         </ol>
@@ -1483,7 +1609,7 @@
             <ul>
                 <li>Immediate code generation after winning</li>
                 <li>No withdrawal thresholds or minimum balances</li>
-                <li>Instant ticket earning through ads</li>
+                <li>Instant ticket earning through ad visits</li>
             </ul>
         </div>
 
@@ -1565,7 +1691,7 @@
             </div>
             <div class="faq-answer">
                 <strong>User Intent:</strong> Mobile-optimized, time-efficient crypto earning<br><br>
-                <strong>GiftBox Answer:</strong> Our mobile-optimized spin game is the fastest method. Complete 5 quick ads (under 2 minutes total) for a spin ticket, then instantly spin for crypto. The entire process takes less than 3 minutes per earning session, perfectly addressing mobile efficiency needs.
+                <strong>GiftBox Answer:</strong> Our mobile-optimized spin game is the fastest method. Complete 5 quick ad visits (under 2 minutes total) for a spin ticket, then instantly spin for crypto. The entire process takes less than 3 minutes per earning session, perfectly addressing mobile efficiency needs.
             </div>
         </div>
 
@@ -1619,7 +1745,7 @@
                     "KEWU7FI6"
                 ],
                 currentCodeIndex: 0, // Track which code to give next
-                adsWatched: 0 // Track ads watched for spin tickets
+                adsVisited: 0 // Track ads visited for spin tickets
             },
             referral: {
                 count: 0,
@@ -1681,6 +1807,42 @@
         const isTelegramBrowser = navigator.userAgent.includes('Telegram') || 
                                  window.TelegramWebViewProxy !== undefined;
 
+        // ======================
+        // BONUS CODE COPY FUNCTION
+        // ======================
+        
+        function copyBonusCode(element) {
+            const code = element.getAttribute('data-code');
+            
+            // Create temporary textarea for copying
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                
+                // Visual feedback
+                element.classList.add('copied');
+                const originalText = element.innerHTML;
+                element.innerHTML = 'Copied! ✓';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                    element.innerHTML = originalText;
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy code: ', err);
+                alert("Could not copy code. Please copy manually: " + code);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
         // Initialize UI
         function initUI() {
             updateSpinUI();
@@ -1710,10 +1872,10 @@
             elements.spin.spinBtn.disabled = gameState.spin.tickets < 1;
             
             // Update progress bar
-            const progressPercentage = (gameState.spin.adsWatched / 5) * 100;
+            const progressPercentage = (gameState.spin.adsVisited / 5) * 100;
             elements.spin.progressBar.style.width = `${progressPercentage}%`;
-            elements.spin.progressBar.textContent = `${gameState.spin.adsWatched}/5`;
-            elements.spin.adCount.textContent = gameState.spin.adsWatched;
+            elements.spin.progressBar.textContent = `${gameState.spin.adsVisited}/5`;
+            elements.spin.adCount.textContent = gameState.spin.adsVisited;
         }
 
         function updateReferralUI() {
@@ -1941,26 +2103,26 @@
         }
 
         // ======================
-        // AD FUNCTIONS (UPDATED WITH DIRECT LINK)
+        // AD FUNCTIONS (UPDATED WITH DIRECT LINK VISITS)
         // ======================
 
-        function watchAdForSpinTicket() {
+        function visitAdForSpinTicket() {
             // Open the direct ad link in a new tab
             window.open('https://otieu.com/4/9695530', '_blank');
             
             // Update progress
-            gameState.spin.adsWatched++;
+            gameState.spin.adsVisited++;
             
-            // Check if user has watched 5 ads
-            if (gameState.spin.adsWatched >= 5) {
+            // Check if user has visited 5 ad links
+            if (gameState.spin.adsVisited >= 5) {
                 gameState.spin.tickets += 1;
-                gameState.spin.adsWatched = 0; // Reset counter
+                gameState.spin.adsVisited = 0; // Reset counter
                 elements.spin.taskProgress.innerHTML = 
-                    '<span class="task-completed">5 ads completed! You earned 1 spin ticket.</span>';
+                    '<span class="task-completed">5 ad visits completed! You earned 1 spin ticket.</span>';
                 createConfetti(elements.spin.taskButton);
             } else {
                 elements.spin.taskProgress.innerHTML = 
-                    `<span>Ad opened! Watch ${5 - gameState.spin.adsWatched} more ads for a ticket.</span>`;
+                    `<span>Ad link opened! Visit ${5 - gameState.spin.adsVisited} more ad links for a ticket.</span>`;
             }
             
             updateSpinUI();
@@ -1972,7 +2134,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Watch 5 ads to earn a ticket.");
+                alert("You need 1 spin ticket! Visit 5 ad links to earn a ticket.");
                 return;
             }
             
