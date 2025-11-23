@@ -480,6 +480,14 @@
             color: gold;
             font-weight: 600;
         }
+
+        .ticket-count.has-tickets {
+            background-color: var(--success-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+        }
         
         .spin-notice {
             color: gold;
@@ -1298,7 +1306,10 @@
             </a>
         </div>
 
-                <div class="spin-notice">🔥 Visit 5 ad links to earn 1 spin ticket! 🔥</div>
+        <!-- Ticket Display -->
+        <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
+        
+        <div class="spin-notice">🔥 Visit 5 ad links to earn 1 spin ticket! 🔥</div>
         
         <!-- Progress bar for ad visits -->
         <div class="progress-container">
@@ -1781,7 +1792,8 @@
         // DOM Elements
         const elements = {
             spin: {
-                tickets: document.getElementById("spin-tickets"),
+                tickets: document.getElementById("ticket-count"),
+                ticketDisplay: document.getElementById("ticket-display"),
                 totalSpins: document.getElementById("total-spins"),
                 codesWon: document.getElementById("codes-won"),
                 result: document.getElementById("spin-result"),
@@ -1870,9 +1882,15 @@
         }
 
         function updateSpinUI() {
+            // Update ticket display
             elements.spin.tickets.textContent = gameState.spin.tickets;
-            elements.spin.totalSpins.textContent = gameState.spin.totalSpins;
-            elements.spin.codesWon.textContent = gameState.spin.codesWon;
+            
+            // Update ticket display styling
+            if (gameState.spin.tickets > 0) {
+                elements.spin.ticketDisplay.classList.add('has-tickets');
+            } else {
+                elements.spin.ticketDisplay.classList.remove('has-tickets');
+            }
             
             // Update spin button state based on tickets
             if (gameState.spin.tickets < 1) {
@@ -2380,10 +2398,8 @@
         });
     </script>
 
-    <!-- ALL AD SCRIPTS MOVED TO BOTTOM OF BODY -->
-    <script src="https://fpyf8.com/88/tag.min.js" data-zone="176111" async data-cfasync="false"></script>
-    <script src="https://pertawee.net/act/files/tag.min.js?z=9980074" data-cfasync="false" async></script>
-    <script src='//libtl.com/sdk.js' data-zone='9679447' data-sdk='show_9679447'></script>
-    <script>(function(s){s.dataset.zone='10067943',s.src='https://forfrogadiertor.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- KEPT ONLY THESE TWO AD SCRIPTS AS REQUESTED -->
+    <script>(function(s){s.dataset.zone='10227477',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <script>(function(s){s.dataset.zone='10227482',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </body>
 </html>
