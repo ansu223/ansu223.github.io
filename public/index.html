@@ -453,16 +453,8 @@
             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
         
-        .spin-notice {
-            color: var(--gold-color);
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 12px;
-            background-color: rgba(255, 215, 0, 0.15);
-            border-radius: 10px;
-            border-left: 4px solid var(--gold-color);
-        }
-
+        /* REMOVED: .spin-notice class since we're removing the notice */
+        
         .ad-button {
             background: linear-gradient(135deg, var(--ads-color) 0%, #e64a19 100%);
         }
@@ -558,8 +550,8 @@
             opacity: 0.8;
         }
 
-        /* Progress bar styles */
-        .progress-container {
+        /* Progress bar styles - REMOVED since we're not using progress bar anymore */
+        /* .progress-container {
             width: 100%;
             background-color: #1e2a47;
             border-radius: 10px;
@@ -579,7 +571,7 @@
             color: #000;
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(45, 214, 12, 0.3);
-        }
+        } */
 
         /* Stats Container */
         .stats-container {
@@ -1363,12 +1355,9 @@
         <!-- Ticket Display -->
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
-        <div class="spin-notice">🔥 Visit 5 ad links to earn 1 spin ticket! 🔥</div>
+        <!-- REMOVED: "Visit 5 ad links to earn 1 spin ticket!" notice -->
         
-        <!-- Progress bar for ad visits -->
-        <div class="progress-container">
-            <div id="spin-progress-bar" class="progress-bar" style="width: 0%">0/5</div>
-        </div>
+        <!-- REMOVED: Progress bar for ad visits -->
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1386,9 +1375,9 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <!-- Updated Ad Visit Button -->
-        <button class="task-button ad-button" id="spin-task-button" onclick="visitAdForSpinTicket()">
-            <i class="fas fa-ad"></i> Visit Ad Link (Progress: <span id="spin-ad-count">0</span>/5)
+        <!-- Updated: Simple button to get free tickets -->
+        <button class="task-button ad-button" id="get-ticket-button" onclick="getFreeTicket()">
+            <i class="fas fa-gift"></i> Get Free Spin Ticket
         </button>
 
         <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
@@ -1647,7 +1636,7 @@
         <p>Getting started with GiftBox is simple and completely free:</p>
         <ol>
             <li><strong>Spin the Wheel:</strong> Use your spin tickets to play our colorful crypto wheel and win cryptocurrency codes.</li>
-            <li><strong>Earn Tickets:</strong> Visit ad links to earn spin tickets - just 5 visits gives you 1 ticket for a chance to win crypto.</li>
+            <li><strong>Earn Tickets:</strong> Get free spin tickets daily - no ads required!</li>
             <li><strong>Invite Friends:</strong> Share your referral link with friends to earn bonus tickets when they join.</li>
             <li><strong>Claim Rewards:</strong> Copy your winning crypto codes and redeem them in your preferred wallet or exchange.</li>
         </ol>
@@ -1659,12 +1648,13 @@
             <li><strong>Instant Rewards:</strong> Get your crypto codes immediately after winning</li>
             <li><strong>User-Friendly:</strong> Simple interface designed for both crypto beginners and experts</li>
             <li><strong>Mobile Optimized:</strong> Play on any device with our responsive design</li>
+            <li><strong>No Ad Watching Required:</strong> Get free tickets directly without watching ads</li>
         </ul>
         
         <h3>Start Earning Crypto Today</h3>
         <p>Join thousands of users who are already earning free cryptocurrency with GiftBox. Whether you're looking to build your crypto portfolio or just want to explore the world of digital assets risk-free, GiftBox provides the perfect platform to get started.</p>
         
-        <p>Our spin wheel game offers exciting rewards with every spin, and our simple task system makes it easy to earn more tickets. With no investment required and real cryptocurrency rewards, there's no reason not to start earning with GiftBox today!</p>
+        <p>Our spin wheel game offers exciting rewards with every spin, and our free ticket system makes it easy to play without any requirements. With no investment required and real cryptocurrency rewards, there's no reason not to start earning with GiftBox today!</p>
     </div>
 
     <!-- Intent-Optimized Content Section -->
@@ -1678,7 +1668,7 @@
             <ul>
                 <li>Immediate code generation after winning</li>
                 <li>No withdrawal thresholds or minimum balances</li>
-                <li>Instant ticket earning through ad visits</li>
+                <li>Free tickets without ad watching</li>
             </ul>
         </div>
 
@@ -1733,34 +1723,34 @@
         
         <div class="faq-item">
             <div class="faq-question">
-                "How can I get free crypto instantly without surveys?" 
+                "How can I get free crypto instantly without surveys or ads?" 
                 <i class="fas fa-chevron-down faq-icon"></i>
             </div>
             <div class="faq-answer">
                 <strong>User Intent:</strong> Immediate cryptocurrency access without time-consuming tasks<br><br>
-                <strong>GiftBox Answer:</strong> Our spin wheel provides instant crypto codes in under 10 seconds. No lengthy surveys - just spin and win immediately. Each winning spin generates a redeemable code instantly, addressing your need for quick, hassle-free crypto acquisition.
+                <strong>GiftBox Answer:</strong> Our spin wheel provides instant crypto codes in under 10 seconds. No ads, no surveys - just spin and win immediately. Each winning spin generates a redeemable code instantly, addressing your need for quick, hassle-free crypto acquisition.
             </div>
         </div>
         
         <div class="faq-item">
             <div class="faq-question">
-                "Is there a legit app that pays real Bitcoin?" 
+                "Is there a legit app that pays real Bitcoin without watching ads?" 
                 <i class="fas fa-chevron-down faq-icon"></i>
             </div>
             <div class="faq-answer">
-                <strong>User Intent:</strong> Verification of legitimacy and Bitcoin payments<br><br>
-                <strong>GiftBox Answer:</strong> Yes, GiftBox provides genuine Bitcoin reward codes, not fake points. We're a legitimate platform with transparent winning mechanisms. All BTC codes are verifiable and redeemable on major exchanges, directly addressing concerns about scam platforms.
+                <strong>User Intent:</strong> Verification of legitimacy and Bitcoin payments without ad requirements<br><br>
+                <strong>GiftBox Answer:</strong> Yes, GiftBox provides genuine Bitcoin reward codes without requiring ad watching. We're a legitimate platform with transparent winning mechanisms. All BTC codes are verifiable and redeemable on major exchanges, directly addressing concerns about scam platforms.
             </div>
         </div>
         
         <div class="faq-item">
             <div class="faq-question">
-                "What's the fastest way to earn crypto on mobile?" 
+                "What's the fastest way to earn crypto on mobile without ads?" 
                 <i class="fas fa-chevron-down faq-icon"></i>
             </div>
             <div class="faq-answer">
-                <strong>User Intent:</strong> Mobile-optimized, time-efficient crypto earning<br><br>
-                <strong>GiftBox Answer:</strong> Our mobile-optimized spin game is the fastest method. Complete 5 quick ad visits (under 2 minutes total) for a spin ticket, then instantly spin for crypto. The entire process takes less than 3 minutes per earning session, perfectly addressing mobile efficiency needs.
+                <strong>User Intent:</strong> Mobile-optimized, time-efficient crypto earning without ad interruptions<br><br>
+                <strong>GiftBox Answer:</strong> Our mobile-optimized spin game is the fastest method. Get free tickets instantly, then spin for crypto. The entire process takes less than 30 seconds per earning session, perfectly addressing mobile efficiency needs without ad interruptions.
             </div>
         </div>
 
@@ -1805,7 +1795,7 @@
         // Enhanced Game State with Image Codes
         const gameState = {
             spin: {
-                tickets: 0, // No free tickets
+                tickets: 0, // Start with 0 tickets
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
@@ -1813,8 +1803,7 @@
                 validCodes: [
                     "BPECJDB8XN"
                 ],
-                currentCodeIndex: 0, // Track which code to give next
-                adsVisited: 0 // Track ads visited for spin tickets
+                currentCodeIndex: 0 // Track which code to give next
             },
             referral: {
                 count: 0,
@@ -1853,12 +1842,10 @@
                 result: document.getElementById("spin-result"),
                 codeDisplay: document.getElementById("spin-code-display"),
                 copyButton: document.getElementById("copy-code-button"),
-                taskButton: document.getElementById("spin-task-button"),
+                getTicketButton: document.getElementById("get-ticket-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
-                spinBtn: document.getElementById("spin-btn"),
-                progressBar: document.getElementById("spin-progress-bar"),
-                adCount: document.getElementById("spin-ad-count")
+                spinBtn: document.getElementById("spin-btn")
             },
             nav: {
                 spin: document.getElementById("spin-nav"),
@@ -1931,8 +1918,10 @@
             // Initial calculation for earnings
             calculateEarnings();
 
-            // 🛡️ REMOVED AD FALLBACK COMPLETELY - NO MESSAGES, NO RELOADS
-            // Ads will either load or not, no interference
+            // Give 1 free ticket when page loads
+            setTimeout(() => {
+                getFreeTicket();
+            }, 1000);
         }
 
         function updateSpinUI() {
@@ -1954,17 +1943,33 @@
                 elements.spin.spinBtn.disabled = false;
                 elements.spin.spinBtn.classList.add('enabled');
             }
-            
-            // Update progress bar
-            const progressPercentage = (gameState.spin.adsVisited / 5) * 100;
-            elements.spin.progressBar.style.width = `${progressPercentage}%`;
-            elements.spin.progressBar.textContent = `${gameState.spin.adsVisited}/5`;
-            elements.spin.adCount.textContent = gameState.spin.adsVisited;
         }
 
         function updateReferralUI() {
             document.getElementById("referrals-count").textContent = gameState.referral.count;
             document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
+        }
+
+        // ======================
+        // GET FREE TICKET FUNCTION
+        // ======================
+
+        function getFreeTicket() {
+            gameState.spin.tickets += 1;
+            updateSpinUI();
+            showNotification("+1 Free Spin Ticket! 🎫");
+            createConfetti(elements.spin.getTicketButton);
+            
+            // Update button text temporarily
+            const originalText = elements.spin.getTicketButton.innerHTML;
+            elements.spin.getTicketButton.innerHTML = '<i class="fas fa-check"></i> Ticket Added!';
+            elements.spin.getTicketButton.disabled = true;
+            
+            // Re-enable after 2 seconds
+            setTimeout(() => {
+                elements.spin.getTicketButton.innerHTML = originalText;
+                elements.spin.getTicketButton.disabled = false;
+            }, 2000);
         }
 
         // ======================
@@ -2187,38 +2192,12 @@
         }
 
         // ======================
-        // AD FUNCTIONS (UPDATED WITH DIRECT LINK VISITS)
-        // ======================
-
-        function visitAdForSpinTicket() {
-            // Open the direct ad link in a new tab
-            window.open('https://otieu.com/4/9695530', '_blank');
-            
-            // Update progress
-            gameState.spin.adsVisited++;
-            
-            // Check if user has visited 5 ad links
-            if (gameState.spin.adsVisited >= 5) {
-                gameState.spin.tickets += 1;
-                gameState.spin.adsVisited = 0; // Reset counter
-                elements.spin.taskProgress.innerHTML = 
-                    '<span class="task-completed">5 ad visits completed! You earned 1 spin ticket.</span>';
-                createConfetti(elements.spin.taskButton);
-            } else {
-                elements.spin.taskProgress.innerHTML = 
-                    `<span>Ad link opened! Visit ${5 - gameState.spin.adsVisited} more ad links for a ticket.</span>`;
-            }
-            
-            updateSpinUI();
-        }
-
-        // ======================
         // GAME FUNCTIONS
         // ======================
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Visit 5 ad links to earn a ticket.");
+                alert("You need 1 spin ticket! Click 'Get Free Spin Ticket' to get one.");
                 return;
             }
             
@@ -2452,8 +2431,7 @@
         });
     </script>
 
-    <!-- KEPT ONLY THESE TWO AD SCRIPTS AS REQUESTED -->
-    <script>(function(s){s.dataset.zone='10227477',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <script>(function(s){s.dataset.zone='10227482',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- NEW AD SCRIPT -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="176111" async data-cfasync="false"></script>
 </body>
 </html>
