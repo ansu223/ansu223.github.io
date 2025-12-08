@@ -1364,7 +1364,7 @@
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
         <!-- SIMPLIFIED: Removed progress notice and bar -->
-        <div class="spin-notice">🔥 Complete tasks to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Complete the task below to earn spin tickets! 🔥</div>
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1382,9 +1382,9 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <!-- SIMPLIFIED: Direct smart link task with immediate reward -->
-        <button class="task-button ad-button" id="spin-task-button" onclick="completeSmartLinkTask()">
-            <i class="fas fa-ad"></i> Unlock Free Spin (Instant Reward)
+        <!-- OGAds Task Button - ONLY TASK REMAINING -->
+        <button class="task-button" id="task-button" onclick="startVerifiedTask()" style="background: linear-gradient(135deg, #06D6A0 0%, #0ACF83 100%); color: white;">
+            <i class="fas fa-check-circle"></i> Complete Task (Get 1 Ticket)
         </button>
 
         <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
@@ -1798,6 +1798,203 @@
     </div>
 
     <script>
+        // ======================
+        // OGAds TASK SYSTEM - ADDED FROM CODE2
+        // ======================
+        const TASK_CONFIG = {
+            webhookUrl: "https://webhook.site/c78ba565-a051-4dfb-a51f-c9afae646ff5",
+            ogadsLink: "https://tasks.spin2earncrypto.lat/sl/0m5zj",
+            rewardAmount: 1,
+            checkInterval: 30000,
+            maxTaskTime: 1800000,
+            taskCooldown: 3600000
+        };
+
+        const taskState = {
+            activeTask: JSON.parse(localStorage.getItem('activeTask')) || null,
+            completedTasks: JSON.parse(localStorage.getItem('completedTasks')) || [],
+            lastTaskAttempt: parseInt(localStorage.getItem('lastTaskAttempt')) || 0,
+            fakeCompletions: JSON.parse(localStorage.getItem('fakeCompletions')) || {}
+        };
+
+        function initTaskSystem() {
+            updateTaskButton();
+            
+            if (taskState.activeTask) {
+                startTaskMonitoring(taskState.activeTask.id);
+            }
+            
+            loadOGAdsFromURL();
+        }
+
+        function startVerifiedTask() {
+            const timeSinceLastAttempt = Date.now() - taskState.lastTaskAttempt;
+            if (timeSinceLastAttempt < TASK_CONFIG.taskCooldown) {
+                const minutesLeft = Math.ceil((TASK_CONFIG.taskCooldown - timeSinceLastAttempt) / 60000);
+                showNotification(`Please wait ${minutesLeft} minutes before starting another task.`);
+                return;
+            }
+            
+            const taskId = 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const userId = gameState.userId;
+            
+            const baseUrl = TASK_CONFIG.ogadsLink;
+            const params = new URLSearchParams({
+                'subid': userId,
+                'subid2': taskId,
+                'subid3': 'spin_game',
+                'custom': userId,
+                'custom1': taskId,
+                'custom2': 'crypto_reward',
+                'source': 'web',
+                'referer': window.location.hostname
+            });
+            
+            const ogadsUrl = `${baseUrl}?${params.toString()}`;
+            
+            taskState.activeTask = {
+                id: taskId,
+                userId: userId,
+                startTime: Date.now(),
+                status: 'started',
+                url: ogadsUrl.toString(),
+                verified: false
+            };
+            
+            taskState.lastTaskAttempt = Date.now();
+            localStorage.setItem('lastTaskAttempt', taskState.lastTaskAttempt.toString());
+            localStorage.setItem('activeTask', JSON.stringify(taskState.activeTask));
+            
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.openLink(ogadsUrl.toString());
+            } else {
+                window.open(ogadsUrl.toString(), '_blank', 'noopener,noreferrer');
+            }
+            
+            showNotification("✅ Task started! Complete ANY offer to earn 1 ticket.");
+            startTaskMonitoring(taskId);
+            updateTaskButton();
+        }
+
+        function startTaskMonitoring(taskId) {
+            const checkInterval = setInterval(async () => {
+                const isComplete = await checkTaskCompletion(taskId);
+                
+                if (isComplete) {
+                    clearInterval(checkInterval);
+                    completeTask(taskId);
+                    return;
+                }
+                
+                if (taskState.activeTask && Date.now() - taskState.activeTask.startTime > TASK_CONFIG.maxTaskTime) {
+                    clearInterval(checkInterval);
+                    taskState.activeTask = null;
+                    localStorage.removeItem('activeTask');
+                    updateTaskButton();
+                    showNotification("❌ Task expired. No ticket earned.");
+                }
+            }, TASK_CONFIG.checkInterval);
+            
+            if (taskState.activeTask) {
+                taskState.activeTask.monitorInterval = checkInterval;
+                localStorage.setItem('activeTask', JSON.stringify(taskState.activeTask));
+            }
+        }
+
+        async function checkTaskCompletion(taskId) {
+            try {
+                if (taskState.fakeCompletions[taskId]) {
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error("Task check error:", error);
+                return false;
+            }
+        }
+
+        function completeTask(taskId) {
+            if (!taskState.fakeCompletions[taskId]) {
+                showNotification("❌ Task not verified. No ticket earned.");
+                cleanupTask(taskId);
+                return;
+            }
+            
+            gameState.spin.tickets += TASK_CONFIG.rewardAmount;
+            localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
+            
+            const completion = {
+                id: taskId,
+                userId: gameState.userId,
+                timestamp: Date.now(),
+                reward: TASK_CONFIG.rewardAmount,
+                verified: true
+            };
+            
+            taskState.completedTasks.push(completion);
+            localStorage.setItem('completedTasks', JSON.stringify(taskState.completedTasks));
+            
+            cleanupTask(taskId);
+            updateSpinUI();
+            updateTaskButton();
+            
+            createConfetti(document.getElementById('task-button'));
+            showNotification("✅ Task VERIFIED! +1 ticket earned!");
+            
+            delete taskState.fakeCompletions[taskId];
+            localStorage.setItem('fakeCompletions', JSON.stringify(taskState.fakeCompletions));
+        }
+
+        function cleanupTask(taskId) {
+            if (taskState.activeTask?.monitorInterval) {
+                clearInterval(taskState.activeTask.monitorInterval);
+            }
+            taskState.activeTask = null;
+            localStorage.removeItem('activeTask');
+        }
+
+        function updateTaskButton() {
+            const taskButton = document.getElementById('task-button');
+            if (!taskButton) return;
+            
+            if (taskState.activeTask) {
+                taskButton.disabled = true;
+                taskButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Complete an offer...';
+            } else {
+                taskButton.disabled = false;
+                taskButton.innerHTML = '<i class="fas fa-check-circle"></i> Complete Task (Get 1 Ticket)';
+            }
+        }
+
+        function loadOGAdsFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('subid') || urlParams.has('status')) {
+                const userId = urlParams.get('subid') || urlParams.get('subid1') || urlParams.get('custom');
+                const taskId = urlParams.get('subid2') || urlParams.get('custom1') || urlParams.get('custom');
+                const status = urlParams.get('status');
+                
+                if (userId && userId === gameState.userId && taskId) {
+                    if (status === '1' || status === 'approved' || status === 'complete') {
+                        taskState.fakeCompletions[taskId] = true;
+                        localStorage.setItem('fakeCompletions', JSON.stringify(taskState.fakeCompletions));
+                        
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        
+                        setTimeout(() => {
+                            showNotification("✅ OGAds confirmed task completion!");
+                            if (taskState.activeTask?.id === taskId) {
+                                completeTask(taskId);
+                            }
+                        }, 1000);
+                    }
+                }
+            }
+        }
+        // ======================
+        // END OF OGAds TASK SYSTEM
+        // ======================
+
         // Enhanced Game State with Image Codes
         const gameState = {
             spin: {
@@ -1815,12 +2012,17 @@
                 count: 0,
                 ticketsEarned: 0
             },
-            userId: 'user_' + Math.random().toString(36).substr(2, 9),
+            userId: localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9),
             userActions: {
                 lastSpin: 0,
                 spinCount: 0
             }
         };
+
+        // Save userId to localStorage
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', gameState.userId);
+        }
 
         // AI Prediction Data
         const predictionData = {
@@ -1846,7 +2048,6 @@
                 result: document.getElementById("spin-result"),
                 codeDisplay: document.getElementById("spin-code-display"),
                 copyButton: document.getElementById("copy-code-button"),
-                taskButton: document.getElementById("spin-task-button"),
                 taskProgress: document.getElementById("spin-task-progress"),
                 wheel: document.getElementById("wheel"),
                 spinBtn: document.getElementById("spin-btn")
@@ -1921,6 +2122,9 @@
             
             // Initial calculation for earnings
             calculateEarnings();
+            
+            // Initialize task system
+            initTaskSystem();
         }
 
         function updateSpinUI() {
@@ -2169,37 +2373,12 @@
         }
 
         // ======================
-        // SIMPLIFIED SMART LINK TASK
-        // ======================
-
-        function completeSmartLinkTask() {
-            // Open the unlock spin smart link in a new tab
-            window.open('https://applocked.org/sl/0m5zj', '_blank');
-            
-            // Immediately give 1 ticket as reward
-            gameState.spin.tickets += 1;
-            
-            // Show success message
-            elements.spin.taskProgress.innerHTML = 
-                '<span class="task-completed">✅ Task completed! You earned 1 spin ticket.</span>';
-            
-            // Create confetti effect
-            createConfetti(elements.spin.taskButton);
-            
-            // Show notification
-            showNotification("+1 Spin Ticket Added!");
-            
-            // Update UI
-            updateSpinUI();
-        }
-
-        // ======================
         // GAME FUNCTIONS
         // ======================
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Complete a task to earn tickets.");
+                alert("You need 1 spin ticket! Complete the task to earn tickets.");
                 return;
             }
             
