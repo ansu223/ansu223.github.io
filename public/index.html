@@ -1363,8 +1363,12 @@
         <!-- Ticket Display -->
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
-        <!-- SIMPLIFIED: Removed progress notice and bar -->
-        <div class="spin-notice">🔥 Complete the task below to earn spin tickets! 🔥</div>
+        <!-- WELCOME MESSAGE FOR FIRST-TIME USERS -->
+        <div id="welcome-message" class="spin-notice" style="display: none;">
+            🎉 Welcome! You get 1 FREE spin to start! 🎉
+        </div>
+        
+        <div class="spin-notice">🔥 Complete the task below to earn more spin tickets! 🔥</div>
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1995,16 +1999,16 @@
         // END OF OGAds TASK SYSTEM
         // ======================
 
-        // Enhanced Game State with Image Codes
+        // Enhanced Game State with Image Codes - UPDATED FOR FREE SPIN
         const gameState = {
             spin: {
-                tickets: 0, // No free tickets
+                tickets: 0, // Will be set to 1 for first-time users
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
                 // ONLY 1 VALID CODE NOW
                 validCodes: [
-                    "H7E2WJOD"
+                    "90FJERDH"
                 ],
                 currentCodeIndex: 0 // Track which code to give next
             },
@@ -2016,7 +2020,9 @@
             userActions: {
                 lastSpin: 0,
                 spinCount: 0
-            }
+            },
+            // NEW: Track if user has received free spin
+            freeSpinGiven: localStorage.getItem('freeSpinGiven') === 'true' || false
         };
 
         // Save userId to localStorage
@@ -2062,7 +2068,8 @@
             predictions: {
                 container: document.getElementById("prediction-container"),
                 updateTime: document.getElementById("prediction-update-time")
-            }
+            },
+            welcomeMessage: document.getElementById("welcome-message")
         };
 
         // Telegram detection
@@ -2107,6 +2114,30 @@
 
         // Initialize UI
         function initUI() {
+            // GIVE FREE SPIN TO FIRST-TIME USERS
+            if (!gameState.freeSpinGiven) {
+                gameState.spin.tickets = 1; // Give 1 free ticket
+                gameState.freeSpinGiven = true;
+                localStorage.setItem('freeSpinGiven', 'true');
+                localStorage.setItem('spinTickets', '1');
+                
+                // Show welcome message
+                if (elements.welcomeMessage) {
+                    elements.welcomeMessage.style.display = 'block';
+                    setTimeout(() => {
+                        elements.welcomeMessage.style.display = 'none';
+                    }, 5000);
+                }
+                
+                showNotification("🎉 Welcome! You get 1 FREE spin to start! 🎉");
+            } else {
+                // Load existing tickets for returning users
+                const savedTickets = localStorage.getItem('spinTickets');
+                if (savedTickets) {
+                    gameState.spin.tickets = parseInt(savedTickets);
+                }
+            }
+            
             updateSpinUI();
             updateReferralUI();
             
@@ -2146,6 +2177,9 @@
                 elements.spin.spinBtn.disabled = false;
                 elements.spin.spinBtn.classList.add('enabled');
             }
+            
+            // Save tickets to localStorage
+            localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
         }
 
         function updateReferralUI() {
