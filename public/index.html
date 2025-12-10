@@ -422,6 +422,8 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            width: 100%;
+            max-width: 300px;
         }
         
         .task-button:hover {
@@ -1257,6 +1259,46 @@
             z-index: 1000;
         }
 
+        /* Ticket Link Button */
+        .ticket-link-button {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            margin: 10px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .ticket-link-button:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .ticket-link-button.disabled {
+            background: linear-gradient(135deg, var(--disabled-color) 0%, #666 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .ticket-link-button.disabled:hover {
+            background: linear-gradient(135deg, var(--disabled-color) 0%, #666 100%);
+            transform: none;
+            box-shadow: none;
+        }
+
         @media (max-width: 480px) {
             .game-container {
                 margin: 15px;
@@ -1363,12 +1405,7 @@
         <!-- Ticket Display -->
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
-        <!-- WELCOME MESSAGE FOR FIRST-TIME USERS -->
-        <div id="welcome-message" class="spin-notice" style="display: none;">
-            🎉 Welcome! You get 1 FREE spin to start! 🎉
-        </div>
-        
-        <div class="spin-notice">🔥 Complete the task below to earn more spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Complete tasks to earn more spin tickets! 🔥</div>
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1386,7 +1423,12 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
         
-        <!-- OGAds Task Button - ONLY TASK REMAINING -->
+        <!-- Click Here to Get Ticket Button -->
+        <button class="task-button ticket-link-button" id="ticket-link-btn" onclick="openTicketLink()">
+            <i class="fas fa-ticket-alt"></i> Click Here to Get Ticket
+        </button>
+
+        <!-- OGAds Task Button -->
         <button class="task-button" id="task-button" onclick="startVerifiedTask()" style="background: linear-gradient(135deg, #06D6A0 0%, #0ACF83 100%); color: white;">
             <i class="fas fa-check-circle"></i> Complete Task (Get 1 Ticket)
         </button>
@@ -1803,6 +1845,23 @@
 
     <script>
         // ======================
+        // TICKET LINK SYSTEM - GIVES 1 TICKET AFTER CLICKING LINK
+        // ======================
+        const TICKET_LINK_CONFIG = {
+            url: "https://otieu.com/4/10164890",
+            rewardAmount: 1,
+            cooldown: 3600000, // 1 hour cooldown
+            checkInterval: 30000 // Check every 30 seconds for completion
+        };
+
+        const ticketLinkState = {
+            lastClicked: parseInt(localStorage.getItem('ticketLinkLastClicked')) || 0,
+            clickedToday: parseInt(localStorage.getItem('ticketLinkClickedToday')) || 0,
+            completed: JSON.parse(localStorage.getItem('ticketLinkCompleted')) || false,
+            ticketsGiven: parseInt(localStorage.getItem('ticketLinkTicketsGiven')) || 0
+        };
+
+        // ======================
         // OGAds TASK SYSTEM - ADDED FROM CODE2
         // ======================
         const TASK_CONFIG = {
@@ -1829,6 +1888,118 @@
             }
             
             loadOGAdsFromURL();
+            
+            // Start checking for ticket link completion
+            startTicketLinkCheck();
+        }
+
+        // ======================
+        // TICKET LINK FUNCTIONALITY
+        // ======================
+        function openTicketLink() {
+            const now = Date.now();
+            const timeSinceLastClick = now - ticketLinkState.lastClicked;
+            
+            // Check cooldown
+            if (timeSinceLastClick < TICKET_LINK_CONFIG.cooldown) {
+                const minutesLeft = Math.ceil((TICKET_LINK_CONFIG.cooldown - timeSinceLastClick) / 60000);
+                showNotification(`Please wait ${minutesLeft} minutes before clicking the ticket link again.`);
+                return;
+            }
+            
+            // Open the link
+            window.open(TICKET_LINK_CONFIG.url, '_blank', 'noopener,noreferrer');
+            
+            // Record the click
+            ticketLinkState.lastClicked = now;
+            localStorage.setItem('ticketLinkLastClicked', now.toString());
+            
+            // Reset completion flag to start checking
+            ticketLinkState.completed = false;
+            localStorage.setItem('ticketLinkCompleted', 'false');
+            
+            // Disable button and show loading
+            const ticketBtn = document.getElementById('ticket-link-btn');
+            ticketBtn.disabled = true;
+            ticketBtn.classList.add('disabled');
+            ticketBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Visiting link...';
+            
+            showNotification("✅ Link opened! Please visit the page and return here to get your ticket.");
+            
+            // Start checking for completion
+            startTicketLinkCheck();
+        }
+
+        function startTicketLinkCheck() {
+            // Check every 30 seconds if user completed the link visit
+            const checkInterval = setInterval(() => {
+                // Simulate completion after 10 seconds (in real scenario, this would check actual completion)
+                if (!ticketLinkState.completed) {
+                    // For demo purposes, we'll simulate completion after 10 seconds
+                    // In production, you would check a server-side endpoint or use a webhook
+                    const timeSinceClick = Date.now() - ticketLinkState.lastClicked;
+                    if (timeSinceClick > 10000) { // 10 seconds for demo
+                        completeTicketLink();
+                        clearInterval(checkInterval);
+                    }
+                } else {
+                    clearInterval(checkInterval);
+                }
+            }, TICKET_LINK_CONFIG.checkInterval);
+        }
+
+        function completeTicketLink() {
+            // Give ticket reward
+            gameState.spin.tickets += TICKET_LINK_CONFIG.rewardAmount;
+            localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
+            
+            // Update state
+            ticketLinkState.completed = true;
+            ticketLinkState.ticketsGiven += TICKET_LINK_CONFIG.rewardAmount;
+            
+            // Save to localStorage
+            localStorage.setItem('ticketLinkCompleted', 'true');
+            localStorage.setItem('ticketLinkTicketsGiven', ticketLinkState.ticketsGiven.toString());
+            
+            // Update UI
+            updateSpinUI();
+            updateTicketLinkButton();
+            
+            // Show success message
+            createConfetti(document.getElementById('ticket-link-btn'));
+            showNotification("✅ Ticket link completed! +1 ticket added!");
+            
+            // Reset button after 5 seconds
+            setTimeout(() => {
+                updateTicketLinkButton();
+            }, 5000);
+        }
+
+        function updateTicketLinkButton() {
+            const ticketBtn = document.getElementById('ticket-link-btn');
+            if (!ticketBtn) return;
+            
+            const now = Date.now();
+            const timeSinceLastClick = now - ticketLinkState.lastClicked;
+            const isOnCooldown = timeSinceLastClick < TICKET_LINK_CONFIG.cooldown;
+            
+            if (ticketLinkState.completed && isOnCooldown) {
+                // Completed and on cooldown
+                const minutesLeft = Math.ceil((TICKET_LINK_CONFIG.cooldown - timeSinceLastClick) / 60000);
+                ticketBtn.disabled = true;
+                ticketBtn.classList.add('disabled');
+                ticketBtn.innerHTML = `<i class="fas fa-clock"></i> Available in ${minutesLeft}m`;
+            } else if (isOnCooldown && !ticketLinkState.completed) {
+                // Clicked but not completed yet
+                ticketBtn.disabled = true;
+                ticketBtn.classList.add('disabled');
+                ticketBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking completion...';
+            } else {
+                // Available to click
+                ticketBtn.disabled = false;
+                ticketBtn.classList.remove('disabled');
+                ticketBtn.innerHTML = '<i class="fas fa-ticket-alt"></i> Click Here to Get Ticket';
+            }
         }
 
         function startVerifiedTask() {
@@ -1999,10 +2170,10 @@
         // END OF OGAds TASK SYSTEM
         // ======================
 
-        // Enhanced Game State with Image Codes - UPDATED FOR FREE SPIN
+        // Enhanced Game State with Image Codes - NO FREE SPIN
         const gameState = {
             spin: {
-                tickets: 0, // Will be set to 1 for first-time users
+                tickets: 0,
                 totalSpins: 0,
                 codesWon: 0,
                 currentCode: '',
@@ -2020,9 +2191,7 @@
             userActions: {
                 lastSpin: 0,
                 spinCount: 0
-            },
-            // NEW: Track if user has received free spin
-            freeSpinGiven: localStorage.getItem('freeSpinGiven') === 'true' || false
+            }
         };
 
         // Save userId to localStorage
@@ -2068,8 +2237,7 @@
             predictions: {
                 container: document.getElementById("prediction-container"),
                 updateTime: document.getElementById("prediction-update-time")
-            },
-            welcomeMessage: document.getElementById("welcome-message")
+            }
         };
 
         // Telegram detection
@@ -2114,32 +2282,15 @@
 
         // Initialize UI
         function initUI() {
-            // GIVE FREE SPIN TO FIRST-TIME USERS
-            if (!gameState.freeSpinGiven) {
-                gameState.spin.tickets = 1; // Give 1 free ticket
-                gameState.freeSpinGiven = true;
-                localStorage.setItem('freeSpinGiven', 'true');
-                localStorage.setItem('spinTickets', '1');
-                
-                // Show welcome message
-                if (elements.welcomeMessage) {
-                    elements.welcomeMessage.style.display = 'block';
-                    setTimeout(() => {
-                        elements.welcomeMessage.style.display = 'none';
-                    }, 5000);
-                }
-                
-                showNotification("🎉 Welcome! You get 1 FREE spin to start! 🎉");
-            } else {
-                // Load existing tickets for returning users
-                const savedTickets = localStorage.getItem('spinTickets');
-                if (savedTickets) {
-                    gameState.spin.tickets = parseInt(savedTickets);
-                }
+            // Load existing tickets
+            const savedTickets = localStorage.getItem('spinTickets');
+            if (savedTickets) {
+                gameState.spin.tickets = parseInt(savedTickets);
             }
             
             updateSpinUI();
             updateReferralUI();
+            updateTicketLinkButton();
             
             // Add event listeners for FAQ toggles
             document.querySelectorAll('.faq-question').forEach(question => {
@@ -2412,7 +2563,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Complete the task to earn tickets.");
+                alert("You need 1 spin ticket! Click 'Click Here to Get Ticket' or 'Complete Task' to earn tickets.");
                 return;
             }
             
