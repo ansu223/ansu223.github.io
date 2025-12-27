@@ -69,6 +69,7 @@
             --gold-color: #ffd700;
             --silver-color: #c0c0c0;
             --bronze-color: #cd7f32;
+            --temu-color: #ff6b00;
         }
 
         * {
@@ -428,6 +429,32 @@
         
         .task-button:hover {
             background: linear-gradient(135deg, #1557b0 0%, #0f4a9c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .temu-button {
+            background: linear-gradient(135deg, var(--temu-color) 0%, #ff5500 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            margin: 10px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .temu-button:hover {
+            background: linear-gradient(135deg, #ff5500 0%, #cc4400 100%);
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
@@ -1370,7 +1397,7 @@
         <!-- Ticket Display -->
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
-        <div class="spin-notice">🔥 Complete tasks to earn more spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Sign up on Temu to earn spin tickets! 🔥</div>
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1388,9 +1415,9 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
 
-        <!-- OGAds Task Button - ONLY TASK REMAINING -->
-        <button class="task-button" id="task-button" onclick="startVerifiedTask()" style="background: linear-gradient(135deg, #06D6A0 0%, #0ACF83 100%); color: white;">
-            <i class="fas fa-check-circle"></i> Complete Task (Get 1 Ticket)
+        <!-- Temu Task Button - NEW SIMPLE SIGN UP TASK -->
+        <button class="temu-button" id="temu-task-button" onclick="startTemuTask()">
+            <i class="fas fa-user-plus"></i> Sign Up on Temu (Get 1 Ticket)
         </button>
 
         <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
@@ -1805,205 +1832,19 @@
 
     <script>
         // ======================
-        // REMOVED TICKET LINK SYSTEM COMPLETELY
+        // SIMPLE TEMU TASK SYSTEM
         // ======================
-
-        // ======================
-        // OGAds TASK SYSTEM - ONLY TASK REMAINING
-        // ======================
-        const TASK_CONFIG = {
-            webhookUrl: "https://webhook.site/c78ba565-a051-4dfb-a51f-c9afae646ff5",
-            ogadsLink: "https://tasks.spin2earncrypto.lat/sl/0m5zj",
+        const TEMU_CONFIG = {
+            referralLink: "https://temu.to/k/ea6ob6btyh4",
             rewardAmount: 1,
-            checkInterval: 30000,
-            maxTaskTime: 1800000,
             taskCooldown: 3600000
         };
 
         const taskState = {
-            activeTask: JSON.parse(localStorage.getItem('activeTask')) || null,
-            completedTasks: JSON.parse(localStorage.getItem('completedTasks')) || [],
-            lastTaskAttempt: parseInt(localStorage.getItem('lastTaskAttempt')) || 0,
-            fakeCompletions: JSON.parse(localStorage.getItem('fakeCompletions')) || {}
+            completedTemuTasks: JSON.parse(localStorage.getItem('completedTemuTasks')) || [],
+            lastTemuAttempt: parseInt(localStorage.getItem('lastTemuAttempt')) || 0,
+            temuTicketGiven: JSON.parse(localStorage.getItem('temuTicketGiven')) || false
         };
-
-        function initTaskSystem() {
-            updateTaskButton();
-            
-            if (taskState.activeTask) {
-                startTaskMonitoring(taskState.activeTask.id);
-            }
-            
-            loadOGAdsFromURL();
-        }
-
-        function startVerifiedTask() {
-            const timeSinceLastAttempt = Date.now() - taskState.lastTaskAttempt;
-            if (timeSinceLastAttempt < TASK_CONFIG.taskCooldown) {
-                const minutesLeft = Math.ceil((TASK_CONFIG.taskCooldown - timeSinceLastAttempt) / 60000);
-                showNotification(`Please wait ${minutesLeft} minutes before starting another task.`);
-                return;
-            }
-            
-            const taskId = 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const userId = gameState.userId;
-            
-            const baseUrl = TASK_CONFIG.ogadsLink;
-            const params = new URLSearchParams({
-                'subid': userId,
-                'subid2': taskId,
-                'subid3': 'spin_game',
-                'custom': userId,
-                'custom1': taskId,
-                'custom2': 'crypto_reward',
-                'source': 'web',
-                'referer': window.location.hostname
-            });
-            
-            const ogadsUrl = `${baseUrl}?${params.toString()}`;
-            
-            taskState.activeTask = {
-                id: taskId,
-                userId: userId,
-                startTime: Date.now(),
-                status: 'started',
-                url: ogadsUrl.toString(),
-                verified: false
-            };
-            
-            taskState.lastTaskAttempt = Date.now();
-            localStorage.setItem('lastTaskAttempt', taskState.lastTaskAttempt.toString());
-            localStorage.setItem('activeTask', JSON.stringify(taskState.activeTask));
-            
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(ogadsUrl.toString());
-            } else {
-                window.open(ogadsUrl.toString(), '_blank', 'noopener,noreferrer');
-            }
-            
-            showNotification("✅ Task started! Complete ANY offer to earn 1 ticket.");
-            startTaskMonitoring(taskId);
-            updateTaskButton();
-        }
-
-        function startTaskMonitoring(taskId) {
-            const checkInterval = setInterval(async () => {
-                const isComplete = await checkTaskCompletion(taskId);
-                
-                if (isComplete) {
-                    clearInterval(checkInterval);
-                    completeTask(taskId);
-                    return;
-                }
-                
-                if (taskState.activeTask && Date.now() - taskState.activeTask.startTime > TASK_CONFIG.maxTaskTime) {
-                    clearInterval(checkInterval);
-                    taskState.activeTask = null;
-                    localStorage.removeItem('activeTask');
-                    updateTaskButton();
-                    showNotification("❌ Task expired. No ticket earned.");
-                }
-            }, TASK_CONFIG.checkInterval);
-            
-            if (taskState.activeTask) {
-                taskState.activeTask.monitorInterval = checkInterval;
-                localStorage.setItem('activeTask', JSON.stringify(taskState.activeTask));
-            }
-        }
-
-        async function checkTaskCompletion(taskId) {
-            try {
-                if (taskState.fakeCompletions[taskId]) {
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.error("Task check error:", error);
-                return false;
-            }
-        }
-
-        function completeTask(taskId) {
-            if (!taskState.fakeCompletions[taskId]) {
-                showNotification("❌ Task not verified. No ticket earned.");
-                cleanupTask(taskId);
-                return;
-            }
-            
-            gameState.spin.tickets += TASK_CONFIG.rewardAmount;
-            localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
-            
-            const completion = {
-                id: taskId,
-                userId: gameState.userId,
-                timestamp: Date.now(),
-                reward: TASK_CONFIG.rewardAmount,
-                verified: true
-            };
-            
-            taskState.completedTasks.push(completion);
-            localStorage.setItem('completedTasks', JSON.stringify(taskState.completedTasks));
-            
-            cleanupTask(taskId);
-            updateSpinUI();
-            updateTaskButton();
-            
-            createConfetti(document.getElementById('task-button'));
-            showNotification("✅ Task VERIFIED! +1 ticket earned!");
-            
-            delete taskState.fakeCompletions[taskId];
-            localStorage.setItem('fakeCompletions', JSON.stringify(taskState.fakeCompletions));
-        }
-
-        function cleanupTask(taskId) {
-            if (taskState.activeTask?.monitorInterval) {
-                clearInterval(taskState.activeTask.monitorInterval);
-            }
-            taskState.activeTask = null;
-            localStorage.removeItem('activeTask');
-        }
-
-        function updateTaskButton() {
-            const taskButton = document.getElementById('task-button');
-            if (!taskButton) return;
-            
-            if (taskState.activeTask) {
-                taskButton.disabled = true;
-                taskButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Complete an offer...';
-            } else {
-                taskButton.disabled = false;
-                taskButton.innerHTML = '<i class="fas fa-check-circle"></i> Complete Task (Get 1 Ticket)';
-            }
-        }
-
-        function loadOGAdsFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            if (urlParams.has('subid') || urlParams.has('status')) {
-                const userId = urlParams.get('subid') || urlParams.get('subid1') || urlParams.get('custom');
-                const taskId = urlParams.get('subid2') || urlParams.get('custom1') || urlParams.get('custom');
-                const status = urlParams.get('status');
-                
-                if (userId && userId === gameState.userId && taskId) {
-                    if (status === '1' || status === 'approved' || status === 'complete') {
-                        taskState.fakeCompletions[taskId] = true;
-                        localStorage.setItem('fakeCompletions', JSON.stringify(taskState.fakeCompletions));
-                        
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        
-                        setTimeout(() => {
-                            showNotification("✅ OGAds confirmed task completion!");
-                            if (taskState.activeTask?.id === taskId) {
-                                completeTask(taskId);
-                            }
-                        }, 1000);
-                    }
-                }
-            }
-        }
-        // ======================
-        // END OF OGAds TASK SYSTEM
-        // ======================
 
         // Enhanced Game State with Image Codes - NO FREE SPIN
         const gameState = {
@@ -2138,9 +1979,6 @@
             
             // Initial calculation for earnings
             calculateEarnings();
-            
-            // Initialize task system
-            initTaskSystem();
         }
 
         function updateSpinUI() {
@@ -2170,6 +2008,96 @@
         function updateReferralUI() {
             document.getElementById("referrals-count").textContent = gameState.referral.count;
             document.getElementById("referral-tickets").textContent = gameState.referral.ticketsEarned;
+        }
+
+        // ======================
+        // TEMU TASK FUNCTIONS
+        // ======================
+
+        function startTemuTask() {
+            const timeSinceLastAttempt = Date.now() - taskState.lastTemuAttempt;
+            
+            if (timeSinceLastAttempt < TEMU_CONFIG.taskCooldown && !taskState.temuTicketGiven) {
+                const minutesLeft = Math.ceil((TEMU_CONFIG.taskCooldown - timeSinceLastAttempt) / 60000);
+                showNotification(`Please wait ${minutesLeft} minutes before trying again.`);
+                return;
+            }
+            
+            // Check if already completed and got ticket
+            if (taskState.temuTicketGiven) {
+                showNotification("✅ You already got your ticket for signing up on Temu!");
+                return;
+            }
+            
+            taskState.lastTemuAttempt = Date.now();
+            localStorage.setItem('lastTemuAttempt', taskState.lastTemuAttempt.toString());
+            
+            // Open Temu sign up link
+            const temuUrl = TEMU_CONFIG.referralLink;
+            
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.openLink(temuUrl);
+            } else {
+                window.open(temuUrl, '_blank', 'noopener,noreferrer');
+            }
+            
+            // Show sign up instructions
+            showNotification("📱 Open Temu & Sign Up → Come back here to claim your ticket!");
+            
+            // Enable claim button after a delay
+            setTimeout(() => {
+                enableTemuClaim();
+            }, 5000);
+        }
+
+        function enableTemuClaim() {
+            const taskButton = document.getElementById('temu-task-button');
+            taskButton.innerHTML = '<i class="fas fa-check-circle"></i> I Signed Up - Claim Ticket';
+            taskButton.onclick = claimTemuReward;
+            taskButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+        }
+
+        function claimTemuReward() {
+            // Check cooldown
+            const timeSinceLastAttempt = Date.now() - taskState.lastTemuAttempt;
+            if (timeSinceLastAttempt < 30000) { // 30 seconds minimum
+                showNotification("Please wait at least 30 seconds after signing up.");
+                return;
+            }
+            
+            // Give ticket
+            gameState.spin.tickets += TEMU_CONFIG.rewardAmount;
+            localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
+            
+            // Mark as completed
+            taskState.temuTicketGiven = true;
+            localStorage.setItem('temuTicketGiven', JSON.stringify(taskState.temuTicketGiven));
+            
+            // Record completion
+            const completion = {
+                timestamp: Date.now(),
+                reward: TEMU_CONFIG.rewardAmount,
+                task: 'temu_signup'
+            };
+            
+            taskState.completedTemuTasks.push(completion);
+            localStorage.setItem('completedTemuTasks', JSON.stringify(taskState.completedTemuTasks));
+            
+            // Update UI
+            updateSpinUI();
+            
+            // Reset button
+            const taskButton = document.getElementById('temu-task-button');
+            taskButton.innerHTML = '<i class="fas fa-user-check"></i> Signed Up - Ticket Claimed ✓';
+            taskButton.disabled = true;
+            taskButton.style.background = 'linear-gradient(135deg, #777 0%, #666 100%)';
+            taskButton.onclick = null;
+            
+            createConfetti(taskButton);
+            showNotification("✅ +1 Ticket Added! You can now spin the wheel!");
+            
+            // Update spin notice
+            document.querySelector('.spin-notice').textContent = "🎉 Ticket earned! Click SPIN NOW to win crypto!";
         }
 
         // ======================
@@ -2397,7 +2325,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Click 'Complete Task' to earn tickets.");
+                alert("You need 1 spin ticket! Sign up on Temu to get your first ticket.");
                 return;
             }
             
