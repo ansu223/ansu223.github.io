@@ -1368,7 +1368,17 @@
 
     <!-- 📊 AD CONTAINER PLACED ABOVE CONTENT FOR HIGHER CPM -->
     <div id="ad-container-top" style="margin: 10px auto; text-align: center; max-width: 728px; min-height: 90px; background: transparent;">
-        <!-- Ad content will be loaded here by the ad scripts -->
+        <!-- Adsterra Ad 728x90 -->
+        <script>
+            atOptions = {
+                'key' : 'bec427dde6a2de161337ed86d94f713c',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+            };
+        </script>
+        <script src="https://www.highperformanceformat.com/bec427dde6a2de161337ed86d94f713c/invoke.js"></script>
     </div>
 
     <!-- Spin Game -->
@@ -1397,7 +1407,7 @@
         <!-- Ticket Display -->
         <div class="ticket-count" id="ticket-display">🎫 Tickets: <span id="ticket-count">0</span></div>
         
-        <div class="spin-notice">🔥 Sign up on Temu to earn spin tickets! 🔥</div>
+        <div class="spin-notice">🔥 Complete task to earn spin tickets! 🔥</div>
         
         <div class="wheel-container">
             <div class="arrow"></div>
@@ -1415,9 +1425,9 @@
         <div id="spin-code-display" class="code-display" style="display: none;"></div>
         <button id="copy-code-button" class="spin-button" onclick="copyResultCode()">📋 Copy Code</button>
 
-        <!-- Temu Task Button - NEW SIMPLE SIGN UP TASK -->
-        <button class="temu-button" id="temu-task-button" onclick="startTemuTask()">
-            <i class="fas fa-user-plus"></i> Sign Up on Temu (Get 1 Ticket)
+        <!-- UPDATED: Complete Task Button with new direct link -->
+        <button class="temu-button" id="temu-task-button" onclick="startTask()">
+            <i class="fas fa-tasks"></i> Complete Task (Get 1 Ticket)
         </button>
 
         <!-- 👇 TELEGRAM GROUP LINK ADDED BELOW WATCH AD BUTTON -->
@@ -1832,18 +1842,18 @@
 
     <script>
         // ======================
-        // SIMPLE TEMU TASK SYSTEM
+        // TASK SYSTEM - UPDATED WITH NEW DIRECT LINK
         // ======================
-        const TEMU_CONFIG = {
-            referralLink: "https://temu.to/k/e23zrlb1imv",
+        const TASK_CONFIG = {
+            taskLink: "https://www.effectivegatecpm.com/e40ebvj4jt?key=1ac8066b06328d892b4c13bf1034d425",
             rewardAmount: 1,
             taskCooldown: 3600000
         };
 
         const taskState = {
-            completedTemuTasks: JSON.parse(localStorage.getItem('completedTemuTasks')) || [],
-            lastTemuAttempt: parseInt(localStorage.getItem('lastTemuAttempt')) || 0,
-            temuTicketGiven: JSON.parse(localStorage.getItem('temuTicketGiven')) || false
+            completedTasks: JSON.parse(localStorage.getItem('completedTasks')) || [],
+            lastTaskAttempt: parseInt(localStorage.getItem('lastTaskAttempt')) || 0,
+            taskTicketGiven: JSON.parse(localStorage.getItem('taskTicketGiven')) || false
         };
 
         // Enhanced Game State with Image Codes - NO FREE SPIN
@@ -2011,84 +2021,84 @@
         }
 
         // ======================
-        // TEMU TASK FUNCTIONS
+        // TASK FUNCTIONS - UPDATED
         // ======================
 
-        function startTemuTask() {
-            const timeSinceLastAttempt = Date.now() - taskState.lastTemuAttempt;
+        function startTask() {
+            const timeSinceLastAttempt = Date.now() - taskState.lastTaskAttempt;
             
-            if (timeSinceLastAttempt < TEMU_CONFIG.taskCooldown && !taskState.temuTicketGiven) {
-                const minutesLeft = Math.ceil((TEMU_CONFIG.taskCooldown - timeSinceLastAttempt) / 60000);
+            if (timeSinceLastAttempt < TASK_CONFIG.taskCooldown && !taskState.taskTicketGiven) {
+                const minutesLeft = Math.ceil((TASK_CONFIG.taskCooldown - timeSinceLastAttempt) / 60000);
                 showNotification(`Please wait ${minutesLeft} minutes before trying again.`);
                 return;
             }
             
             // Check if already completed and got ticket
-            if (taskState.temuTicketGiven) {
-                showNotification("✅ You already got your ticket for signing up on Temu!");
+            if (taskState.taskTicketGiven) {
+                showNotification("✅ You already got your ticket for completing the task!");
                 return;
             }
             
-            taskState.lastTemuAttempt = Date.now();
-            localStorage.setItem('lastTemuAttempt', taskState.lastTemuAttempt.toString());
+            taskState.lastTaskAttempt = Date.now();
+            localStorage.setItem('lastTaskAttempt', taskState.lastTaskAttempt.toString());
             
-            // Open Temu sign up link
-            const temuUrl = TEMU_CONFIG.referralLink;
+            // Open task link
+            const taskUrl = TASK_CONFIG.taskLink;
             
             if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(temuUrl);
+                Telegram.WebApp.openLink(taskUrl);
             } else {
-                window.open(temuUrl, '_blank', 'noopener,noreferrer');
+                window.open(taskUrl, '_blank', 'noopener,noreferrer');
             }
             
-            // Show sign up instructions
-            showNotification("📱 Open Temu & Sign Up → Come back here to claim your ticket!");
+            // Show task instructions
+            showNotification("📱 Complete the task → Come back here to claim your ticket!");
             
             // Enable claim button after a delay
             setTimeout(() => {
-                enableTemuClaim();
+                enableTaskClaim();
             }, 5000);
         }
 
-        function enableTemuClaim() {
+        function enableTaskClaim() {
             const taskButton = document.getElementById('temu-task-button');
-            taskButton.innerHTML = '<i class="fas fa-check-circle"></i> I Signed Up - Claim Ticket';
-            taskButton.onclick = claimTemuReward;
+            taskButton.innerHTML = '<i class="fas fa-check-circle"></i> Task Completed - Claim Ticket';
+            taskButton.onclick = claimTaskReward;
             taskButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
         }
 
-        function claimTemuReward() {
+        function claimTaskReward() {
             // Check cooldown
-            const timeSinceLastAttempt = Date.now() - taskState.lastTemuAttempt;
+            const timeSinceLastAttempt = Date.now() - taskState.lastTaskAttempt;
             if (timeSinceLastAttempt < 30000) { // 30 seconds minimum
-                showNotification("Please wait at least 30 seconds after signing up.");
+                showNotification("Please wait at least 30 seconds after completing the task.");
                 return;
             }
             
             // Give ticket
-            gameState.spin.tickets += TEMU_CONFIG.rewardAmount;
+            gameState.spin.tickets += TASK_CONFIG.rewardAmount;
             localStorage.setItem('spinTickets', gameState.spin.tickets.toString());
             
             // Mark as completed
-            taskState.temuTicketGiven = true;
-            localStorage.setItem('temuTicketGiven', JSON.stringify(taskState.temuTicketGiven));
+            taskState.taskTicketGiven = true;
+            localStorage.setItem('taskTicketGiven', JSON.stringify(taskState.taskTicketGiven));
             
             // Record completion
             const completion = {
                 timestamp: Date.now(),
-                reward: TEMU_CONFIG.rewardAmount,
-                task: 'temu_signup'
+                reward: TASK_CONFIG.rewardAmount,
+                task: 'complete_task'
             };
             
-            taskState.completedTemuTasks.push(completion);
-            localStorage.setItem('completedTemuTasks', JSON.stringify(taskState.completedTemuTasks));
+            taskState.completedTasks.push(completion);
+            localStorage.setItem('completedTasks', JSON.stringify(taskState.completedTasks));
             
             // Update UI
             updateSpinUI();
             
             // Reset button
             const taskButton = document.getElementById('temu-task-button');
-            taskButton.innerHTML = '<i class="fas fa-user-check"></i> Signed Up - Ticket Claimed ✓';
+            taskButton.innerHTML = '<i class="fas fa-check-double"></i> Task Completed - Ticket Claimed ✓';
             taskButton.disabled = true;
             taskButton.style.background = 'linear-gradient(135deg, #777 0%, #666 100%)';
             taskButton.onclick = null;
@@ -2325,7 +2335,7 @@
 
         function spinWheel() {
             if (gameState.spin.tickets < 1) {
-                alert("You need 1 spin ticket! Sign up on Temu to get your first ticket.");
+                alert("You need 1 spin ticket! Complete the task to get your first ticket.");
                 return;
             }
             
@@ -2558,12 +2568,26 @@
         });
     </script>
 
-    <!-- ADDED: Game-appropriate ad script as requested -->
-    <script>(function(s){s.dataset.zone='10227477',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- ADDED: Additional Adsterra ad container -->
+    <div id="container-ed3202688c1d809886f47c8ad821f716"></div>
+    <script async="async" data-cfasync="false" src="https://pl28112609.effectivegatecpm.com/ed3202688c1d809886f47c8ad821f716/invoke.js"></script>
+
+    <!-- ADDED: Adsterra 300x250 ad script -->
+    <script>
+        atOptions = {
+            'key' : 'fab231b1ab0c0bdcc4e17a53780bd94b',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+        };
+    </script>
+    <script src="https://www.highperformanceformat.com/fab231b1ab0c0bdcc4e17a53780bd94b/invoke.js"></script>
     
+    <!-- ADDED: Additional Adsterra script -->
+    <script src="https://pl28454683.effectivegatecpm.com/25/81/99/2581997754a97d974456c43629555264.js"></script>
     
-    
-    <!-- ADDED: Requested ad script -->
-    <script>(function(s){s.dataset.zone='9979954',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <!-- ADDED: Vignette script -->
+    <script>(function(s){s.dataset.zone='10450275',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </body>
 </html>
